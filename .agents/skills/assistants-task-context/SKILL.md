@@ -14,25 +14,29 @@ understand, specify, design, implement, review, or validate.
 
 ## Workflow
 
-1. Retrieve the issue from Linear without mutating it.
-2. Resolve its complete parent chain until reaching `INV-2228`.
-3. Read [linear-context.md](references/linear-context.md) and validate the hierarchy and inherited
+1. From the workspace root, run `./scripts/update-repos.sh` before retrieving context. Inspect its
+   output: stop and report when `assistants` or a required `ids` repo fails to update; continue with
+   an explicit freshness warning when a required repo is skipped. Ignore the expected
+   `inventeer-hub` skip.
+2. Retrieve the issue from Linear without mutating it.
+3. Resolve its complete parent chain until reaching `INV-2228`.
+4. Read [linear-context.md](references/linear-context.md) and validate the hierarchy and inherited
    DoD coverage.
-4. Resolve `repos/assistants` and, when required by the domain, `repos/ids`. If a required repo is
+5. Resolve `repos/assistants` and, when required by the domain, `repos/ids`. If a required repo is
    absent, report the missing clone and stop; never clone automatically.
-5. Read the target repository's local agent instructions and check its Git worktree before any
+6. Read the target repository's local agent instructions and check its Git worktree before any
    proposed mutation.
-6. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
+7. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
    and load only the relevant canonical contracts or standards from `repos/ids` when it does.
-7. Follow the code-first verification chain:
+8. Follow the code-first verification chain:
    - existing implementation and neighboring patterns;
    - relevant tests;
    - project documentation, artifacts, ADRs, and existing specs;
    - Git history only when the current rationale remains unclear.
-8. Separate discovered facts, supported inferences, and unresolved questions.
-9. Read [specification-policy.md](references/specification-policy.md) and determine whether the
+9. Separate discovered facts, supported inferences, and unresolved questions.
+10. Read [specification-policy.md](references/specification-policy.md) and determine whether the
    Linear issue is ready for the user's intended action.
-10. Return the context package below and recommend exactly one next action.
+11. Return the context package below and recommend exactly one next action.
 
 ## Context Package
 

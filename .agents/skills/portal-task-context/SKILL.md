@@ -15,28 +15,32 @@ understand, specify, design, implement, review, or validate.
 
 ## Workflow
 
-1. Retrieve the issue from Linear without mutating it.
-2. Resolve its complete parent chain until reaching `INV-254`.
-3. Read [linear-context.md](references/linear-context.md) and validate hierarchy and inherited DoD
+1. From the workspace root, run `./scripts/update-repos.sh` before retrieving context. Inspect its
+   output: stop and report when `portal`, `portal-api`, `portal-web`, or a required `ids` repo fails
+   to update; continue with an explicit freshness warning when a required repo is skipped. Ignore
+   the expected `inventeer-hub` skip.
+2. Retrieve the issue from Linear without mutating it.
+3. Resolve its complete parent chain until reaching `INV-254`.
+4. Read [linear-context.md](references/linear-context.md) and validate hierarchy and inherited DoD
    coverage.
-4. Resolve `repos/portal`, `repos/portal-api`, `repos/portal-web`, and, when required by the domain,
+5. Resolve `repos/portal`, `repos/portal-api`, `repos/portal-web`, and, when required by the domain,
    `repos/ids`. If a required repo is absent, report it and stop; never clone automatically.
-5. Read [repository-topology.md](references/repository-topology.md).
-6. Load product meaning and constraints from `repos/portal` before deciding implementation ownership.
-7. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
+6. Read [repository-topology.md](references/repository-topology.md).
+7. Load product meaning and constraints from `repos/portal` before deciding implementation ownership.
+8. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
    and load only the relevant canonical standards from `repos/ids` when it does.
-8. Classify the target behavior as product/docs, API/backend, web/frontend, or cross-repo.
-9. For every repo in scope, read its local agent instructions and check its Git worktree before any
+9. Classify the target behavior as product/docs, API/backend, web/frontend, or cross-repo.
+10. For every repo in scope, read its local agent instructions and check its Git worktree before any
    proposed mutation.
-10. Follow the code-first verification chain in the implementation repo or repos:
+11. Follow the code-first verification chain in the implementation repo or repos:
    - existing implementation and neighboring patterns;
    - relevant tests and shared contracts;
    - local specs, ADRs, artifacts, and documentation;
    - Git history only when the current rationale remains unclear.
-11. Separate discovered facts, supported inferences, and unresolved questions.
-12. Read [specification-policy.md](references/specification-policy.md) and determine readiness for
+12. Separate discovered facts, supported inferences, and unresolved questions.
+13. Read [specification-policy.md](references/specification-policy.md) and determine readiness for
     the user's intended action.
-13. Return the context package below and recommend exactly one next action.
+14. Return the context package below and recommend exactly one next action.
 
 ## Context Package
 

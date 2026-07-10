@@ -113,13 +113,22 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-10
 - **Status**: active
 
+### AD-013
+- **Decision**: Centralizar a atualização segura dos clones locais em `scripts/update-repos.sh` e executá-la como primeira etapa das skills `portal-task-context` e `assistants-task-context`.
+- **Reason**: Preparar tasks com código atualizado reduz conclusões baseadas em clones defasados e evita duplicar regras de sincronização entre skills.
+- **Trade-off**: O início do fluxo passa a depender de acesso aos remotes; worktrees com mudanças locais permanecem intocados e geram aviso de possível defasagem. Repositórios com branch local `develop` usam essa branch; os demais usam a branch padrão do `origin`.
+- **Alternatives considered**: Atualização manual antes de cada task; executar `git pull` diretamente em cada skill; atualizar apenas o repo inicialmente identificado como alvo.
+- **Scope**: Preparação de contexto de Portal e Assistants e manutenção dos clones sob `repos/`.
+- **Date**: 2026-07-10
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Bootstrap do Inventeer Engineering Workspace
-- **Phase / Task**: Estrutura inicial — concluída
-- **Completed**: estrutura base, decisões AD-001..AD-012, registry de Hub/Inv Cortex/Assistants/IDS/Portal, TLC 3.2.0 vendorizada, skills de contexto Assistants e Portal criadas, dependências contextuais Portal→IDS e Assistants→IDS definidas, repos/ ignorado
+- **Feature**: Sincronização segura dos repositórios locais
+- **Phase / Task**: Implementação, validação e commit — concluídos
+- **Completed**: script Linux para atualizar clones por fast-forward, seleção genérica de `develop`, troca segura de branch em worktrees limpos, preservação de alterações locais, exclusão temporária de `inventeer-hub`, documentação no README e integração como primeira etapa das skills de Portal e Assistants
 - **In-progress**: none
-- **Next step**: executar um dry run de uma skill de contexto em uma task real antes de iniciar implementação
+- **Next step**: executar uma skill de contexto em uma task real e confirmar o preflight de atualização
 - **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: main

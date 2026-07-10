@@ -46,6 +46,20 @@ Cada diretório em `repos/` mantém seu próprio histórico Git. Consulte o
 [registro de projetos](projects/README.md) para localizar fontes canônicas, relações entre repos e
 instruções antes de trabalhar em um produto.
 
+Para atualizar todos os clones no Linux:
+
+```bash
+./scripts/update-repos.sh
+```
+
+O script usa `develop` quando essa branch existe localmente; caso contrário, usa a branch padrão
+publicada pelo `origin`. Worktrees limpos são trocados para essa branch e atualizados somente por
+avanço rápido. Repositórios com mudanças locais são reportados como pulados, sem troca de branch.
+Opcionalmente, informe outro diretório como primeiro argumento.
+
+O repositório `inventeer-hub` é ignorado explicitamente enquanto suas políticas de acesso estão em
+definição; o script não tenta consultar nem atualizar seu remote.
+
 ## Limites
 
 - Linear permanece canônico para estado operacional das issues.
