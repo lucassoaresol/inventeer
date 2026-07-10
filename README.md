@@ -15,6 +15,7 @@ Esse arquivo registra memória do workspace; specs de produto permanecem nos res
 ├── .agents/skills/        Skills versionadas e descobertas pelo Codex
 ├── .specs/STATE.md        Decisões e handoff deste workspace
 ├── projects/              Pontos de entrada versionados dos projetos
+├── scripts/               Automações locais do workspace
 └── repos/                 Clones locais independentes (ignorado pelo Git)
 ```
 
@@ -36,11 +37,14 @@ Clone os projetos dentro de `repos/`, preservando o nome do repositório remoto:
 ```bash
 git clone <assistants-url> repos/assistants
 git clone <ids-url> repos/ids
-git clone <inventeer-hub-url> repos/inventeer-hub
+git clone <inv-cortex-url> repos/inv-cortex
 git clone <portal-url> repos/portal
 git clone <portal-api-url> repos/portal-api
 git clone <portal-web-url> repos/portal-web
 ```
+
+Clone `inventeer-hub` somente quando o acesso estiver provisionado, pois suas políticas de acesso
+ainda estão em definição.
 
 Cada diretório em `repos/` mantém seu próprio histórico Git. Consulte o
 [registro de projetos](projects/README.md) para localizar fontes canônicas, relações entre repos e
@@ -59,6 +63,10 @@ Opcionalmente, informe outro diretório como primeiro argumento.
 
 O repositório `inventeer-hub` é ignorado explicitamente enquanto suas políticas de acesso estão em
 definição; o script não tenta consultar nem atualizar seu remote.
+
+As skills `assistants-task-context` e `portal-task-context` executam esse script automaticamente
+antes de carregar o contexto de uma issue. Falhas em repos necessários interrompem a preparação;
+repos necessários pulados geram um aviso explícito de possível defasagem.
 
 ## Limites
 
