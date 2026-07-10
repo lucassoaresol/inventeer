@@ -1,0 +1,4 @@
+interface:
+  display_name: "Portal Task Context"
+  short_description: "Prepare Portal tasks across product, API, and web"
+  default_prompt: "Use $portal-task-context to prepare INV-XXXX for development."

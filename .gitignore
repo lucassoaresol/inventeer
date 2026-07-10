@@ -1,0 +1,8 @@
+# Independent project repositories and their worktrees.
+/repos/
+
+# Local environment and generated output.
+.env
+.env.*
+!.env.example
+.skill-results/

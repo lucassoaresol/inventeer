@@ -1,0 +1,54 @@
+# Inventeer Engineering Workspace
+
+Workspace pessoal de engenharia para trabalhar com projetos da Inventeer usando Codex.
+
+Este repositório mantém skills reutilizáveis e pontos de entrada dos projetos. O código dos
+produtos fica em repositórios Git independentes sob `repos/`, que é ignorado por este repositório.
+
+As decisões que definem este workspace e seus trade-offs ficam em [`.specs/STATE.md`](.specs/STATE.md).
+Esse arquivo registra memória do workspace; specs de produto permanecem nos respectivos repos.
+
+## Estrutura
+
+```text
+.
+├── .agents/skills/        Skills versionadas e descobertas pelo Codex
+├── .specs/STATE.md        Decisões e handoff deste workspace
+├── projects/              Pontos de entrada versionados dos projetos
+└── repos/                 Clones locais independentes (ignorado pelo Git)
+```
+
+## Skills
+
+| Skill | Origem | Versão | Uso |
+|---|---|---:|---|
+| `tlc-spec-driven` | Tech Lead's Club | 3.2.0 | Especificar, projetar, implementar e verificar mudanças |
+| `assistants-task-context` | Local | 0.1.0 | Preparar tasks do produto Assistants para desenvolvimento |
+| `portal-task-context` | Local | 0.1.0 | Preparar tasks do Portal e determinar ownership entre produto, API e web |
+
+As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
+global. A `tlc-spec-driven` é vendorizada e deve ser atualizada separadamente das skills locais.
+
+## Repositórios locais
+
+Clone os projetos dentro de `repos/`, preservando o nome do repositório remoto:
+
+```bash
+git clone <assistants-url> repos/assistants
+git clone <ids-url> repos/ids
+git clone <inventeer-hub-url> repos/inventeer-hub
+git clone <portal-url> repos/portal
+git clone <portal-api-url> repos/portal-api
+git clone <portal-web-url> repos/portal-web
+```
+
+Cada diretório em `repos/` mantém seu próprio histórico Git. Consulte o
+[registro de projetos](projects/README.md) para localizar fontes canônicas, relações entre repos e
+instruções antes de trabalhar em um produto.
+
+## Limites
+
+- Linear permanece canônico para estado operacional das issues.
+- O IDS permanece canônico para contratos DAP, EPP e DEP.
+- Cada repositório de produto permanece canônico para código e specs locais.
+- Este workspace não deve armazenar credenciais, dados de clientes ou saídas de produção.

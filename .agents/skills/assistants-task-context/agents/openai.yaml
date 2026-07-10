@@ -1,0 +1,4 @@
+interface:
+  display_name: "Assistants Task Context"
+  short_description: "Prepare Assistants tasks with full context"
+  default_prompt: "Use $assistants-task-context to prepare INV-XXXX for development."
