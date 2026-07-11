@@ -122,13 +122,22 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-10
 - **Status**: active
 
+### AD-014
+- **Decision**: Preparar issues de produto com revisão inicial em português, artefatos canônicos finais em inglês, orientação funcional e operacional antes de decisões e estado `Draft` até aprovação explícita, salvo instrução diferente do usuário.
+- **Reason**: O uso real mostrou que decisões técnicas tomadas antes de estabelecer o modelo mental, a operação e o contrato editorial geram retrabalho e dificultam distinguir entendimento, aprovação e prontidão para implementação.
+- **Trade-off**: A preparação ganha uma etapa editorial e pedagógica adicional, que deve permanecer adaptativa para não burocratizar tasks simples ou usuários que já dominam o contexto.
+- **Alternatives considered**: Alterar a `tlc-spec-driven` vendorizada; produzir diretamente em inglês; deixar idioma, profundidade e status apenas implícitos no chat.
+- **Scope**: Skills locais de contexto de produto e seus handoffs para a TLC; não altera a `tlc-spec-driven` vendorizada.
+- **Date**: 2026-07-10
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Sincronização segura dos repositórios locais
-- **Phase / Task**: Implementação, validação e commit — concluídos
-- **Completed**: script Linux para atualizar clones por fast-forward, seleção genérica de `develop`, troca segura de branch em worktrees limpos, preservação de alterações locais, exclusão temporária de `inventeer-hub`, documentação no README e integração como primeira etapa das skills de Portal e Assistants
+- **Feature**: Estratégia sustentável de vendor e customização da `tlc-spec-driven`
+- **Phase / Task**: Descoberta futura — debate registrado, ainda não iniciado
+- **Completed**: revisão do uso da TLC na sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; identificação de melhorias potenciais em orientação antes de decisões, contrato editorial/idiomas, proveniência de requisitos, estado dos artefatos e handoff; decisão de tratar mudanças na skill em uma sessão dedicada
 - **In-progress**: none
-- **Next step**: executar uma skill de contexto em uma task real e confirmar o preflight de atualização
-- **Blockers**: none
+- **Next step**: em uma sessão específica, comparar a TLC oficial, a cópia vendorizada e a instalação global; classificar diferenças como upstream, política local ou patch genérico; então desenhar um fluxo reproduzível de atualização antes de alterar a TLC
+- **Blockers**: falta definir a origem/upstream oficial e o mecanismo de atualização; a política local foi separada desse debate pela AD-014
 - **Uncommitted files**: none
 - **Branch**: main
