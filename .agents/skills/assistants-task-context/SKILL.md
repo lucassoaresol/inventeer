@@ -40,6 +40,10 @@ understand, specify, design, implement, review, or validate.
      when understanding is not already demonstrated;
    - mark artifacts as `Draft` until the user explicitly approves their content;
    - state the contract in the context package handed to downstream workflows.
+   Present the review package in chat by default. Create a separate review file only when the user
+   requests one. After approval, hand the approved package to the downstream workflow to create or
+   update canonical artifacts in the canonical language; do not require a second approval solely for
+   translation unless meaning changes.
 10. Build the user's mental model before requesting decisions: explain the problem, current and
     expected behavior, end-to-end flow, components, dependencies, scope boundaries, and why each
     unresolved choice matters. Use the sequence: orient with evidence, present options and
@@ -54,8 +58,25 @@ understand, specify, design, implement, review, or validate.
     `DEPENDENCY`, or `RECOMMENDATION`. Do not silently promote a recommendation or dependency into
     issue scope.
 13. Read [specification-policy.md](references/specification-policy.md) and determine whether the
-   Linear issue is ready for the user's intended action.
+    Linear issue is ready for the user's intended action.
 14. Return the context package below and recommend exactly one next action.
+
+## Provenance
+
+Use exactly one primary provenance for each requirement or constraint:
+
+- `ISSUE`: stated directly by the target Linear issue.
+- `INHERITED`: imposed by its ancestry, declared DoD, canonical IDS contract, or active decision.
+- `SAFETY`: necessary to prevent an identified security, privacy, availability, or destructive risk
+  not already classified as inherited.
+- `DECISION`: explicitly chosen or approved by the user during preparation.
+- `DEPENDENCY`: required access, provisioning, external work, or prior capability that enables the
+  issue but is not silently added to its implementation scope.
+- `RECOMMENDATION`: optional improvement proposed by the agent and not required for readiness or
+  compliance.
+
+When multiple sources apply, keep the strongest scope-authorizing source as primary and cite the
+others as supporting evidence. Never use `SAFETY` or `RECOMMENDATION` to override a canonical rule.
 
 ## Context Package
 
@@ -95,8 +116,8 @@ Return a concise report containing:
 
 When `tlc-spec-driven` is available and specification, design, implementation, or validation is the
 recommended action, hand off the prepared context and review contract to it. Keep review artifacts
-in the review language and produce canonical artifacts in the canonical language only after explicit
-approval. Do not duplicate its workflow.
+in the review language. After explicit content approval, let the downstream workflow create or
+update canonical artifacts in the canonical language. Do not duplicate its workflow.
 
 ## Boundaries
 
