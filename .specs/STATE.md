@@ -131,13 +131,22 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-10
 - **Status**: active
 
+### AD-015
+- **Decision**: Manter `.agents/skills/tlc-spec-driven` como mirror byte a byte do pacote oficial `tech-leads-club/agent-skills`, registrar a revisão upstream fixada em `.agents/vendor.json` e realizar checks ou atualizações somente pelo script local `scripts/update-vendored-skill.sh`.
+- **Reason**: Separar o conteúdo oficial das políticas Inventeer permite detectar alterações acidentais, incorporar melhorias upstream com diff reproduzível e manter toda personalização exclusiva deste workspace fora do pacote vendorizado.
+- **Trade-off**: A atualização passa a depender de rede, `git`, `curl`, `tar`, `rsync` e `jq`; políticas locais não podem ser implementadas editando diretamente a TLC.
+- **Alternatives considered**: Manter um fork; aplicar patches locais dentro da skill; copiar atualizações manualmente; depender apenas da instalação global.
+- **Scope**: Vendor e atualização da `tlc-spec-driven` neste workspace; não cria commits, forks ou PRs no repositório oficial.
+- **Date**: 2026-07-10
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Estratégia sustentável de vendor e customização da `tlc-spec-driven`
-- **Phase / Task**: Descoberta futura — debate registrado, ainda não iniciado
-- **Completed**: revisão do uso da TLC na sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; aplicação local da orientação antes de decisões, contrato editorial/idiomas, proveniência de requisitos e estado dos artefatos; decisão de tratar qualquer mudança na TLC em uma sessão dedicada
+- **Phase / Task**: Estratégia definida e mecanismo local implementado
+- **Completed**: revisão do uso da TLC na sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; aplicação das políticas locais fora da TLC; upstream oficial identificado; cópias comparadas; mirror puro, manifesto fixado e atualizador seguro definidos pela AD-015
 - **In-progress**: none
-- **Next step**: em uma sessão específica, comparar a TLC oficial, a cópia vendorizada e a instalação global; classificar diferenças como upstream, política local ou patch genérico; então desenhar um fluxo reproduzível de atualização antes de alterar a TLC
-- **Blockers**: falta definir a origem/upstream oficial e o mecanismo de atualização; a política local foi separada desse debate pela AD-014
+- **Next step**: antes de uma futura atualização, executar `./scripts/update-vendored-skill.sh --check main`, revisar o diff e só então usar `--apply`
+- **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: main

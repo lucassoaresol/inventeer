@@ -1,0 +1,10 @@
+{
+  "tlc-spec-driven": {
+    "repository": "https://github.com/tech-leads-club/agent-skills.git",
+    "source_path": "packages/skills-catalog/skills/(development)/tlc-spec-driven",
+    "target_path": ".agents/skills/tlc-spec-driven",
+    "ref": "6663279cd659b60cecb3e8d2dcc13162c88a8b7a",
+    "version": "3.2.0",
+    "synced_at": "2026-07-10"
+  }
+}

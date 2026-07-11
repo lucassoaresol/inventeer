@@ -29,6 +29,25 @@ Esse arquivo registra memória do workspace; specs de produto permanecem nos res
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
 global. A `tlc-spec-driven` é vendorizada e deve ser atualizada separadamente das skills locais.
+Sua origem e revisão fixada ficam em `.agents/vendor.json`. O diretório vendorizado deve permanecer
+idêntico ao upstream; personalizações Inventeer ficam em `AGENTS.md`, nas decisões e nas skills
+locais de contexto.
+
+Para verificar se há diferença em relação à branch oficial, sem alterar arquivos:
+
+```bash
+./scripts/update-vendored-skill.sh --check main
+```
+
+Depois de revisar o resultado, aplique uma referência explícita ou `main`:
+
+```bash
+./scripts/update-vendored-skill.sh --apply <ref>
+```
+
+O modo `--apply` exige worktree limpo, recusa atualizar um mirror que já divergiu da revisão fixada,
+sincroniza o diretório completo e atualiza o manifesto. O script não cria commits nem interage com
+forks ou pull requests; a atualização deve ser revisada e commitada isoladamente neste workspace.
 
 ## Repositórios locais
 
