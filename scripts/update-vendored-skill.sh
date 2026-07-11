@@ -9,13 +9,13 @@ MODE="${1:---check}"
 REQUESTED_REF="${2:-main}"
 
 usage() {
-  echo "Uso: $0 [--check|--apply] [ref]" >&2
+  echo "Uso: $0 [--check|--merge|--accept] [ref]" >&2
   exit 2
 }
 
-[[ "$MODE" == "--check" || "$MODE" == "--apply" ]] || usage
+[[ "$MODE" == "--check" || "$MODE" == "--merge" || "$MODE" == "--accept" ]] || usage
 
-for command in git curl tar rsync jq; do
+for command in git curl tar rsync jq patch; do
   command -v "$command" >/dev/null 2>&1 || {
     echo "Erro: comando obrigatório não encontrado: $command" >&2
     exit 2
@@ -25,7 +25,7 @@ done
 repository="$(jq -er --arg skill "$SKILL" '.[$skill].repository' "$MANIFEST")"
 source_path="$(jq -er --arg skill "$SKILL" '.[$skill].source_path' "$MANIFEST")"
 target_rel="$(jq -er --arg skill "$SKILL" '.[$skill].target_path' "$MANIFEST")"
-current_ref="$(jq -er --arg skill "$SKILL" '.[$skill].ref' "$MANIFEST")"
+base_ref="$(jq -er --arg skill "$SKILL" '.[$skill].base_ref' "$MANIFEST")"
 target_dir="$ROOT_DIR/$target_rel"
 
 resolve_ref() {
@@ -63,47 +63,85 @@ download_skill() {
   echo "$extracted/$source_path"
 }
 
+update_manifest() {
+  local ref="$1"
+  local version="$2"
+  local manifest_tmp="$3"
+
+  jq --arg skill "$SKILL" \
+    --arg ref "$ref" \
+    --arg version "$version" \
+    --arg synced_at "$(date +%F)" \
+    '.[$skill].base_ref = $ref | .[$skill].upstream_version = $version | .[$skill].merged_at = $synced_at' \
+    "$MANIFEST" > "$manifest_tmp"
+  mv "$manifest_tmp" "$MANIFEST"
+}
+
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
 target_ref="$(resolve_ref "$REQUESTED_REF")"
-candidate_dir="$(download_skill "$target_ref" "$tmp_dir/candidate")"
-candidate_version="$(awk '/^  version: / {print $2; exit}' "$candidate_dir/SKILL.md")"
+base_dir="$(download_skill "$base_ref" "$tmp_dir/base-download")"
+incoming_dir="$(download_skill "$target_ref" "$tmp_dir/incoming-download")"
+incoming_version="$(awk '/^  version: / {print $2; exit}' "$incoming_dir/SKILL.md")"
 
-if diff -qr "$candidate_dir" "$target_dir" >/dev/null; then
-  echo "[OK] $SKILL já corresponde a $target_ref (versão $candidate_version)."
+echo "Base upstream: $base_ref"
+echo "Incoming:      $target_ref (versão $incoming_version)"
+
+if diff -qr "$base_dir" "$target_dir" >/dev/null; then
+  echo "Customizações locais: nenhuma"
+else
+  echo "Customizações locais:"
+  diff -qr "$base_dir" "$target_dir" || true
+fi
+
+if diff -qr "$base_dir" "$incoming_dir" >/dev/null; then
+  echo "Atualizações upstream: nenhuma"
   exit 0
 fi
 
-echo "[DIFERENTE] $SKILL: local não corresponde a $target_ref (versão $candidate_version)."
-diff -qr "$candidate_dir" "$target_dir" || true
+echo "Atualizações upstream disponíveis:"
+diff -qr "$base_dir" "$incoming_dir" || true
 
 if [[ "$MODE" == "--check" ]]; then
-  echo "Nenhum arquivo foi alterado. Revise o diff antes de executar --apply."
+  echo "Nenhum arquivo foi alterado. Use --merge após revisar os dois lados."
   exit 1
 fi
 
+if [[ "$MODE" == "--accept" ]]; then
+  if grep -R -n -E '^(<<<<<<<|=======|>>>>>>>)' "$target_dir" >/dev/null; then
+    echo "Erro: ainda existem marcadores de conflito no fork local." >&2
+    exit 2
+  fi
+  update_manifest "$target_ref" "$incoming_version" "$tmp_dir/vendor.json"
+  echo "[ACEITO] $SKILL agora usa $target_ref como nova base upstream."
+  exit 0
+fi
+
 if [[ -n "$(git -C "$ROOT_DIR" status --porcelain)" ]]; then
-  echo "Erro: --apply exige o worktree limpo." >&2
+  echo "Erro: --merge exige o worktree limpo." >&2
   exit 2
 fi
 
-current_dir="$(download_skill "$current_ref" "$tmp_dir/current")"
-if ! diff -qr "$current_dir" "$target_dir" >/dev/null; then
-  echo "Erro: o mirror local divergiu da revisão fixada $current_ref; restaure ou classifique as diferenças antes de atualizar." >&2
-  diff -qr "$current_dir" "$target_dir" || true
-  exit 2
+merge_dir="$tmp_dir/merge"
+mkdir -p "$merge_dir/base" "$merge_dir/local"
+rsync -a "$base_dir/" "$merge_dir/base/"
+rsync -a "$target_dir/" "$merge_dir/local/"
+(
+  cd "$merge_dir"
+  diff -ruN base local > local-customizations.patch || [[ $? -eq 1 ]]
+)
+
+rsync -a --delete "$incoming_dir/" "$target_dir/"
+
+if [[ -s "$merge_dir/local-customizations.patch" ]]; then
+  if ! patch --directory="$target_dir" -p1 --merge --forward < "$merge_dir/local-customizations.patch"; then
+    echo "[CONFLITO] O upstream foi aplicado, mas algumas personalizações exigem merge manual." >&2
+    echo "Resolva os marcadores no worktree e execute: $0 --accept $target_ref" >&2
+    exit 1
+  fi
 fi
 
-rsync -a --delete "$candidate_dir/" "$target_dir/"
-manifest_tmp="$tmp_dir/vendor.json"
-jq --arg skill "$SKILL" \
-  --arg ref "$target_ref" \
-  --arg version "$candidate_version" \
-  --arg synced_at "$(date +%F)" \
-  '.[$skill].ref = $ref | .[$skill].version = $version | .[$skill].synced_at = $synced_at' \
-  "$MANIFEST" > "$manifest_tmp"
-mv "$manifest_tmp" "$MANIFEST"
-
-echo "[ATUALIZADO] $SKILL -> $target_ref (versão $candidate_version)."
+update_manifest "$target_ref" "$incoming_version" "$tmp_dir/vendor.json"
+echo "[MESCLADO] $SKILL -> base $target_ref com personalizações locais reaplicadas."
 echo "Revise e valide o diff; o script não cria commits."

@@ -3,8 +3,15 @@
     "repository": "https://github.com/tech-leads-club/agent-skills.git",
     "source_path": "packages/skills-catalog/skills/(development)/tlc-spec-driven",
     "target_path": ".agents/skills/tlc-spec-driven",
-    "ref": "6663279cd659b60cecb3e8d2dcc13162c88a8b7a",
-    "version": "3.2.0",
-    "synced_at": "2026-07-10"
+    "strategy": "three-way-merge",
+    "base_ref": "6663279cd659b60cecb3e8d2dcc13162c88a8b7a",
+    "upstream_version": "3.2.0",
+    "merged_at": "2026-07-10",
+    "local_customizations": [
+      "review contract and artifact lifecycle",
+      "orientation before decision questions",
+      "operational enablement discovery",
+      "requirement provenance"
+    ]
   }
 }
