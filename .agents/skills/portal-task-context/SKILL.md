@@ -37,10 +37,49 @@ understand, specify, design, implement, review, or validate.
    - relevant tests and shared contracts;
    - local specs, ADRs, artifacts, and documentation;
    - Git history only when the current rationale remains unclear.
-12. Separate discovered facts, supported inferences, and unresolved questions.
-13. Read [specification-policy.md](references/specification-policy.md) and determine readiness for
+12. Establish the review contract before creating artifacts or asking the user to decide gray areas:
+    - default the review language to Portuguese and the canonical artifact language to English;
+    - honor an explicit user preference over those defaults;
+    - infer the user's domain familiarity and include a functional walkthrough when understanding is
+      not already demonstrated;
+    - mark artifacts as `Draft` until the user explicitly approves their content;
+    - state the contract in the context package handed to downstream workflows.
+    Present the review package in chat by default. Create a separate review file only when the user
+    requests one. After approval, hand the approved package to the downstream workflow to create or
+    update canonical artifacts in the canonical language; do not require a second approval solely for
+    translation unless meaning changes.
+13. Build the user's mental model before requesting decisions: explain the problem, current and
+    expected behavior, end-to-end flow, repository ownership, dependencies, scope boundaries, and
+    why each unresolved choice matters. Orient with evidence, present options and consequences,
+    recommend, then ask for a decision. Keep this adaptive for simple tasks and experienced users.
+14. When the task involves an external tool, service, runtime, environment, credential, or network
+    boundary, assess operational readiness: where it runs, required binary/configuration, identity
+    and credentials, connectivity, local reproduction, staging validation, and dependencies on
+    other teams. Separate code changes from provisioning or access work.
+15. Separate discovered facts, supported inferences, and unresolved questions. Classify each
+    requirement or constraint by provenance: `ISSUE`, `INHERITED`, `SAFETY`, `DECISION`,
+    `DEPENDENCY`, or `RECOMMENDATION`. Do not silently promote a recommendation or dependency into
+    issue scope.
+16. Read [specification-policy.md](references/specification-policy.md) and determine readiness for
     the user's intended action.
-14. Return the context package below and recommend exactly one next action.
+17. Return the context package below and recommend exactly one next action.
+
+## Provenance
+
+Use exactly one primary provenance for each requirement or constraint:
+
+- `ISSUE`: stated directly by the target Linear issue.
+- `INHERITED`: imposed by its ancestry, declared DoD, canonical IDS standard, or active decision.
+- `SAFETY`: necessary to prevent an identified security, privacy, availability, or destructive risk
+  not already classified as inherited.
+- `DECISION`: explicitly chosen or approved by the user during preparation.
+- `DEPENDENCY`: required access, provisioning, external work, or prior capability that enables the
+  issue but is not silently added to its implementation scope.
+- `RECOMMENDATION`: optional improvement proposed by the agent and not required for readiness or
+  compliance.
+
+When multiple sources apply, keep the strongest scope-authorizing source as primary and cite the
+others as supporting evidence. Never use `SAFETY` or `RECOMMENDATION` to override a canonical rule.
 
 ## Context Package
 
@@ -55,9 +94,19 @@ Return a concise report containing:
 7. Relevant implementation files, contracts, and observed patterns.
 8. Relevant tests and currently asserted behaviors.
 9. Applicable decisions, artifacts, ADRs, and specs.
-10. Ambiguities, cross-repo risks, conflicts, and missing information.
-11. Readiness verdict with evidence.
-12. Exactly one recommended next action.
+10. Review contract: review language, canonical language, required walkthrough depth, artifact
+    status, and approval gate.
+11. Mental model: problem, current behavior, expected behavior, end-to-end flow, repository
+    ownership, dependencies, and scope boundaries. Omit only details the user has demonstrated.
+12. Operational readiness when applicable: execution location, binary/configuration, identity,
+    credentials, connectivity, local reproduction, staging validation, external ownership, and the
+    boundary between code and provisioning.
+13. Requirements and constraints with provenance (`ISSUE`, `INHERITED`, `SAFETY`, `DECISION`,
+    `DEPENDENCY`, or `RECOMMENDATION`).
+14. Ambiguities, cross-repo risks, conflicts, missing information, and decisions still required,
+    each explained before asking the user to choose.
+15. Readiness verdict with evidence.
+16. Exactly one recommended next action.
 
 ## Allowed Next Actions
 
@@ -71,7 +120,9 @@ Return a concise report containing:
 - Validate an existing implementation.
 
 When `tlc-spec-driven` is available and specification, design, implementation, or validation is the
-recommended action, hand off the prepared context to it. Do not duplicate its workflow.
+recommended action, hand off the prepared context and review contract to it. Keep review artifacts
+in the review language. After explicit content approval, let the downstream workflow create or
+update canonical artifacts in the canonical language. Do not duplicate its workflow.
 
 ## Boundaries
 
