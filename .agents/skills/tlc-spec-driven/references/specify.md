@@ -18,17 +18,51 @@ The canonical rubric for requirements that are easy to miss. Referenced by [disc
 | Data lifecycle / expiry | TTL, archival, deletion |
 | Observability | Logging, metrics, tracing hooks |
 | External-dependency failure | Circuit breakers, fallbacks |
+| Operational enablement | Runtime location, installation/configuration, identity/credentials, connectivity, local reproduction, staging validation, external ownership |
 | State-transition integrity | Valid transitions, guards |
 
 ---
 
 ## Process
 
-### 1. Clarify Requirements
+### 0. Establish the Review Contract
+
+Before writing an artifact or asking the user to decide gray areas, establish:
+
+- **Review language** — use a contract handed off by a context skill; otherwise use the language of
+  the conversation.
+- **Canonical language** — use the repository's documented convention; if none exists, ask only when
+  it differs from the review language.
+- **Walkthrough depth** — infer whether the user first needs a functional or operational mental
+  model; do not make them decide concepts they have not been oriented to.
+- **Artifact lifecycle** — present the review package in chat by default and treat it as `Draft`.
+  Create a separate review file only when requested. After explicit content approval, create or
+  update canonical artifacts in the canonical language. Translation without semantic change does
+  not require a second approval.
+
+State the inferred contract briefly and let the user correct it without turning it into a mandatory
+questionnaire. If an upstream context package already records an approved contract and decisions,
+reuse them rather than asking again.
+
+### 1. Orient, Then Clarify Requirements
 
 **Load confirmed lessons first:** Before clarifying, load the project's confirmed lessons so past verification failures shape this spec instead of repeating. Run `python3 scripts/lessons.py list --status confirmed` (optionally `--scope [area]` or `--query [term]` for the area this feature touches) and apply what comes back as guidance. Load only `confirmed` — never `candidate` or `quarantined`. If no store exists yet or no code tool is available, skip silently. See [lessons.md](lessons.md).
 
 **Lightweight context scan first (Knowledge Verification Chain Step 1):** Before asking questions, briefly scan existing code, patterns, and neighboring features relevant to this feature. Use what you find to ground your clarifying questions in reality — not to constrain the spec to current implementation. Keep it lightweight (stay within the <40k token budget; reuse the chain, no new machinery). The spec captures WHAT is needed, not only what exists.
+
+**Build the mental model before requesting decisions.** Explain, at the depth the user needs, the
+problem, current behavior, expected behavior, end-to-end flow, components, dependencies, scope
+boundary, and why each unresolved choice matters. For external tools or services, also distinguish
+code changes from access, credentials, provisioning, networking, and environment validation.
+
+Use this sequence whenever a decision is required:
+
+```text
+Orient with evidence → present options and consequences → recommend → ask for a decision
+```
+
+Do not ask the user to choose between labels or technologies they have not been given enough context
+to evaluate.
 
 You are a thinking partner, not an interviewer. Start open — let the user dump their mental model. Follow the energy: whatever they emphasize, dig into that.
 
@@ -79,12 +113,33 @@ Before presenting the spec for confirmation, run the three checks below. The spe
 
 Fix inline. This gate is bounded to THIS feature's stated dimensions and actual behavior — never to "anything imaginable." The Out of Scope table and anti-scope-creep rules remain the counterweights: the gate clarifies existing requirements, it never invents new ones.
 
+### 5. Preserve Requirement Provenance
+
+Classify every requirement or constraint by one primary source:
+
+- `ISSUE`: directly stated by the initiating task or request.
+- `INHERITED`: imposed by ancestry, declared DoD, canonical contract, standard, or active decision.
+- `SAFETY`: necessary to mitigate an identified security, privacy, availability, or destructive risk
+  not already classified as inherited.
+- `DECISION`: explicitly chosen or approved by the user during Specify.
+- `DEPENDENCY`: access, provisioning, external work, or prior capability required to enable delivery
+  but not silently added to implementation scope.
+- `RECOMMENDATION`: optional improvement proposed by the agent and not required for readiness or
+  compliance.
+
+When multiple sources apply, keep the strongest scope-authorizing source as primary and cite the
+others as supporting evidence. Never use `SAFETY` or `RECOMMENDATION` to override a canonical rule.
+
 ---
 
 ## Template: `.specs/features/[feature]/spec.md`
 
 ```markdown
 # [Feature Name] Specification
+
+**Status:** Draft | Approved
+**Review language:** [language]
+**Canonical language:** [language]
 
 ## Problem Statement
 
@@ -175,11 +230,11 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 
 Each requirement gets a unique ID for tracking across design, tasks, and validation.
 
-| Requirement ID | Story       | Phase  | Status  |
-| -------------- | ----------- | ------ | ------- |
-| [FEAT]-01      | P1: [Story] | Design | Pending |
-| [FEAT]-02      | P1: [Story] | Design | Pending |
-| [FEAT]-03      | P2: [Story] | -      | Pending |
+| Requirement ID | Story       | Provenance | Evidence | Phase  | Status  |
+| -------------- | ----------- | ---------- | -------- | ------ | ------- |
+| [FEAT]-01      | P1: [Story] | ISSUE      | [source] | Design | Pending |
+| [FEAT]-02      | P1: [Story] | INHERITED  | [source] | Design | Pending |
+| [FEAT]-03      | P2: [Story] | DECISION   | [source] | -      | Pending |
 
 **ID format:** `[CATEGORY]-[NUMBER]` (e.g., `AUTH-01`, `CART-03`, `NOTIF-02`)
 
@@ -207,4 +262,6 @@ How we know the feature is successful:
 - **Edge cases matter** — What breaks? What's empty? What's huge?
 - **Out of Scope prevents creep** — If it's not here, it doesn't get built
 - **Closure gate before confirm** — Three checks: unambiguity + precision, open-questions/assumptions closure, declined gray areas logged; scope-tiered; bounded to stated dimensions; never invents requirements
-- **Confirm after the gate passes** — Present the spec for user confirmation only after the closure gate passes (no unresolved-and-unmarked items remain); user approves spec before moving to discuss phase
+- **Confirm after the gate passes** — Resolve Discuss within Specify, run the closure gate, then present the complete review package for approval before writing canonical artifacts or moving to Design
+- **Review before canonicalization** — Review in the agreed language; write or translate the canonical artifact only after content approval
+- **Provenance prevents scope drift** — Every requirement states why it belongs; dependencies and recommendations never become implementation scope silently

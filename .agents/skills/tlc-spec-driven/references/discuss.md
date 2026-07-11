@@ -19,9 +19,13 @@ The output — `context.md` — feeds directly into Design and Tasks:
 
 ## Process
 
-### 1. Analyze the Feature
+### 1. Orient the User and Analyze the Feature
 
-Read `.specs/features/[feature]/spec.md` and identify the domain:
+Read the working specification from the review conversation or
+`.specs/features/[feature]/spec.md` when a canonical artifact already exists, then identify the
+domain. Before presenting choices, summarize the feature boundary, current behavior, intended flow,
+evidence found, and why each gray area matters. Match the depth to the user's demonstrated
+familiarity.
 
 | Domain                         | Gray areas to explore                                         |
 | ------------------------------ | ------------------------------------------------------------- |
@@ -30,13 +34,16 @@ Read `.specs/features/[feature]/spec.md` and identify the domain:
 | Something users **RUN** (CLI)  | Output format, flags, modes, error handling, verbosity        |
 | Something users **READ**       | Structure, tone, depth, flow, navigation                      |
 | Something being **ORGANIZED**  | Grouping criteria, naming, duplicates, exceptions             |
+| Something using an **external tool/service** | Execution location, installation/configuration, identity/credentials, connectivity, reproduction, environment validation, external ownership |
 | Something with **backend / state / contract** | Failure & partial-failure states, idempotency/retry/dedup, auth boundaries & rate limits, data lifecycle/expiry, concurrency/ordering — see [implicit-requirement dimensions](specify.md#implicit-requirement-dimensions) |
 
 Generate 3-4 **feature-specific** gray areas. Not generic categories, but concrete decisions for THIS feature.
 
 ### 2. Present Gray Areas
 
-Present the feature boundary (from spec.md) and the gray areas to the user. Let them choose which to discuss. Do NOT include a "skip all" option — the user invoked this phase to discuss.
+For each gray area, present the evidence, concrete options, consequences, and a reasoned
+recommendation before asking the user to choose. Present the feature boundary and let the user choose
+which areas to discuss. Do NOT include a "skip all" option — the user invoked this phase to discuss.
 
 Any gray area the user **declines** to discuss, or that goes undiscussed, is written to the spec's **Assumptions & Open Questions** section (agent's chosen default + rationale) — never silently dropped. This ensures the spec's closure gate can pass: every gray area is either resolved through discussion or recorded as a signed-off assumption.
 
@@ -52,6 +59,8 @@ For each selected area:
 **Question design:**
 
 - Options should be concrete ("Card layout" not "Option A")
+- Explain unfamiliar terms before using them as choices
+- State the practical consequence of every option and identify the recommendation
 - Each answer should inform the next question
 - Include "You decide" as an option when reasonable — captures agent discretion
 
@@ -64,7 +73,12 @@ The feature boundary from spec.md is **fixed**. Discussion clarifies HOW to impl
 
 When user suggests scope creep: "That sounds like a separate feature. I'll note it in Deferred Ideas. Back to [current area]."
 
-### 5. Write context.md
+### 5. Review, Approve, Then Write context.md
+
+Present the decisions in the agreed review language in chat by default. After explicit content
+approval, write `context.md` in the canonical language and mark it ready for design. Create a separate
+review-language file only when requested. Translation without semantic change does not require a
+second approval; any semantic change does.
 
 ---
 
@@ -134,3 +148,4 @@ When user suggests scope creep: "That sounds like a separate feature. I'll note 
 - **User = visionary, Agent = builder** — Ask about how they imagine it, not about technical implementation
 - **Don't ask about:** Technical architecture, performance, implementation details — that's Design's job
 - **Confirm before Design** — User approves context.md before moving to design phase
+- **Orient before deciding** — Evidence, options, consequences, and recommendation come before the question
