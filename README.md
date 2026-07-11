@@ -28,10 +28,10 @@ Esse arquivo registra memória do workspace; specs de produto permanecem nos res
 | `portal-task-context` | Local | — | Preparar tasks do Portal e determinar ownership entre produto, API e web |
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
-global. A `tlc-spec-driven` é vendorizada e deve ser atualizada separadamente das skills locais.
-Sua origem e revisão fixada ficam em `.agents/vendor.json`. O diretório vendorizado deve permanecer
-idêntico ao upstream; personalizações Inventeer ficam em `AGENTS.md`, nas decisões e nas skills
-locais de contexto.
+global. A `tlc-spec-driven` é um fork local vendorizado e deve ser atualizada separadamente das
+skills locais. Sua origem, base upstream e personalizações conhecidas ficam em
+`.agents/vendor.json`. As políticas específicas de produto continuam nas skills de contexto; as
+melhorias genéricas do workflow podem permanecer no fork local da TLC.
 
 Para verificar se há diferença em relação à branch oficial, sem alterar arquivos:
 
@@ -39,15 +39,23 @@ Para verificar se há diferença em relação à branch oficial, sem alterar arq
 ./scripts/update-vendored-skill.sh --check main
 ```
 
-Depois de revisar o resultado, aplique uma referência explícita ou `main`:
+O check mostra separadamente as personalizações locais (`base → local`) e as mudanças oficiais
+(`base → incoming`). Depois de revisar os dois lados, execute o merge:
 
 ```bash
-./scripts/update-vendored-skill.sh --apply <ref>
+./scripts/update-vendored-skill.sh --merge <ref>
 ```
 
-O modo `--apply` exige worktree limpo, recusa atualizar um mirror que já divergiu da revisão fixada,
-sincroniza o diretório completo e atualiza o manifesto. O script não cria commits nem interage com
-forks ou pull requests; a atualização deve ser revisada e commitada isoladamente neste workspace.
+O modo `--merge` exige worktree limpo, aplica o novo upstream e reaplica as personalizações como um
+patch de três vias. Se houver conflito, ele mantém os marcadores para resolução humana e não avança a
+base do manifesto. Depois de resolver e validar, finalize com:
+
+```bash
+./scripts/update-vendored-skill.sh --accept <ref>
+```
+
+O script não cria commits nem interage com forks ou pull requests. Tanto a personalização quanto
+cada merge de upstream devem ser revisados e commitados isoladamente neste workspace.
 
 ## Repositórios locais
 

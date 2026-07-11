@@ -138,15 +138,24 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Alternatives considered**: Manter um fork; aplicar patches locais dentro da skill; copiar atualizações manualmente; depender apenas da instalação global.
 - **Scope**: Vendor e atualização da `tlc-spec-driven` neste workspace; não cria commits, forks ou PRs no repositório oficial.
 - **Date**: 2026-07-10
+- **Status**: superseded by AD-016
+
+### AD-016
+- **Decision**: Manter `tlc-spec-driven` como fork local baseado em uma revisão upstream fixada, permitir personalizações exclusivas deste workspace dentro da skill e incorporar atualizações oficiais por merge de três vias entre base, local e incoming.
+- **Reason**: Alguns aprendizados são melhorias deliberadas do próprio workflow TLC neste workspace; preservá-los junto à skill torna o comportamento consistente, enquanto a base fixada permite distinguir claramente mudanças oficiais e locais durante upgrades.
+- **Trade-off**: O diretório deixa de ser um mirror puro e futuras atualizações exigem revisão humana de diffs e possíveis conflitos; a Inventeer assume a manutenção dessas personalizações sem propor mudanças ao repositório oficial.
+- **Alternatives considered**: Mirror upstream sem personalizações; skill complementar; patches externos reaplicados manualmente; fork remoto com PRs upstream.
+- **Scope**: `tlc-spec-driven` e seu processo de atualização somente neste workspace; nenhuma interação de escrita com o repositório oficial.
+- **Date**: 2026-07-10
 - **Status**: active
 
 ## Handoff
 
-- **Feature**: Estratégia sustentável de vendor e customização da `tlc-spec-driven`
-- **Phase / Task**: Estratégia definida e mecanismo local implementado
-- **Completed**: revisão do uso da TLC na sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; aplicação das políticas locais fora da TLC; upstream oficial identificado; cópias comparadas; mirror puro, manifesto fixado e atualizador seguro definidos pela AD-015
+- **Feature**: Fork local e atualização sustentável da `tlc-spec-driven`
+- **Phase / Task**: Personalização, estratégia de merge e validação concluídas
+- **Completed**: revisão da sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; contrato editorial, orientação antes de decisões, prontidão operacional e proveniência incorporados a Specify/Discuss; base upstream fixada; atualizador convertido para comparação e merge de três vias pela AD-016
 - **In-progress**: none
-- **Next step**: antes de uma futura atualização, executar `./scripts/update-vendored-skill.sh --check main`, revisar o diff e só então usar `--apply`
+- **Next step**: validar as personalizações em uma issue real; antes de futura atualização, usar `--check`, revisar base/local/incoming e então executar `--merge`
 - **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: main
