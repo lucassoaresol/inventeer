@@ -33,10 +33,29 @@ understand, specify, design, implement, review, or validate.
    - relevant tests;
    - project documentation, artifacts, ADRs, and existing specs;
    - Git history only when the current rationale remains unclear.
-9. Separate discovered facts, supported inferences, and unresolved questions.
-10. Read [specification-policy.md](references/specification-policy.md) and determine whether the
+9. Establish the review contract before creating artifacts or asking the user to decide gray areas:
+   - default the review language to Portuguese and the canonical artifact language to English;
+   - honor an explicit user preference over those defaults;
+   - infer the user's domain familiarity from the conversation and include a functional walkthrough
+     when understanding is not already demonstrated;
+   - mark artifacts as `Draft` until the user explicitly approves their content;
+   - state the contract in the context package handed to downstream workflows.
+10. Build the user's mental model before requesting decisions: explain the problem, current and
+    expected behavior, end-to-end flow, components, dependencies, scope boundaries, and why each
+    unresolved choice matters. Use the sequence: orient with evidence, present options and
+    consequences, recommend, then ask for a decision. Keep this adaptive for simple tasks and
+    experienced users.
+11. When the task involves an external tool, service, runtime, environment, credential, or network
+    boundary, assess operational readiness: where it runs, required binary/configuration, identity
+    and credentials, connectivity, local reproduction, staging validation, and dependencies on
+    other teams. Separate code changes from provisioning or access work.
+12. Separate discovered facts, supported inferences, and unresolved questions. Classify each
+    requirement or constraint by provenance: `ISSUE`, `INHERITED`, `SAFETY`, `DECISION`,
+    `DEPENDENCY`, or `RECOMMENDATION`. Do not silently promote a recommendation or dependency into
+    issue scope.
+13. Read [specification-policy.md](references/specification-policy.md) and determine whether the
    Linear issue is ready for the user's intended action.
-11. Return the context package below and recommend exactly one next action.
+14. Return the context package below and recommend exactly one next action.
 
 ## Context Package
 
@@ -50,9 +69,19 @@ Return a concise report containing:
 5. Relevant implementation files and observed patterns.
 6. Relevant tests and currently asserted behaviors.
 7. Applicable decisions, artifacts, ADRs, and specs.
-8. Ambiguities, conflicts, and missing information.
-9. Readiness verdict with evidence.
-10. Exactly one recommended next action.
+8. Review contract: review language, canonical language, required walkthrough depth, artifact
+   status, and approval gate.
+9. Mental model: problem, current behavior, expected behavior, end-to-end flow, components,
+   dependencies, and scope boundaries. Omit only details the user has already demonstrated.
+10. Operational readiness when applicable: execution location, binary/configuration, identity,
+    credentials, connectivity, local reproduction, staging validation, external ownership, and the
+    boundary between code and provisioning.
+11. Requirements and constraints with provenance (`ISSUE`, `INHERITED`, `SAFETY`, `DECISION`,
+    `DEPENDENCY`, or `RECOMMENDATION`).
+12. Ambiguities, conflicts, missing information, and decisions still required, each explained before
+    asking the user to choose.
+13. Readiness verdict with evidence.
+14. Exactly one recommended next action.
 
 ## Allowed Next Actions
 
@@ -65,7 +94,9 @@ Return a concise report containing:
 - Validate an existing implementation.
 
 When `tlc-spec-driven` is available and specification, design, implementation, or validation is the
-recommended action, hand off the prepared context to it. Do not duplicate its workflow.
+recommended action, hand off the prepared context and review contract to it. Keep review artifacts
+in the review language and produce canonical artifacts in the canonical language only after explicit
+approval. Do not duplicate its workflow.
 
 ## Boundaries
 
