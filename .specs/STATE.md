@@ -123,7 +123,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Status**: active
 
 ### AD-014
-- **Decision**: Preparar issues de produto com revisão inicial em português, artefatos canônicos finais em inglês, orientação funcional e operacional antes de decisões e estado `Draft` até aprovação explícita, salvo instrução diferente do usuário.
+- **Decision**: Preparar issues de Assistants e Portal com revisão inicial em português no chat, artefatos canônicos finais em inglês somente após aprovação explícita, orientação funcional e operacional antes de decisões e estado `Draft` até aprovação, salvo instrução diferente do usuário; criar arquivo intermediário de revisão apenas quando solicitado.
 - **Reason**: O uso real mostrou que decisões técnicas tomadas antes de estabelecer o modelo mental, a operação e o contrato editorial geram retrabalho e dificultam distinguir entendimento, aprovação e prontidão para implementação.
 - **Trade-off**: A preparação ganha uma etapa editorial e pedagógica adicional, que deve permanecer adaptativa para não burocratizar tasks simples ou usuários que já dominam o contexto.
 - **Alternatives considered**: Alterar a `tlc-spec-driven` vendorizada; produzir diretamente em inglês; deixar idioma, profundidade e status apenas implícitos no chat.
@@ -135,7 +135,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 - **Feature**: Estratégia sustentável de vendor e customização da `tlc-spec-driven`
 - **Phase / Task**: Descoberta futura — debate registrado, ainda não iniciado
-- **Completed**: revisão do uso da TLC na sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; identificação de melhorias potenciais em orientação antes de decisões, contrato editorial/idiomas, proveniência de requisitos, estado dos artefatos e handoff; decisão de tratar mudanças na skill em uma sessão dedicada
+- **Completed**: revisão do uso da TLC na sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; aplicação local da orientação antes de decisões, contrato editorial/idiomas, proveniência de requisitos e estado dos artefatos; decisão de tratar qualquer mudança na TLC em uma sessão dedicada
 - **In-progress**: none
 - **Next step**: em uma sessão específica, comparar a TLC oficial, a cópia vendorizada e a instalação global; classificar diferenças como upstream, política local ou patch genérico; então desenhar um fluxo reproduzível de atualização antes de alterar a TLC
 - **Blockers**: falta definir a origem/upstream oficial e o mecanismo de atualização; a política local foi separada desse debate pela AD-014

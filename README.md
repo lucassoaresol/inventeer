@@ -24,8 +24,8 @@ Esse arquivo registra memória do workspace; specs de produto permanecem nos res
 | Skill | Origem | Versão | Uso |
 |---|---|---:|---|
 | `tlc-spec-driven` | Tech Lead's Club | 3.2.0 | Especificar, projetar, implementar e verificar mudanças |
-| `assistants-task-context` | Local | 0.1.0 | Preparar tasks do produto Assistants para desenvolvimento |
-| `portal-task-context` | Local | 0.1.0 | Preparar tasks do Portal e determinar ownership entre produto, API e web |
+| `assistants-task-context` | Local | — | Preparar tasks do produto Assistants para desenvolvimento |
+| `portal-task-context` | Local | — | Preparar tasks do Portal e determinar ownership entre produto, API e web |
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
 global. A `tlc-spec-driven` é vendorizada e deve ser atualizada separadamente das skills locais.
