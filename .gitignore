@@ -6,3 +6,6 @@
 .env.*
 !.env.example
 .skill-results/
+
+# Ephemeral documents supplied as context for the current work session.
+/session-context/

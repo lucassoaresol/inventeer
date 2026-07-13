@@ -149,6 +149,15 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-10
 - **Status**: active
 
+### AD-017
+- **Decision**: Reservar `session-context/`, integralmente ignorado pelo Git, para documentos auxiliares fornecidos durante uma sessão e necessários apenas ao trabalho corrente.
+- **Reason**: Tasks podem depender de contexto ad hoc que precisa estar acessível ao Codex sem virar histórico do workspace, spec de produto ou fonte canônica concorrente.
+- **Trade-off**: O conteúdo não é reproduzido em outra máquina nem preservado pelo Git; materiais que se tornem evidência ou decisão durável precisam ser promovidos deliberadamente à fonte canônica adequada.
+- **Alternatives considered**: Usar `/tmp`; guardar arquivos dentro do repo de produto; versionar um diretório de contexto; reutilizar `.skill-results/`.
+- **Scope**: Entrada efêmera de documentos para sessões neste workspace.
+- **Date**: 2026-07-13
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Fork local e atualização sustentável da `tlc-spec-driven`

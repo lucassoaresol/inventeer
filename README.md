@@ -16,8 +16,20 @@ Esse arquivo registra memória do workspace; specs de produto permanecem nos res
 ├── .specs/STATE.md        Decisões e handoff deste workspace
 ├── projects/              Pontos de entrada versionados dos projetos
 ├── scripts/               Automações locais do workspace
+├── session-context/       Documentos efêmeros para a sessão (ignorado pelo Git)
 └── repos/                 Clones locais independentes (ignorado pelo Git)
 ```
+
+## Contexto efêmero de sessão
+
+Use `session-context/` para disponibilizar documentos auxiliares que o Codex precise ler durante
+uma task, mas que não devam fazer parte do histórico do workspace nem dos repositórios de produto.
+O diretório inteiro é ignorado pelo Git; ele pode conter arquivos e subdiretórios organizados por
+issue, por exemplo `session-context/INV-1234/`.
+
+Esse local é apenas uma entrada temporária de contexto. Apague seu conteúdo quando ele deixar de
+ser necessário e não coloque nele credenciais, dados de clientes ou saídas de produção. Decisões,
+specs e evidências que precisem persistir continuam pertencendo às respectivas fontes canônicas.
 
 ## Skills
 
