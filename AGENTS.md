@@ -38,6 +38,12 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Leia completamente o `SKILL.md` selecionado antes de agir.
 - Use `assistants-task-context` para preparar uma issue do produto Assistants.
 - Use `portal-task-context` para preparar uma issue do Portal e determinar os repos em escopo.
+- Use `triage-project-cycle` para comparar várias issues, ciclos ou frentes antes de selecionar uma
+  task para preparação individual.
+- Use `discover-project-context` para entender um projeto ou fluxo quando não houver issue Linear;
+  não use discovery para contornar uma issue existente.
+- Use `create-review-bundle` para empacotar evidências e diffs por arquivo sem modificar o repo
+  revisado.
 - Use `tlc-spec-driven` quando o trabalho exigir especificação, design, implementação ou validação.
 - Não duplique o workflow da TLC em skills específicas de projeto.
 - Trate `tlc-spec-driven` como conteúdo vendorizado e atualize-a em commit isolado.

@@ -158,13 +158,45 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-13
 - **Status**: active
 
+### AD-018
+- **Decision**: Separar triagem de múltiplas issues (`triage-project-cycle`) e discovery sem issue
+  (`discover-project-context`) das skills de contexto de task única de Assistants e Portal.
+- **Reason**: Sessões reais incluíram planejamento de ciclos, comparação de várias tasks e desenho de
+  fluxos ainda sem Linear; forçar esses casos no contrato de uma issue única ampliava contexto,
+  misturava objetivos e enfraquecia o handoff para execução.
+- **Trade-off**: O workspace ganha duas rotas adicionais e precisa transferir explicitamente a issue
+  selecionada ou o trabalho canonizado para a skill de produto adequada.
+- **Alternatives considered**: Ampliar as skills de produto com múltiplos modos; criar uma única skill
+  genérica de contexto; usar diretamente a TLC; continuar tratando os casos informalmente.
+- **Scope**: Preparação comparativa e discovery read-only dos projetos registrados neste workspace.
+- **Date**: 2026-07-15
+- **Status**: active
+
+### AD-019
+- **Decision**: Automatizar bundles efêmeros de review com a skill local `create-review-bundle`,
+  usando um script read-only para o repo-fonte que gera manifesto, status, commits, diff por arquivo
+  e checksum SHA-256, com rejeição de caminhos provavelmente sensíveis.
+- **Reason**: Reviews recentes repetiram manualmente a criação de ZIPs, captura de diffs, proveniência
+  e checksums; uma automação determinística reduz retrabalho e torna o conteúdo verificável.
+- **Trade-off**: O fluxo depende de Bash, Git, `zip`, `unzip` e `sha256sum`; a rejeição por caminho não
+  substitui a inspeção humana do diff para detectar conteúdo sensível em arquivos comuns.
+- **Alternatives considered**: Adicionar imediatamente o comando ao `inv-cortex`; manter scripts ad
+  hoc por sessão; versionar bundles; gerar um único diff sem manifesto por arquivo.
+- **Scope**: Evidências temporárias de review produzidas neste workspace; não substitui validação,
+  aprovação ou artifacts canônicos dos produtos.
+- **Date**: 2026-07-15
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Fork local e atualização sustentável da `tlc-spec-driven`
-- **Phase / Task**: Personalização, estratégia de merge e validação concluídas
-- **Completed**: revisão da sessão `019f4e5f-99ee-77f2-8756-bf7db2dabea5`; contrato editorial, orientação antes de decisões, prontidão operacional e proveniência incorporados a Specify/Discuss; base upstream fixada; atualizador convertido para comparação e merge de três vias pela AD-016
+- **Feature**: Rotas de contexto e automação de review bundles
+- **Phase / Task**: Implementação e validação concluídas
+- **Completed**: `triage-project-cycle` e `discover-project-context` separam múltiplas issues e
+  discovery sem issue das skills de task única; `create-review-bundle` gera ZIP read-only com diffs
+  por arquivo e checksum; seis testes funcionais, ShellCheck e validadores de skill aprovados
 - **In-progress**: none
-- **Next step**: validar as personalizações em uma issue real; antes de futura atualização, usar `--check`, revisar base/local/incoming e então executar `--merge`
+- **Next step**: validar as três skills em sessões reais e registrar apenas falhas grounded como
+  novos aprendizados
 - **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: main

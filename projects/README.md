@@ -13,3 +13,16 @@ versionados; os repositórios reais permanecem independentes e ignorados sob `re
 
 Antes de agir em qualquer repo, leia suas instruções locais (`AGENTS.md`, `CLAUDE.md` e README,
 conforme existirem) e confira o worktree Git correspondente.
+
+## Roteamento de trabalho
+
+| Situação | Entrada | Próximo handoff |
+|---|---|---|
+| Uma issue Assistants selecionada | `assistants-task-context` | TLC ou clarificação da issue |
+| Uma issue Portal selecionada | `portal-task-context` | TLC ou clarificação da issue |
+| Várias issues, ciclo ou backlog | `triage-project-cycle` | Selecionar uma issue e usar sua skill de produto |
+| Projeto, processo ou integração sem issue | `discover-project-context` | Registrar o trabalho canônico antes de implementar |
+| Mudança pronta para review | `create-review-bundle` | Compartilhar o ZIP efêmero e preservar o repo-fonte |
+
+As rotas de triagem e discovery leem este registry apenas para localizar fontes canônicas. Elas não
+transformam os arquivos de `projects/` em especificação, decisão de produto ou estado operacional.

@@ -38,6 +38,9 @@ specs e evidências que precisem persistir continuam pertencendo às respectivas
 | `tlc-spec-driven` | Tech Lead's Club | 3.2.0 | Especificar, projetar, implementar e verificar mudanças |
 | `assistants-task-context` | Local | — | Preparar tasks do produto Assistants para desenvolvimento |
 | `portal-task-context` | Local | — | Preparar tasks do Portal e determinar ownership entre produto, API e web |
+| `triage-project-cycle` | Local | — | Comparar várias issues, dependências, conflitos e ordem de execução |
+| `discover-project-context` | Local | — | Descobrir projetos e fluxos sem exigir uma issue Linear |
+| `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência e diff por arquivo |
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
 global. A `tlc-spec-driven` é um fork local vendorizado e deve ser atualizada separadamente das
@@ -68,6 +71,32 @@ base do manifesto. Depois de resolver e validar, finalize com:
 
 O script não cria commits nem interage com forks ou pull requests. Tanto a personalização quanto
 cada merge de upstream devem ser revisados e commitados isoladamente neste workspace.
+
+### Roteamento por intenção
+
+Use uma rota de contexto antes da TLC:
+
+| Intenção | Skill inicial | Handoff |
+|---|---|---|
+| Comparar ciclo, backlog ou várias issues | `triage-project-cycle` | Skill de task do produto após selecionar uma issue |
+| Entender projeto ou fluxo sem issue | `discover-project-context` | Criar/clarificar issue antes de implementar |
+| Preparar uma issue Assistants | `assistants-task-context` | `tlc-spec-driven`, quando necessário |
+| Preparar uma issue Portal | `portal-task-context` | `tlc-spec-driven`, quando necessário |
+| Empacotar trabalho para review | `create-review-bundle` | Review externo; não implica aprovação |
+
+Para gerar um bundle diretamente:
+
+```bash
+.agents/skills/create-review-bundle/scripts/create-review-bundle.sh \
+  --repo repos/portal-api \
+  --base origin/develop \
+  --output-dir session-context \
+  --label INV-0000
+```
+
+O ZIP inclui manifesto, status, commits, checksum e um diff por arquivo. A base padrão é `HEAD`,
+adequada para revisar apenas mudanças não commitadas. Caminhos prováveis de credenciais, chaves ou
+dumps são recusados.
 
 ## Repositórios locais
 
