@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Review Bundle"
+  short_description: "Package Git evidence and per-file diffs for review"
+  default_prompt: "Use $create-review-bundle to package the current Git changes into a timestamped review ZIP."
