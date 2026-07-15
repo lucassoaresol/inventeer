@@ -19,7 +19,8 @@ git -C "$repo" config user.name Test
 git -C "$repo" config user.email test@example.com
 printf 'before\n' >"$repo/changed.txt"
 printf 'remove me\n' >"$repo/removed.txt"
-git -C "$repo" add changed.txt removed.txt
+printf 'session-context/\n' >"$repo/.gitignore"
+git -C "$repo" add .gitignore changed.txt removed.txt
 git -C "$repo" commit -m initial >/dev/null
 
 printf 'after\n' >"$repo/changed.txt"
@@ -51,6 +52,21 @@ status_after="$(git -C "$repo" status --porcelain=v1)"
 [[ "$status_before" == "$status_after" ]] || fail "source worktree was mutated"
 echo "ok 3 - checksum passes and source status is unchanged"
 
+internal_before="$(git -C "$repo" status --porcelain=v1)"
+if "$subject" --repo "$repo" --output-dir "$repo/review-output" >/dev/null 2>&1; then
+  fail "non-ignored output inside source repository should be rejected"
+fi
+[[ ! -e "$repo/review-output" ]] || fail "rejected internal output left a directory behind"
+internal_after="$(git -C "$repo" status --porcelain=v1)"
+[[ "$internal_before" == "$internal_after" ]] || fail "rejected internal output changed source status"
+echo "ok 4 - rejects non-ignored output inside the source repository without residue"
+
+"$subject" --repo "$repo" --output-dir "$repo/session-context" --label internal >/dev/null
+[[ -n "$(find "$repo/session-context" -maxdepth 1 -type f -name 'internal-review-*.zip' -print -quit)" ]] || fail "ignored internal output was not created"
+ignored_after="$(git -C "$repo" status --porcelain=v1)"
+[[ "$internal_before" == "$ignored_after" ]] || fail "ignored internal output changed source status"
+echo "ok 5 - permits ignored output inside the source repository"
+
 clean_repo="$tmp_dir/clean"
 git init --initial-branch=main "$clean_repo" >/dev/null
 git -C "$clean_repo" config user.name Test
@@ -61,15 +77,15 @@ git -C "$clean_repo" commit -m initial >/dev/null
 if "$subject" --repo "$clean_repo" --output-dir "$tmp_dir/clean-out" >/dev/null 2>&1; then
   fail "clean repository should be rejected"
 fi
-echo "ok 4 - rejects an empty change set"
+echo "ok 6 - rejects an empty change set"
 
 if "$subject" --repo "$repo" --base missing-ref --output-dir "$tmp_dir/bad-base" >/dev/null 2>&1; then
   fail "invalid base should be rejected"
 fi
-echo "ok 5 - rejects an invalid base"
+echo "ok 7 - rejects an invalid base"
 
 printf 'token=value\n' >"$clean_repo/.env"
 if "$subject" --repo "$clean_repo" --output-dir "$tmp_dir/sensitive" >/dev/null 2>&1; then
   fail "sensitive path should be rejected"
 fi
-echo "ok 6 - rejects likely credential files"
+echo "ok 8 - rejects likely credential files"

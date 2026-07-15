@@ -193,7 +193,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Phase / Task**: Implementação e validação concluídas
 - **Completed**: `triage-project-cycle` e `discover-project-context` separam múltiplas issues e
   discovery sem issue das skills de task única; `create-review-bundle` gera ZIP read-only com diffs
-  por arquivo e checksum; seis testes funcionais, ShellCheck e validadores de skill aprovados
+  por arquivo e checksum; oito testes funcionais, ShellCheck e validadores de skill aprovados
 - **In-progress**: none
 - **Next step**: validar as três skills em sessões reais e registrar apenas falhas grounded como
   novos aprendizados

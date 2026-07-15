@@ -89,6 +89,21 @@ branch="${branch:-detached-HEAD}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 workspace_root="$(cd "$script_dir/../../../.." && pwd)"
 output_dir="${output_dir:-$workspace_root/session-context}"
+output_dir="$(realpath -m "$output_dir")"
+
+if [[ "$output_dir" == "$repo" ]]; then
+  echo "Erro: output-dir não pode ser a raiz do repositório analisado" >&2
+  exit 4
+fi
+if [[ "$output_dir" == "$repo/"* ]]; then
+  relative_output="${output_dir#"$repo/"}"
+  ignore_probe="$relative_output/.review-bundle-probe"
+  if ! git -C "$repo" check-ignore --quiet --no-index -- "$ignore_probe"; then
+    echo "Erro: output-dir dentro do repositório precisa estar ignorado pelo Git: $relative_output" >&2
+    exit 4
+  fi
+fi
+
 mkdir -p "$output_dir"
 output_dir="$(cd "$output_dir" && pwd)"
 

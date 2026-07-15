@@ -49,6 +49,8 @@ The adjacent `.sha256` file verifies the completed ZIP.
 ## Boundaries
 
 - Do not stage, stash, commit, switch branches, reset, clean, or edit the source repository.
+- Do not write to a non-ignored path inside the source repository; the script rejects that destination
+  before creating it.
 - Do not include raw files beyond their Git diff representation.
 - Do not bypass the script's sensitive-path rejection.
 - Do not claim tests were executed unless their evidence was independently supplied and verified.
