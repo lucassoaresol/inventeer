@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Context Discovery"
+  short_description: "Discover project context without a Linear issue"
+  default_prompt: "Use $discover-project-context to map this Inventeer project or workflow without requiring a Linear issue."

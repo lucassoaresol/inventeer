@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Cycle Triage"
+  short_description: "Compare issues and plan an Inventeer cycle"
+  default_prompt: "Use $triage-project-cycle to analyze this project cycle and recommend an execution order."
