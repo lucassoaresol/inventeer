@@ -187,6 +187,35 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-15
 - **Status**: active
 
+### AD-020
+- **Decision**: Configurar o servidor MCP `apex` somente no escopo deste workspace por meio de
+  `.codex/config.toml`, removendo sua entrada da configuração global do Codex.
+- **Reason**: O APEX pertence ao fluxo de engenharia dos projetos Inventeer neste workspace e não
+  deve aparecer nem consumir contexto em sessões Codex iniciadas em diretórios não relacionados.
+- **Trade-off**: O projeto precisa estar marcado como confiável e novas sessões devem usar este
+  workspace como raiz para carregar o servidor; os repositórios Git independentes sob `repos/` não
+  herdam essa camada quando abertos diretamente. Mudanças de configuração exigem reiniciar o Codex.
+- **Alternatives considered**: Manter o MCP global; usar um profile global selecionado manualmente;
+  habilitar e desabilitar o servidor por sessão.
+- **Scope**: Configuração Codex e disponibilidade do APEX MCP neste workspace.
+- **Date**: 2026-07-20
+- **Status**: active
+
+### AD-021
+- **Decision**: Configurar o servidor MCP `linear` somente no escopo deste workspace por meio de
+  `.codex/config.toml`, removendo sua entrada da configuração global do Codex e preservando o modo
+  de aprovação de ferramentas como `prompt`.
+- **Reason**: O Linear é a fonte canônica de execução dos projetos Inventeer deste workspace e não
+  precisa ficar disponível em sessões Codex iniciadas para trabalhos não relacionados.
+- **Trade-off**: Assim como o APEX, o Linear só é carregado quando este workspace é a raiz confiável
+  da sessão; os repositórios Git independentes sob `repos/` não herdam essa configuração quando
+  abertos diretamente.
+- **Alternatives considered**: Manter o MCP global; usar um profile global selecionado manualmente;
+  habilitar e desabilitar o servidor por sessão.
+- **Scope**: Configuração Codex e disponibilidade do Linear MCP neste workspace.
+- **Date**: 2026-07-20
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Rotas de contexto e automação de review bundles

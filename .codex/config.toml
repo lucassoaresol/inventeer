@@ -1,0 +1,8 @@
+[mcp_servers.apex]
+url = "https://apex-gw.dev.inventeer.tech/api/v1/mcp"
+enabled = true
+
+[mcp_servers.linear]
+url = "https://mcp.linear.app/mcp"
+enabled = true
+default_tools_approval_mode = "prompt"
