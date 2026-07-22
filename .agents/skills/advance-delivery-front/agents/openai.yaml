@@ -1,0 +1,4 @@
+interface:
+  display_name: "Advance Delivery Front"
+  short_description: "Continue delivery while PRs await review"
+  default_prompt: "Use $advance-delivery-front to assess my active PRs and recommend the next merge-safe task."
