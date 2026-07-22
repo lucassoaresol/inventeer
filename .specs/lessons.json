@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "promote_threshold": 2,
+  "window_days": 45,
+  "quarantine_threshold": 2,
+  "next_id": 3,
+  "lessons": [
+    {
+      "id": "L-001",
+      "key": "surviving_mutant::test invalid but resolvable git refs not only missing refs when guards depend on ancestry",
+      "text": "Test invalid-but-resolvable Git refs, not only missing refs, when guards depend on ancestry.",
+      "signal": "surviving_mutant",
+      "scope": "git-inspector",
+      "status": "candidate",
+      "features": [
+        "delivery-front-continuity"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "validation.md:M1 (git-inspector)"
+      ],
+      "created": "2026-07-22T20:39:26Z",
+      "last_seen": "2026-07-22T20:39:26Z"
+    },
+    {
+      "id": "L-002",
+      "key": "surviving_mutant::test git range semantics on diverged histories so two dot and three dot behavior cannot pass the same fixture",
+      "text": "Test Git range semantics on diverged histories so two-dot and three-dot behavior cannot pass the same fixture.",
+      "signal": "surviving_mutant",
+      "scope": "git-inspector",
+      "status": "candidate",
+      "features": [
+        "delivery-front-continuity"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "validation.md:M2 (git-inspector)"
+      ],
+      "created": "2026-07-22T20:39:26Z",
+      "last_seen": "2026-07-22T20:39:26Z"
+    }
+  ]
+}

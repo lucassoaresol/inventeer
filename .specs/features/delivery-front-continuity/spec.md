@@ -300,23 +300,23 @@ The continuity skill must not duplicate full issue context or TLC execution.
 
 | Requirement | Story | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- | --- |
-| DFC-01..04 | Assess front | ISSUE | User request and observed PR wait | Specify | Approved |
-| DFC-05..09 | Select next | DECISION | Approved WIP and merge-safe model | Specify | Approved |
-| DFC-10..13 | Delivery contract | DECISION | Approved read-only-first recommendation | Specify | Approved |
-| DFC-14..19 | Reconciliation | INHERITED | Portal squash merge plus safety requirements | Specify | Approved |
-| DFC-20..22 | Task-only delivery | ISSUE | Repeated requirement that PR contain only task work | Specify | Approved |
+| DFC-01..04 | Assess front | ISSUE | User request and observed PR wait | Execute | Validated |
+| DFC-05..09 | Select next | DECISION | Approved WIP and merge-safe model | Execute | Validated |
+| DFC-10..13 | Delivery contract | DECISION | Approved read-only-first recommendation | Execute | Validated |
+| DFC-14..19 | Reconciliation | INHERITED | Portal squash merge plus safety requirements | Execute | Validated |
+| DFC-20..22 | Task-only delivery | ISSUE | Repeated requirement that PR contain only task work | Execute | Validated |
 
 **Coverage:** 22 requirements; all mapped to independently testable stories; no implementation tasks
 created in this phase.
 
 ## Success Criteria
 
-- [ ] Given one ready PR and at least two candidate issues, the MVP identifies a merge-safe next task
+- [x] Given one ready PR and at least two candidate issues, the MVP identifies a merge-safe next task
   or explains why none is safe without mutating state.
-- [ ] Independent and dependent candidates receive different branch/PR contracts.
-- [ ] A squash-merged dependency produces a boundary-aware reconciliation plan.
-- [ ] Stale, dirty, unavailable and abandoned-base cases never produce a false-safe recommendation.
-- [ ] No plan permits more than one ready PR plus one active/draft task per repo.
+- [x] Independent and dependent candidates receive different branch/PR contracts.
+- [x] A squash-merged dependency produces a boundary-aware reconciliation plan.
+- [x] Stale, dirty, unavailable and abandoned-base cases never produce a false-safe recommendation.
+- [x] No plan permits more than one ready PR plus one active/draft task per repo.
 - [x] The user approved AD-022 without needing implementation details from the future skill.
 
 ## Approval Record
