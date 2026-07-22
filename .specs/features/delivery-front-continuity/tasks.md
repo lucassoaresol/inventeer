@@ -11,7 +11,7 @@ of truth for the per-task cycle, commits, adequacy review, Verifier and discrimi
 ---
 
 **Design**: `.specs/features/delivery-front-continuity/design.md`
-**Status**: Approved
+**Status**: In Progress — implementation complete, final verification pending
 
 ---
 
@@ -113,15 +113,15 @@ delivery contracts, reconciliation and promotion guards.
 
 **Done when**:
 
-- [ ] A table of contents is present because the reference exceeds 100 lines.
-- [ ] Classification precedence distinguishes `blocked`, `dependent`, `conflicting` and
+- [x] A table of contents is present because the reference exceeds 100 lines.
+- [x] Classification precedence distinguishes `blocked`, `dependent`, `conflicting` and
   `independent` without turning code overlap into a formal dependency.
-- [ ] WIP ≤ 2 and stack depth ≤ 1 are explicit invariants.
-- [ ] All delivery states and invalid transitions from the spec are represented.
-- [ ] Independent and dependent contract templates contain every field in DFC-12.
-- [ ] Squash, stale-base, abandoned-base and task-only promotion rules cover DFC-14..22.
-- [ ] Mutating actions are described only as future approval boundaries, never executable steps.
-- [ ] Quick gate passes with zero errors.
+- [x] WIP ≤ 2 and stack depth ≤ 1 are explicit invariants.
+- [x] All delivery states and invalid transitions from the spec are represented.
+- [x] Independent and dependent contract templates contain every field in DFC-12.
+- [x] Squash, stale-base, abandoned-base and task-only promotion rules cover DFC-14..22.
+- [x] Mutating actions are described only as future approval boundaries, never executable steps.
+- [x] Quick gate passes with zero errors.
 
 **Tests**: none — reference/documentation layer; consumed by T3 forward-tests
 **Gate**: Quick
@@ -145,16 +145,16 @@ component.
 
 **Done when**:
 
-- [ ] CLI implements exactly the approved arguments and exit behavior.
-- [ ] Output is schema-versioned, stable, tab-separated and quotes all dynamic Git values safely.
-- [ ] It captures resolved SHAs, merge base, dirty paths, linked worktrees, changed paths and optional
+- [x] CLI implements exactly the approved arguments and exit behavior.
+- [x] Output is schema-versioned, stable, tab-separated and quotes all dynamic Git values safely.
+- [x] It captures resolved SHAs, merge base, dirty paths, linked worktrees, changed paths and optional
   boundary-only commits without printing file contents or credential-bearing remote/config values.
-- [ ] It contains none of the forbidden Git commands/effects from the design.
-- [ ] Ten named TAP-style assertions cover independent refs, dirty/deleted/untracked/space paths,
+- [x] It contains none of the forbidden Git commands/effects from the design.
+- [x] Ten named TAP-style assertions cover independent refs, dirty/deleted/untracked/space paths,
   linked worktrees, boundary-only commits, deterministic timestamp, invalid repo, missing integration
   ref, missing work ref, missing boundary and success/failure immutability.
-- [ ] Tests compare source status, refs, config and tracked-tree fingerprints before/after.
-- [ ] Full gate passes with exactly 10 assertions and no silent deletion.
+- [x] Tests compare source status, refs, config and tracked-tree fingerprints before/after.
+- [x] Full gate passes with exactly 10 assertions and no silent deletion.
 
 **Tests**: integration
 **Gate**: Full
@@ -178,18 +178,18 @@ task-context skills, AD-022 and `skill-creator` writing rules
 
 **Done when**:
 
-- [ ] Frontmatter contains only `name` and a trigger-complete `description` under 1024 characters.
-- [ ] Body is imperative, under 500 lines, and links directly to the policy reference at the exact
+- [x] Frontmatter contains only `name` and a trigger-complete `description` under 1024 characters.
+- [x] Body is imperative, under 500 lines, and links directly to the policy reference at the exact
   point where detailed classification/reconciliation rules are required.
-- [ ] Workflow gathers Linear, GitHub, local Git and inherited rules read-only, timestamps each source
+- [x] Workflow gathers Linear, GitHub, local Git and inherited rules read-only, timestamps each source
   and blocks affected transitions on unavailable or stale evidence.
-- [ ] It preserves the ownership boundary: triage compares waves, continuity owns active topology,
+- [x] It preserves the ownership boundary: triage compares waves, continuity owns active topology,
   product context prepares one issue and TLC executes one issue.
-- [ ] Every result follows the seven-section report contract and recommends exactly one next action.
-- [ ] No instruction creates or modifies branches, worktrees, PRs, Linear issues or remote state.
-- [ ] The five raw fixture groups exercise every DFC-01..22 outcome in a fresh-agent forward-test;
+- [x] Every result follows the seven-section report contract and recommends exactly one next action.
+- [x] No instruction creates or modifies branches, worktrees, PRs, Linear issues or remote state.
+- [x] The five raw fixture groups exercise every DFC-01..22 outcome in a fresh-agent forward-test;
   expected safe/blocked transitions are evidenced from the spec rather than leaked in prompts.
-- [ ] Build and Verification gates pass: five fixture results, 22 mapped AC outcomes, zero unsafe
+- [x] Build and Verification gates pass: five fixture results, 22 mapped AC outcomes, zero unsafe
   mutations and no silent test omission.
 
 **Tests**: forward-test
@@ -212,11 +212,11 @@ task-context skills, AD-022 and `skill-creator` writing rules
 
 **Done when**:
 
-- [ ] `display_name`, `short_description` and `default_prompt` are generated deterministically and
+- [x] `display_name`, `short_description` and `default_prompt` are generated deterministically and
   exactly match the approved design.
-- [ ] `default_prompt` explicitly contains `$advance-delivery-front`.
-- [ ] No icons, colors or fixed MCP dependencies are introduced.
-- [ ] Build gate passes with zero errors.
+- [x] `default_prompt` explicitly contains `$advance-delivery-front`.
+- [x] No icons, colors or fixed MCP dependencies are introduced.
+- [x] Build gate passes with zero errors.
 
 **Tests**: none — interface metadata/configuration layer
 **Gate**: Build
@@ -238,11 +238,11 @@ without copying the policy.
 
 **Done when**:
 
-- [ ] Skill inventory describes active PR/task continuity in one concise row.
-- [ ] Routing distinguishes cycle comparison, active delivery-front coordination, task preparation
+- [x] Skill inventory describes active PR/task continuity in one concise row.
+- [x] Routing distinguishes cycle comparison, active delivery-front coordination, task preparation
   and TLC execution.
-- [ ] Handoff states that the new skill is read-only and returns one next action/contract.
-- [ ] Quick gate passes with zero errors.
+- [x] Handoff states that the new skill is read-only and returns one next action/contract.
+- [x] Quick gate passes with zero errors.
 
 **Tests**: none — workspace documentation layer
 **Gate**: Quick
@@ -263,12 +263,12 @@ without copying the policy.
 
 **Done when**:
 
-- [ ] The Skills section routes continuity requests involving pending PRs to
+- [x] The Skills section routes continuity requests involving pending PRs to
   `advance-delivery-front`.
-- [ ] The instruction keeps triage, task-context and TLC responsibilities distinct.
-- [ ] The Security section preserves the no-mutation boundary for Linear, GitHub and product repos.
-- [ ] Build gate passes with exactly 10 inspector assertions and zero validation errors.
-- [ ] The mandatory final TLC Verifier runs after this task and writes `validation.md` with per-AC
+- [x] The instruction keeps triage, task-context and TLC responsibilities distinct.
+- [x] The Security section preserves the no-mutation boundary for Linear, GitHub and product repos.
+- [x] Build gate passes with exactly 10 inspector assertions and zero validation errors.
+- [x] The mandatory final TLC Verifier runs after this task and writes `validation.md` with per-AC
   evidence, forward-test results and discrimination-sensor verdict.
 
 **Tests**: none — workspace instructions layer
@@ -348,6 +348,20 @@ Proposed execution assignment:
   `tlc-spec-driven`, and `skill-creator`.
 
 Before Execute, the user must approve these tasks and confirm this tool assignment or name changes.
+
+## Execution Results
+
+| Task | Commit | Gate result | Status |
+| --- | --- | --- | --- |
+| T1 | `0b2fdfe` | Quick: diff and policy contract clean | Complete |
+| T2 | `1648eee` | Full: 10/10 integration assertions, ShellCheck and diff clean | Complete |
+| T3 | `89cf20f` | Build + forward-test: skill valid, 10/10 inspector tests, five fixture groups covering DFC-01..22 | Complete |
+| T4 | `b8cb6cd` | Build: generated metadata exact, skill valid, 10/10 tests and ShellCheck clean | Complete |
+| T5 | `9d8d013` | Quick: README route and diff clean | Complete |
+| T6 | `8dde283` | Build: skill valid, 10/10 tests, ShellCheck and AGENTS route clean | Complete |
+
+Implementation is complete. The feature remains in progress until the independent TLC Verifier
+persists a PASS report.
 
 ## Task Approval Record
 

@@ -235,12 +235,11 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ## Handoff
 
 - **Feature**: Delivery front continuity
-- **Phase / Task**: Execute — preflight de T1
-- **Completed**: spec, AD-022, design, seis tasks e atribuição de ferramentas aprovados
-- **In-progress**: baseline de planejamento e inicialização de `advance-delivery-front`
-- **Next step**: criar `references/continuity-policy.md` e executar a gate de T1
+- **Phase / Task**: Execute — T1–T6 concluídas; Verifier pendente
+- **Completed**: policy, inspetor Git com 10 testes, skill, metadata, README e AGENTS implementados em
+  seis commits atômicos; forward-test sintético cobriu DFC-01..22
+- **In-progress**: validação independente, spec-anchored check e discrimination sensor
+- **Next step**: executar o Verifier fresh, corrigir gaps se houver e persistir `validation.md`
 - **Blockers**: none
-- **Uncommitted files**: `.specs/features/delivery-front-continuity/spec.md`,
-  `.specs/features/delivery-front-continuity/design.md`,
-  `.specs/features/delivery-front-continuity/tasks.md`, `.specs/STATE.md`
+- **Uncommitted files**: `.specs/features/delivery-front-continuity/tasks.md`, `.specs/STATE.md`
 - **Branch**: main
