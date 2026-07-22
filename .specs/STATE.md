@@ -216,16 +216,31 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-20
 - **Status**: active
 
+### AD-022
+- **Decision**: Coordenar frentes contínuas de entrega com no máximo uma PR pronta para review e uma
+  próxima task em implementação ou PR draft por repositório; priorizar tasks independentes e
+  permitir no máximo um nível de PR dependente com boundary SHA registrado, mantendo-a draft até a
+  reconciliação com a branch de integração.
+- **Reason**: Review e aprovação são esperas externas; o ciclo deve continuar sem misturar escopos,
+  esconder dependências ou criar stacks difíceis de recuperar após squash merge.
+- **Trade-off**: O fluxo adiciona classificação, metadados e uma etapa de reconciliação; algumas
+  tasks conflitantes ainda precisarão aguardar quando não houver trabalho independente seguro.
+- **Alternatives considered**: Parar até cada merge; abrir várias PRs prontas sem ordem; manter stacks
+  ilimitados; embutir toda a coordenação na TLC; tratar cada transição informalmente.
+- **Scope**: Seleção, preparação, review e reconciliação de tasks consecutivas nos repositórios
+  registrados neste workspace.
+- **Date**: 2026-07-22
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Rotas de contexto e automação de review bundles
-- **Phase / Task**: Implementação e validação concluídas
-- **Completed**: `triage-project-cycle` e `discover-project-context` separam múltiplas issues e
-  discovery sem issue das skills de task única; `create-review-bundle` gera ZIP read-only com diffs
-  por arquivo e checksum; oito testes funcionais, ShellCheck e validadores de skill aprovados
-- **In-progress**: none
-- **Next step**: validar as três skills em sessões reais e registrar apenas falhas grounded como
-  novos aprendizados
+- **Feature**: Delivery front continuity
+- **Phase / Task**: Execute — preflight de T1
+- **Completed**: spec, AD-022, design, seis tasks e atribuição de ferramentas aprovados
+- **In-progress**: baseline de planejamento e inicialização de `advance-delivery-front`
+- **Next step**: criar `references/continuity-policy.md` e executar a gate de T1
 - **Blockers**: none
-- **Uncommitted files**: none
+- **Uncommitted files**: `.specs/features/delivery-front-continuity/spec.md`,
+  `.specs/features/delivery-front-continuity/design.md`,
+  `.specs/features/delivery-front-continuity/tasks.md`, `.specs/STATE.md`
 - **Branch**: main
