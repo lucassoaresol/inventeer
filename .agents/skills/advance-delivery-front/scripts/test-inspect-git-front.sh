@@ -31,16 +31,21 @@ assert_failed_without_stdout() {
   local label="$1"
   shift
   local output_file="$fixture_dir/failure-output"
+  local status
 
   : >"$output_file"
   if bash "$subject" "$@" >"$output_file" 2>/dev/null; then
     fail "$label should fail"
+  else
+    status=$?
   fi
+  [[ "$status" -eq 2 ]] || fail "$label exited with $status instead of 2"
   [[ ! -s "$output_file" ]] || fail "$label emitted partial stdout"
 }
 
 repo="$fixture_dir/repo"
 linked="$fixture_dir/linked worktree"
+integration_worktree="$fixture_dir/integration worktree"
 git init --initial-branch=main "$repo" >/dev/null
 git -C "$repo" config user.name Test
 git -C "$repo" config user.email test@example.com
@@ -48,7 +53,6 @@ printf 'initial\n' >"$repo/tracked.txt"
 printf 'remove\n' >"$repo/deleted.txt"
 git -C "$repo" add tracked.txt deleted.txt
 git -C "$repo" commit -m initial >/dev/null
-integration_sha="$(git -C "$repo" rev-parse main)"
 
 git -C "$repo" switch -c feature/base >/dev/null
 printf 'base\n' >"$repo/base.txt"
@@ -63,6 +67,11 @@ git -C "$repo" commit -m 'dependent task' >/dev/null
 work_sha="$(git -C "$repo" rev-parse HEAD)"
 
 git -C "$repo" worktree add -b linked "$linked" main >/dev/null
+git -C "$repo" worktree add "$integration_worktree" main >/dev/null
+printf 'integration only\n' >"$integration_worktree/integration-only.txt"
+git -C "$integration_worktree" add integration-only.txt
+git -C "$integration_worktree" commit -m 'advance integration' >/dev/null
+integration_sha="$(git -C "$repo" rev-parse main)"
 printf 'changed\n' >"$repo/tracked.txt"
 rm "$repo/deleted.txt"
 printf 'local\n' >"$repo/untracked file.txt"
@@ -79,6 +88,8 @@ output="$(bash "$subject" \
 grep -F $'schema_version\t1' <<<"$output" >/dev/null || fail "schema version missing"
 grep -F $'integration_sha\t'"$integration_sha" <<<"$output" >/dev/null || fail "integration SHA missing"
 grep -F $'work_sha\t'"$work_sha" <<<"$output" >/dev/null || fail "work SHA missing"
+review_paths="$(awk -F '\t' '$1 == "changed_path" { print $2 }' <<<"$output")"
+[[ "$review_paths" == $'base.txt\ndependent.txt' ]] || fail "review surface does not match the three-dot range"
 echo "ok 1 - resolves refs and emits the versioned snapshot"
 
 grep -F 'tracked.txt' <<<"$output" >/dev/null || fail "tracked dirty path missing"
@@ -119,6 +130,11 @@ assert_failed_without_stdout "missing boundary ref" \
   --repo "$repo" --integration-ref main --boundary-ref missing-boundary
 echo "ok 9 - rejects a missing boundary ref without partial output"
 
+assert_failed_without_stdout "non-ancestor boundary ref" \
+  --repo "$repo" --integration-ref main --work-ref feature/dependent --boundary-ref main
+
 fingerprint_after="$(fingerprint_repo "$repo")"
 [[ "$fingerprint_before" == "$fingerprint_after" ]] || fail "inspector mutated repository state"
 echo "ok 10 - preserves status, refs, config, tracked tree, and untracked files"
+echo "ok 11 - reports the exact three-dot review surface on diverged history"
+echo "ok 12 - rejects a resolvable non-ancestor boundary without partial output"
