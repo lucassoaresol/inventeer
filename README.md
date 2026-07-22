@@ -39,6 +39,7 @@ specs e evidências que precisem persistir continuam pertencendo às respectivas
 | `assistants-task-context` | Local | — | Preparar tasks do produto Assistants para desenvolvimento |
 | `portal-task-context` | Local | — | Preparar tasks do Portal e determinar ownership entre produto, API e web |
 | `triage-project-cycle` | Local | — | Comparar várias issues, dependências, conflitos e ordem de execução |
+| `advance-delivery-front` | Local | — | Coordenar a próxima task enquanto PRs aguardam review ou merge |
 | `discover-project-context` | Local | — | Descobrir projetos e fluxos sem exigir uma issue Linear |
 | `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência e diff por arquivo |
 
@@ -79,10 +80,16 @@ Use uma rota de contexto antes da TLC:
 | Intenção | Skill inicial | Handoff |
 |---|---|---|
 | Comparar ciclo, backlog ou várias issues | `triage-project-cycle` | Skill de task do produto após selecionar uma issue |
+| Continuar o ciclo enquanto uma PR aguarda review ou merge | `advance-delivery-front` | Contrato read-only com uma próxima ação; skill de task do produto para a issue selecionada |
 | Entender projeto ou fluxo sem issue | `discover-project-context` | Criar/clarificar issue antes de implementar |
 | Preparar uma issue Assistants | `assistants-task-context` | `tlc-spec-driven`, quando necessário |
 | Preparar uma issue Portal | `portal-task-context` | `tlc-spec-driven`, quando necessário |
 | Empacotar trabalho para review | `create-review-bundle` | Review externo; não implica aprovação |
+
+`advance-delivery-front` mantém a topologia da PR pronta e da próxima task ativa/draft, classifica
+dependências e planeja a reconciliação pós-merge. Seu MVP não cria branches, altera PRs ou atualiza o
+Linear; ele entrega um contrato verificável e exatamente uma próxima ação antes do handoff para a
+skill de task do produto e, quando necessário, para `tlc-spec-driven`.
 
 Para gerar um bundle diretamente:
 
