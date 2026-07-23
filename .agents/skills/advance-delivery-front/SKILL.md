@@ -44,8 +44,9 @@ entry point and repository-local instructions to establish inherited branch, mer
    Treat the output as local evidence, not proof that a remote-tracking ref is current. Preserve a
    dirty worktree and report its paths.
 6. **Normalize the snapshot.** Build one timestamped view of sources, repo SHAs/worktrees, PRs,
-   issues, inherited rules, WIP, and stack depth. Keep each repository's branch, PR, gates, and merge
-   order separate.
+   issues, inherited rules, WIP, stack depth, implementation maturity, and validation maturity. Bind
+   validation to its exact evidence SHA/range and treat review bundles only as historical `CODE`
+   evidence. Keep each repository's branch, PR, gates, and merge order separate.
 7. **Apply classification precedence.** Follow the policy's `blocked → dependent → conflicting →
    independent` order. Cite evidence class, source, confidence, missing evidence, and rejected
    alternatives. Never turn code overlap into a formal dependency or missing evidence into
@@ -57,7 +58,8 @@ entry point and repository-local instructions to establish inherited branch, mer
    operations explanatory only. For dependent work, require the exact upstream head as boundary;
    block squash-aware reconciliation when it is absent.
 10. **Recheck freshness.** Before recommending promotion or reconciliation, re-read the PR head,
-    base, and state. Mark the plan stale when they differ from the snapshot.
+    base, and state and compare the current review surface, gates, and validation binding. Mark the
+    plan and affected validation stale when any bound input differs from the snapshot.
 11. **Return one next action.** Do not offer several simultaneous actions or imply that any proposed
     state change has already happened.
 

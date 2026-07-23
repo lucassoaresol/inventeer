@@ -3,6 +3,7 @@
 ## Contents
 
 - [Evidence and freshness](#evidence-and-freshness)
+- [Evidence maturity](#evidence-maturity)
 - [Front invariants](#front-invariants)
 - [Candidate classification](#candidate-classification)
 - [Delivery states](#delivery-states)
@@ -36,6 +37,28 @@ plan stale and rebuild only the affected conclusions.
 
 Missing evidence never implies independence. Use `QUESTION`, retain conclusions supported by the
 available sources, and block only transitions that require the missing source.
+
+## Evidence Maturity
+
+Track implementation and validation on separate axes. Report only the highest implementation state
+directly supported by the current snapshot:
+
+| Implementation | Required evidence |
+| --- | --- |
+| `working-tree` | Dirty tracked or untracked task changes exist; no complete committed range is proven. |
+| `committed` | A task-only commit range is present locally and the relevant worktree diff is clean. |
+| `pushed` | GitHub observes the same head SHA, but no complete ready-PR snapshot is available. |
+| `pr-observed` | GitHub PR head/base/state and local or remote commit evidence agree. |
+
+Track validation as `missing`, `pass`, `fail`, `stale`, or `pending-delivery`. A PASS is valid only
+for the exact work SHA or explicitly fingerprinted working-tree surface, requirement contract, and
+gate set named by its evidence block. Mark it `stale` when any of those change. Use
+`pending-delivery` when behavioral validation passed but a delivery-only condition remains, such as
+same-commit placement, an uncommitted validation artifact, or a final-base gate.
+
+A review bundle is historical `CODE` evidence. Record its generation stage, checksum, parent
+lineage, base/head, and capture time when available, but never use it alone as proof of current
+GitHub state, validation, or freshness.
 
 ## Front Invariants
 
@@ -99,11 +122,11 @@ evidence, and rejected alternatives. Never hide low confidence behind a definiti
 | State | Linear | Pull request | Valid next transition |
 | --- | --- | --- | --- |
 | `ready` | Ready to Start | none | `active` after a task is selected |
-| `active` | In Progress | none or draft | implement, validate, or `waiting-base` |
+| `active` | In Progress | none or draft | implement, validate, correct, or `waiting-base` |
 | `waiting-base` | In Progress | draft against dependency | refresh plan, wait, `reconciling`, or `abandoned-base` |
 | `reconciling` | In Progress | draft | re-evaluate base, task-only diff, gates, and freshness |
 | `reviewable` | In Review | ready against final integration | review, `changes-requested`, or `merged` through canonical workflow |
-| `changes-requested` | Per local policy | ready or draft | correct, revalidate, then return to prior safe state |
+| `changes-requested` | Per local policy | ready or draft | correct, mark prior validation stale, revalidate, then return to prior safe state |
 | `merged` | Done through canonical workflow | merged | select the next task |
 | `abandoned-base` | In Progress or Blocked | draft | replan against integration or cancel |
 
@@ -113,6 +136,8 @@ Reject these transitions:
 - `active → merged` without a reviewable PR and canonical merge workflow;
 - any transition that creates a third active/dependent front in the repository;
 - promotion when source freshness, boundary, task-only diff, gates, or final PR base is unresolved.
+- promotion from `working-tree`, `committed`, or `pushed` without a matching `pr-observed` snapshot;
+- promotion with validation `missing`, `fail`, `stale`, or `pending-delivery`.
 
 ## Delivery Contracts
 
@@ -125,11 +150,24 @@ Every contract contains:
 - boundary SHA when dependent;
 - intended Linear and PR states;
 - expected path/symbol surface;
+- implementation and validation maturity, including the validation evidence SHA/range;
+- review generation or bundle lineage when supplied;
 - applicable gates;
 - promotion conditions;
 - unresolved questions and confidence;
 - future actions requiring explicit authorization;
 - exactly one immediate next action.
+
+Represent the expected surface with the applicable fields below instead of relying on a file count:
+
+- exact paths;
+- path families or globs;
+- expected old-to-new renames;
+- allowed generated artifacts;
+- forbidden local or validation artifacts.
+
+An expected mechanical rename may touch many files and remain task-only. File count is informational;
+unexpected semantics, paths, or rename directions determine scope drift.
 
 ### Independent contract
 
@@ -183,6 +221,14 @@ Mark the previous plan stale. Re-read the base PR head and candidate impact. Est
 only from evidence that the dependent work was actually rebased onto that exact head; never replace
 the stored boundary merely because the PR-base advanced.
 
+### Review correction changes a head or dirty surface
+
+Mark validation and promotion evidence for that task stale. Recompute its review commits,
+rename-aware surface, unexpected paths, applicable gates, and final PR head/base. If the changed PR
+is a dependency boundary for another draft, also stale the dependent reconciliation plan; keep the
+stored boundary as historical evidence until the dependent work is demonstrably based on the new
+head. Independent work may continue, but its own promotion still requires a fresh final-base diff.
+
 ### Base PR closed without merge
 
 Enter `abandoned-base`. Block automatic promotion. Reassess whether the work remains valid against
@@ -209,6 +255,8 @@ Recommend promotion to `Ready for review` / `In Review` only when all checks pas
    commit and PR without being deleted automatically.
 8. All applicable repository gates and CI are green.
 9. WIP and stack-depth invariants remain satisfied.
+10. Implementation maturity is `pr-observed` and validation is a non-stale `pass` bound to the same
+    head/review surface; no delivery-only condition remains.
 
 If any check fails, return the failed checks and one next action that can recover evidence or resolve
 the earliest blocking condition.

@@ -104,7 +104,7 @@ current_branch="${current_branch:-detached-HEAD}"
 snapshot_file="$(mktemp /tmp/inspect-git-front.XXXXXX)"
 trap 'rm -f "$snapshot_file"' EXIT
 
-emit schema_version 1
+emit schema_version 2
 emit captured_at "$captured_at"
 emit repo_root "$repo_root"
 emit current_branch "$current_branch"
@@ -123,6 +123,18 @@ while IFS= read -r -d '' status_record; do
   emit worktree_status "$status_record"
 done < <(git -C "$repo_root" status --porcelain=v1 -z --untracked-files=all)
 
+while IFS= read -r -d '' staged_path; do
+  emit worktree_staged_path "$staged_path"
+done < <(git -C "$repo_root" diff --cached --name-only -z --)
+
+while IFS= read -r -d '' unstaged_path; do
+  emit worktree_unstaged_path "$unstaged_path"
+done < <(git -C "$repo_root" diff --name-only -z --)
+
+while IFS= read -r -d '' untracked_path; do
+  emit worktree_untracked_path "$untracked_path"
+done < <(git -C "$repo_root" ls-files --others --exclude-standard -z)
+
 while IFS= read -r -d '' worktree_record; do
   emit worktree_entry "$worktree_record"
 done < <(git -C "$repo_root" worktree list --porcelain -z)
@@ -130,6 +142,20 @@ done < <(git -C "$repo_root" worktree list --porcelain -z)
 while IFS= read -r -d '' changed_path; do
   emit changed_path "$changed_path"
 done < <(git -C "$repo_root" diff --name-only -z "$integration_sha...$work_sha" --)
+
+while IFS= read -r review_commit; do
+  emit review_commit "$review_commit"
+done < <(git -C "$repo_root" rev-list --reverse "$merge_base_sha..$work_sha")
+
+while IFS= read -r -d '' entry_status; do
+  IFS= read -r -d '' entry_path || die "malformed name-status output"
+  if [[ "$entry_status" == R* || "$entry_status" == C* ]]; then
+    IFS= read -r -d '' entry_target || die "malformed rename/copy output"
+    emit changed_entry "$entry_status"$'\t'"$entry_path"$'\t'"$entry_target"
+  else
+    emit changed_entry "$entry_status"$'\t'"$entry_path"
+  fi
+done < <(git -C "$repo_root" diff --name-status -z -M "$integration_sha...$work_sha" --)
 
 if [[ -n "$boundary_sha" ]]; then
   while IFS= read -r commit_sha; do
