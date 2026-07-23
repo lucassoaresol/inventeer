@@ -129,4 +129,3 @@ delivery coordination consumes evidence, bundles package it, and TLC produces va
 - Inspector tests discriminate two-dot/three-dot, ancestry, rename, and working-tree maturity.
 - A second bundle proves its parent and path delta without changing the source repo.
 - TLC validation and lessons behavior enforce the new workflow rules.
-

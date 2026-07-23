@@ -83,4 +83,3 @@ Promotion compares rename-aware actual entries with this contract. File count is
   checksum, checksum mismatch, malformed parent, and source fingerprint preservation.
 - Add a deterministic lessons probe for `review_finding` and validate all three skill folders.
 - Use a fresh independent verifier for spec evidence and behavior-level mutations.
-
