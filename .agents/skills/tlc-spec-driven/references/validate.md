@@ -82,8 +82,11 @@ The sensor provides the empirical guarantee that the tests can actually detect r
 **How it works:**
 
 1. **Prepare a scratch state.** Use one of (choose the safest available for the environment):
-   - `git stash` the current state, apply a mutation, run tests, then `git stash pop`; OR
-   - A temporary worktree (`git worktree add`) or temp copy of the affected file(s).
+   - A temporary worktree (`git worktree add`) fixed to the evidence SHA; OR
+   - A disposable temp copy of the affected files or repository.
+
+   Never stash, edit, or restore the real implementation worktree for a sensor. A scratch mutation
+   must remain disposable even when the test command crashes or the session is interrupted.
 2. **Inject a behavior-level fault** into the new code introduced by this feature. Choose a mutation proportional to the code's risk:
    - Flip a boolean condition (`if (x)` → `if (!x)`, `>` → `>=`)
    - Change a return value (return a wrong status code, wrong field, zero instead of a computed value)
@@ -176,11 +179,15 @@ Fix tasks follow the same format as regular tasks and can be executed with the i
 After all checks complete, the Verifier MUST:
 
 1. **Write the persisted report** to `.specs/features/[feature]/validation.md` (see template below). This file is the evidence artifact — it survives the session and can be referenced by CI, reviewers, or future agents.
-2. **Return a compact summary in chat** to the orchestrator (see Compact Chat Summary section below). The orchestrator surfaces it to the user and routes any ranked gaps to fix tasks.
+2. **Write the Delivery Evidence Block** in that report: verdict, exact commit range/work SHA (or an
+   explicit working-tree fingerprint), gate state, pending delivery-only conditions, and high-risk
+   paths. A behavioral PASS with a remaining same-commit/final-base condition is
+   `pending-delivery`, not promotion-ready.
+3. **Return a compact summary in chat** to the orchestrator (see Compact Chat Summary section below). The orchestrator surfaces it to the user and routes any ranked gaps to fix tasks.
 
 ### 10. Distill Lessons (MANDATORY when validation.md has signal)
 
-This is the closing action of validation — not a separate phase. Immediately after the report is written, turn its grounded failures into reusable, project-local guidance by following [lessons.md](lessons.md). In short: for each surviving mutant, spec-precision gap, failed/uncovered AC, or `// SPEC_DEVIATION`, record one terse general lesson via `python3 scripts/lessons.py add` (the script enforces grounding and owns all bookkeeping). A clean PASS with no signal → record nothing. Run the self-check: if there was signal but no lesson was recorded, say so in chat. See [lessons.md](lessons.md) for the exact commands, phrasing rules, scope discipline, and the no-script fallback.
+This is the closing action of validation — not a separate phase. Immediately after the report is written, turn its grounded failures into reusable, project-local guidance by following [lessons.md](lessons.md). In short: for each surviving mutant, spec-precision gap, failed/uncovered AC, `// SPEC_DEVIATION`, or independently confirmed external review finding recorded in the report, record one terse general lesson via `python3 scripts/lessons.py add` (the script enforces grounding and owns all bookkeeping). A clean PASS with no signal → record nothing. Run the self-check: if there was signal but no lesson was recorded, say so in chat. See [lessons.md](lessons.md) for the exact commands, phrasing rules, scope discipline, and the no-script fallback.
 
 ---
 
@@ -194,6 +201,7 @@ The Verifier returns this block to the orchestrator after completing all checks:
 **Spec-anchored check**: [N/N ACs matched spec outcome | M spec-precision gaps flagged]
 **Gate**: [X passed, 0 failed]
 **Sensor**: [N mutations injected, N killed, N survived]
+**Delivery evidence**: [validation state] @ [exact SHA/range or working-tree fingerprint]; gates [state]; pending [none/list]
 **Report**: `.specs/features/[feature]/validation.md`
 
 **Ranked gaps** (if FAIL):
@@ -212,6 +220,17 @@ The Verifier returns this block to the orchestrator after completing all checks:
 **Spec**: `.specs/features/[feature]/spec.md`
 **Diff range**: [commit range or branch..HEAD]
 **Verifier**: independent sub-agent (author ≠ verifier)
+
+---
+
+## Delivery Evidence
+
+- **Validation state**: `pass | fail | stale | pending-delivery`
+- **Evidence binding**: [exact commit range + work SHA, or explicit working-tree fingerprint]
+- **Requirement contract**: [spec/issue/decision revision used]
+- **Gate state**: [green / failed / incomplete, with commands]
+- **Pending delivery conditions**: [none, or same-commit/final-base/commit/push condition]
+- **High-risk paths**: [paths requiring additional review, or none]
 
 ---
 
@@ -336,7 +355,7 @@ Update spec.md requirement statuses:
 
 - **Validation is never prompted** — it always runs after the last task; do not ask the user whether to run it
 - **Spec-anchored, not just covered** — "there is an assertion" is not enough; the assertion must target the spec-defined outcome
-- **Sensor in scratch only** — never mutate the real tree; stash/worktree/temp copy, run, discard
+- **Sensor in scratch only** — never mutate or stash the real tree; use a disposable worktree/copy
 - **Surviving mutants are fix tasks** — do not mark the feature done if the sensor found weak tests
 - **P1 first** — MVP must work before P2/P3
 - **WHEN/THEN = Test** — Each criterion is a test case

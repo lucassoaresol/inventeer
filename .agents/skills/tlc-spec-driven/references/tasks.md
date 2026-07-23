@@ -26,12 +26,17 @@
 - **Clean commits** - Each task = one atomic, revertable commit
 - **Errors isolated** - One failure doesn't block everything
 
-**Rule**: One task = ONE of these:
+**Rule**: One task = ONE reversible semantic deliverable, such as:
 
 - One component
 - One function
 - One API endpoint
 - One file change
+
+A broad mechanical refactor may touch many files and still be atomic when it enforces one invariant,
+is independently verifiable, and can be reverted as a unit (for example, relocating one module layer
+or applying one naming rule). File count is evidence to inspect, not an automatic split rule. Split
+when a task combines independent behaviors, policies, or rollback reasons.
 
 ---
 
@@ -66,6 +71,12 @@ Before sampling tests or inferring anything, scan the project for documented qua
 
 1. **Sample test files.** Locate 5–10 existing test files. Map each file's location relative to its source file to identify which code layers are exercised and at what level (unit, integration, e2e). Use these samples for style, location patterns, framework, and test type — and as a **floor** (never produce tests less thorough than existing ones for the same layer). Existing tests are NOT a ceiling on thoroughness; the thoroughness target comes from the spec ACs, listed edge cases, and guidelines (or strong default). The Coverage Expectation column captures the target per layer.
 2. **Discover commands from the repo.** Do NOT invent commands and do NOT assume an ecosystem. Read the project's own build/task manifests, test config, and CI workflows to extract the actual commands — for example: `package.json` / `project.json` (JS/TS), `Makefile`, `pyproject.toml` / `tox.ini` / `pytest` (Python), `Cargo.toml` (Rust), `go test` invocations (Go), `pom.xml` / `build.gradle` (Java/Kotlin), `Gemfile` / `Rakefile` (Ruby), `composer.json` (PHP), `.github/workflows` / `.gitlab-ci.yml`. The list is illustrative; detect what this repo actually uses.
+3. **Plan for repository-sized resource limits.** Read documented CI/local constraints and observe
+   prior full-gate behavior when evidence exists. If the canonical full command can exceed memory or
+   time limits, define a coverage-equivalent recipe: partition the complete selection into
+   deterministic shards, run every shard, isolate required services/workers, and aggregate counts.
+   Never omit tests, reduce assertions, or call a partial selection the full gate. Record both the
+   canonical command and the equivalent recipe plus the constraint that activates it.
 
 **Output contract — render these two sections verbatim into `tasks.md`** (the exact headings downstream phases reference):
 
@@ -103,11 +114,11 @@ These defaults may exceed the current repo's depth. That is intentional — they
 
 > Generated from codebase — confirm before Execute.
 
-| Gate Level | When to Use | Command |
-| ---------- | ----------- | ------- |
-| Quick | After tasks with unit tests only | [unit test command] |
-| Full | After tasks with e2e/integration tests | [unit + e2e commands] |
-| Build | After phase completion or config/entity-only tasks | [build + lint + all tests] |
+| Gate Level | When to Use | Canonical Command | Resource-Aware Equivalent (if needed) |
+| ---------- | ----------- | ----------------- | ------------------------------------- |
+| Quick | After tasks with unit tests only | [unit test command] | [usually same command] |
+| Full | After tasks with e2e/integration tests | [unit + e2e commands] | [complete deterministic shard recipe + aggregation, or N/A] |
+| Build | After phase completion or config/entity-only tasks | [build + lint + all tests] | [coverage-equivalent constrained recipe, or N/A] |
 
 ---
 
@@ -122,10 +133,12 @@ These defaults may exceed the current repo's depth. That is intentional — they
 
 ### 2. Break Into Atomic Tasks
 
-**Task = ONE deliverable**. Examples:
+**Task = ONE reversible semantic deliverable**. Examples:
 
 - ✅ "Create UserService interface" (one file, one concept)
+- ✅ "Relocate the DAP module to its approved layers" (many mechanical paths, one structural invariant)
 - ❌ "Implement user management" (too vague, multiple files)
+- ❌ "Relocate modules and change error behavior" (two rollback reasons and two verification contracts)
 
 ### 3. Define Dependencies
 
@@ -371,18 +384,17 @@ with no sub-agents spawned.
 
 Before approving tasks, verify they are granular enough:
 
-| Task                            | Scope         | Status       |
-| ------------------------------- | ------------- | ------------ |
-| T1: Create email input          | 1 component   | ✅ Granular  |
-| T2: Add validation function     | 1 function    | ✅ Granular  |
-| T3: Create form with all fields | 5+ components | ❌ Split it! |
-| T4: Connect to API              | 1 function    | ✅ Granular  |
+| Task                            | Semantic scope | Revert/verification unit | Status       |
+| ------------------------------- | -------------- | ------------------------ | ------------ |
+| T1: Create email input          | 1 component    | input tests + one revert | ✅ Granular  |
+| T2: Apply one naming migration  | 20 file renames | naming scan + one revert | ✅ Granular  |
+| T3: Create form and change API  | UI + contract  | two independent units    | ❌ Split it! |
 
 **Granularity check**:
 
-- ✅ 1 component / 1 function / 1 endpoint = Good
-- ⚠️ 2-3 related things in same file = OK if cohesive
-- ❌ Multiple components or files = MUST split
+- ✅ One independently testable invariant with one rollback reason = Good
+- ⚠️ Several paths or layers = OK when changes are mechanical and inseparable under that invariant
+- ❌ Independent behaviors, policies, or rollback reasons = MUST split
 
 ---
 

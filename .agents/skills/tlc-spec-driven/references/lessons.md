@@ -4,7 +4,7 @@
 
 **The split that keeps it alive**: the agent (you) supplies *judgment* — read the failure, phrase the lesson, cite its grounding. The script `scripts/lessons.py` owns everything *mechanical* — IDs, recurrence counting across distinct features, candidate→confirmed promotion, pruning, demotion, and rendering. Hand-kept bookkeeping is exactly what rots, so it is not your job; the script's job.
 
-**What feeds it**: only the execution signals already produced by the Verifier in [validate.md](validate.md) and written to `.specs/features/[feature]/validation.md`. No signal → no lesson. This is the hard gate: a lesson with no grounding in a real verification outcome is an opinion, and the script refuses it.
+**What feeds it**: only execution signals produced or independently confirmed by the Verifier in [validate.md](validate.md) and written to `.specs/features/[feature]/validation.md`. External review comments qualify only after the Verifier reproduces or corroborates the finding and records that confirmation. No signal → no lesson. This is the hard gate: a lesson with no grounding in a real verification outcome is an opinion, and the script refuses it.
 
 **Scope discipline (critical)**: this layer captures *execution* lessons that are project-local and grounded in a signal. It does **NOT** capture methodology opinions about the SDD process itself ("we should always discuss earlier"). Those are maintainer decisions that ship in a version bump — never auto-written. If a candidate lesson is really about how to run the skill rather than about this codebase, do not record it.
 
@@ -37,6 +37,7 @@ Walk the just-written `validation.md`. For each **grounded** signal, record one 
 | A criterion flagged ⚠️ Spec-precision gap | `spec_precision_gap` |
 | A `// SPEC_DEVIATION` marker was added during implement | `spec_deviation` |
 | The build-level gate check failed | `gate_fail` |
+| An external review finding was independently confirmed and recorded | `review_finding` |
 
 If `validation.md` is a clean PASS with no surviving mutants, no spec-precision gaps, and no deviations → **write nothing**. A clean run produces no lessons. This is correct, not a miss.
 
@@ -63,7 +64,10 @@ python3 scripts/lessons.py add \
 
 ### Self-check (do not skip)
 
-After distilling, if `validation.md` contained any FAIL, surviving mutant, spec-precision gap, or SPEC_DEVIATION but you recorded zero lessons, state plainly in chat: *"Validation had signal X but no lesson was recorded — recording now / here's why it's out of scope."* Silent skipping is how the file dies.
+After distilling, if `validation.md` contained any FAIL, surviving mutant, spec-precision gap,
+SPEC_DEVIATION, or confirmed external review finding but you recorded zero lessons, state plainly in
+chat: *"Validation had signal X but no lesson was recorded — recording now / here's why it's out of
+scope."* Silent skipping is how the file dies.
 
 ### Demotion
 

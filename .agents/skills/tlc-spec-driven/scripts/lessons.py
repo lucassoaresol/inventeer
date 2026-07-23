@@ -41,6 +41,7 @@ SIGNALS = {
     "spec_precision_gap": "Spec did not define a precise outcome",
     "spec_deviation": "Implementation diverged from spec/design (SPEC_DEVIATION)",
     "gate_fail": "Build-level gate check failed",
+    "review_finding": "External review finding independently confirmed by the Verifier",
 }
 
 DEFAULTS = {"promote_threshold": 2, "window_days": 45, "quarantine_threshold": 2}

@@ -11,6 +11,7 @@ The canonical rubric for requirements that are easy to miss. Referenced by [disc
 | Dimension | What to cover |
 | --------- | ------------- |
 | Input validation & bounds | Limits, formats, sanitization |
+| Compatibility & representation | Wire format, persisted representation, migration/backfill, rollout compatibility, exact encoding/precision, safe public disclosure |
 | Failure / partial-failure states | Timeouts, partial saves, rollbacks |
 | Idempotency / retry / duplicate handling | Safe retries, dedup keys |
 | Auth boundaries & rate limits | Who can call what, throttle rules |
