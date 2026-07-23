@@ -232,17 +232,33 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-22
 - **Status**: active
 
+### AD-023
+- **Decision**: Tratar implementação e validação como eixos distintos de maturidade da entrega,
+  vincular todo PASS ao SHA/surface/contrato/gates efetivamente verificados, invalidá-lo após qualquer
+  mudança relevante e encadear gerações efêmeras de review bundle por checksum e delta de paths.
+- **Reason**: Sessões reais produziram várias gerações de evidência para a mesma issue e mostraram
+  que implementação validada, commitada, publicada e promovível não são estados equivalentes.
+- **Trade-off**: O fluxo passa a carregar mais metadados, exige revalidação após correções e adiciona
+  parsing/checksum de parent bundles; em troca, impede promoção com evidência obsoleta e torna o churn
+  de review auditável sem criar uma nova fonte canônica.
+- **Alternatives considered**: Tratar todo PASS como pronto para review; inferir lineage apenas pelo
+  nome dos ZIPs; incorporar validação à `advance-delivery-front`; manter atomicidade por contagem de
+  arquivos; registrar findings externos como lessons sem confirmação independente.
+- **Scope**: `advance-delivery-front`, `create-review-bundle`, fork local `tlc-spec-driven` e seus
+  handoffs neste workspace; não altera produtos, Linear ou GitHub.
+- **Date**: 2026-07-23
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Delivery front continuity
-- **Phase / Task**: Execute — complete; independent Verifier PASS
-- **Completed**: policy, inspetor Git com 12 testes, skill, metadata, README e AGENTS implementados em
-  seis commits atômicos mais o commit isolado de reforço `757a3c1`; DFC-01..22 validados em 22/22,
-  cinco de cinco forward-tests passaram, Build passou e três de três mutações foram mortas; lessons
-  L-001 e L-002 preservam os sinais da primeira iteração
-- **In-progress**: none
-- **Next step**: usar `advance-delivery-front` numa frente real e observar recorrência das lessons
-  candidatas antes de promovê-las a guidance
+- **Feature**: Review evidence lifecycle
+- **Phase / Task**: Execute — T1..T5 complete; T6 independent verification pending
+- **Completed**: approved spec/design/tasks; delivery evidence maturity and inspector schema v2 with
+  14 passing cases; review bundle lineage with 13 passing cases; isolated TLC workflow improvements
+  with grounded `review_finding` probe; README and AD-023 updated
+- **In-progress**: independent feature-level verification over the complete commit range
+- **Next step**: dispatch the fresh TLC Verifier, route any gaps through an isolated fix commit, then
+  close validation and handoff
 - **Blockers**: none
-- **Uncommitted files**: none after the final traceability commit
+- **Uncommitted files**: workspace decision, README, and this handoff until T5 is committed
 - **Branch**: main

@@ -95,3 +95,14 @@
 
 All tasks represent one reversible semantic increment. Broad mechanical edits within one invariant
 remain one task even when they touch several files.
+
+## Execution Record
+
+| Task | Status | Commit / evidence |
+| --- | --- | --- |
+| T1 | Complete | `f32e75c`; 21/21 requirements traced; diff check passed |
+| T2 | Complete | `2b2f94f`; inspector 14/14, ShellCheck and skill validator passed |
+| T3 | Complete | `ed28e54`; bundle harness 13/13, ShellCheck and skill validator passed |
+| T4 | Complete | `79ac96b`; lessons probe 2/2 and skill validator passed |
+| T5 | In progress | AD-023, README, handoff, and execution record |
+| T6 | Pending | Independent Verifier after T5 |

@@ -39,9 +39,9 @@ specs e evidências que precisem persistir continuam pertencendo às respectivas
 | `assistants-task-context` | Local | — | Preparar tasks do produto Assistants para desenvolvimento |
 | `portal-task-context` | Local | — | Preparar tasks do Portal e determinar ownership entre produto, API e web |
 | `triage-project-cycle` | Local | — | Comparar várias issues, dependências, conflitos e ordem de execução |
-| `advance-delivery-front` | Local | — | Coordenar a próxima task enquanto PRs aguardam review ou merge |
+| `advance-delivery-front` | Local | — | Coordenar a próxima task e a maturidade da evidência enquanto PRs aguardam |
 | `discover-project-context` | Local | — | Descobrir projetos e fluxos sem exigir uma issue Linear |
-| `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência e diff por arquivo |
+| `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência, diffs e lineage opcional |
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
 global. A `tlc-spec-driven` é um fork local vendorizado e deve ser atualizada separadamente das
@@ -87,9 +87,10 @@ Use uma rota de contexto antes da TLC:
 | Empacotar trabalho para review | `create-review-bundle` | Review externo; não implica aprovação |
 
 `advance-delivery-front` mantém a topologia da PR pronta e da próxima task ativa/draft, classifica
-dependências e planeja a reconciliação pós-merge. Seu MVP não cria branches, altera PRs ou atualiza o
-Linear; ele entrega um contrato verificável e exatamente uma próxima ação antes do handoff para a
-skill de task do produto e, quando necessário, para `tlc-spec-driven`.
+dependências, separa maturidade de implementação e validação e planeja a reconciliação pós-merge.
+Seu MVP não cria branches, altera PRs ou atualiza o Linear; ele entrega um contrato verificável e
+exatamente uma próxima ação antes do handoff para a skill de task do produto e, quando necessário,
+para `tlc-spec-driven`.
 
 Para gerar um bundle diretamente:
 
@@ -98,12 +99,14 @@ Para gerar um bundle diretamente:
   --repo repos/portal-api \
   --base origin/develop \
   --output-dir session-context \
-  --label INV-0000
+  --label INV-0000 \
+  --review-stage initial
 ```
 
-O ZIP inclui manifesto, status, commits, checksum e um diff por arquivo. A base padrão é `HEAD`,
-adequada para revisar apenas mudanças não commitadas. Caminhos prováveis de credenciais, chaves ou
-dumps são recusados.
+O ZIP inclui manifesto, lineage, status, commits, checksum e um diff por arquivo. Gerações
+corretivas podem usar `--parent-bundle <bundle-anterior.zip>` para registrar o checksum do parent e o
+delta de paths. A base padrão é `HEAD`, adequada para revisar apenas mudanças não commitadas.
+Caminhos prováveis de credenciais, chaves ou dumps são recusados.
 
 ## Repositórios locais
 
