@@ -11,6 +11,8 @@ Options:
   --base REF         Compare REF to the current worktree (default: HEAD)
   --output-dir PATH  Destination directory (default: workspace/session-context)
   --label TEXT       Short filename label (default: repository name)
+  --review-stage ID  Evidence stage such as initial/corrective/final (default: snapshot)
+  --parent-bundle ZIP  Link this generation to an earlier bundle
   -h, --help         Show this help
 EOF
 }
@@ -37,6 +39,8 @@ repo=""
 base_ref="HEAD"
 output_dir=""
 label=""
+review_stage="snapshot"
+parent_bundle=""
 
 while (($# > 0)); do
   case "$1" in
@@ -58,6 +62,16 @@ while (($# > 0)); do
     --label)
       [[ $# -ge 2 ]] || { echo "Erro: --label exige um valor" >&2; exit 2; }
       label="$2"
+      shift 2
+      ;;
+    --review-stage)
+      [[ $# -ge 2 ]] || { echo "Erro: --review-stage exige um valor" >&2; exit 2; }
+      review_stage="$2"
+      shift 2
+      ;;
+    --parent-bundle)
+      [[ $# -ge 2 ]] || { echo "Erro: --parent-bundle exige um valor" >&2; exit 2; }
+      parent_bundle="$2"
       shift 2
       ;;
     -h | --help)
@@ -110,6 +124,8 @@ output_dir="$(cd "$output_dir" && pwd)"
 label="${label:-$(basename "$repo")}"
 safe_label="$(printf '%s' "$label" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+//; s/-+$//')"
 [[ -n "$safe_label" ]] || { echo "Erro: label não produz um nome seguro" >&2; exit 2; }
+safe_review_stage="$(printf '%s' "$review_stage" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+//; s/-+$//')"
+[[ -n "$safe_review_stage" ]] || { echo "Erro: review-stage não produz um identificador seguro" >&2; exit 2; }
 
 declare -A change_kind=()
 while IFS= read -r -d '' path; do
@@ -131,6 +147,52 @@ for path in "${changed_paths[@]}"; do
     exit 4
   fi
 done
+
+parent_status="none"
+parent_basename=""
+parent_sha256=""
+parent_checksum_status="not-applicable"
+parent_head_sha=""
+declare -A parent_paths=()
+if [[ -n "$parent_bundle" ]]; then
+  [[ -f "$parent_bundle" ]] || { echo "Erro: parent bundle não encontrado: $parent_bundle" >&2; exit 4; }
+  parent_bundle="$(realpath "$parent_bundle")"
+  parent_basename="$(basename "$parent_bundle")"
+  parent_sha256="$(sha256sum "$parent_bundle" | cut -d' ' -f1)"
+
+  if [[ -f "$parent_bundle.sha256" ]]; then
+    if ! (cd "$(dirname "$parent_bundle")" && sha256sum -c "$(basename "$parent_bundle").sha256" >/dev/null 2>&1); then
+      echo "Erro: checksum adjacente do parent bundle é inválido: $parent_bundle.sha256" >&2
+      exit 4
+    fi
+    parent_checksum_status="verified"
+  else
+    parent_checksum_status="missing"
+  fi
+
+  mapfile -t parent_files_entries < <(unzip -Z1 "$parent_bundle" 2>/dev/null | awk '/\/files\.tsv$/')
+  mapfile -t parent_readme_entries < <(unzip -Z1 "$parent_bundle" 2>/dev/null | awk '/\/README\.md$/')
+  if [[ ${#parent_files_entries[@]} -ne 1 || ${#parent_readme_entries[@]} -ne 1 ]]; then
+    echo "Erro: parent bundle precisa conter exatamente um files.tsv e um README.md" >&2
+    exit 4
+  fi
+
+  while IFS=$'\t' read -r kind path diff_name; do
+    [[ "$kind" == "kind" && "$path" == "path" ]] && continue
+    [[ -n "$path" && -n "$diff_name" ]] || {
+      echo "Erro: files.tsv inválido no parent bundle" >&2
+      exit 4
+    }
+    parent_paths["$path"]=1
+  done < <(unzip -p "$parent_bundle" "${parent_files_entries[0]}")
+
+  parent_head_sha="$(unzip -p "$parent_bundle" "${parent_readme_entries[0]}" | sed -n 's/^- HEAD SHA: //p')"
+  [[ "$parent_head_sha" =~ ^[0-9a-fA-F]{40}$ ]] || {
+    echo "Erro: HEAD SHA ausente ou inválido no parent bundle" >&2
+    exit 4
+  }
+  parent_status="linked"
+fi
 
 timestamp="$(date +%Y%m%d-%H%M%S%z)"
 bundle_name="${safe_label}-review-${timestamp}"
@@ -166,6 +228,38 @@ for path in "${changed_paths[@]}"; do
   printf '%s\t%s\t%s\n' "${change_kind[$path]}" "$path" "diffs/$diff_name" >>"$bundle_dir/files.tsv"
 done
 
+{
+  printf 'type\tstatus\tvalue\n'
+  printf 'meta\tschema_version\t1\n'
+  printf 'meta\treview_stage\t%s\n' "$safe_review_stage"
+  printf 'meta\tparent_status\t%s\n' "$parent_status"
+  printf 'meta\tparent_bundle\t%s\n' "$parent_basename"
+  printf 'meta\tparent_sha256\t%s\n' "$parent_sha256"
+  printf 'meta\tparent_checksum_status\t%s\n' "$parent_checksum_status"
+  printf 'meta\tparent_head_sha\t%s\n' "$parent_head_sha"
+  printf 'meta\tcurrent_head_sha\t%s\n' "$head_sha"
+  if [[ "$parent_status" == "linked" ]]; then
+    declare -A union_paths=()
+    for path in "${changed_paths[@]}"; do
+      union_paths["$path"]=1
+    done
+    for path in "${!parent_paths[@]}"; do
+      union_paths["$path"]=1
+    done
+    mapfile -d '' lineage_paths < <(printf '%s\0' "${!union_paths[@]}" | sort -z)
+    for path in "${lineage_paths[@]}"; do
+      if [[ -n "${parent_paths[$path]:-}" && -n "${change_kind[$path]:-}" ]]; then
+        path_status="retained"
+      elif [[ -n "${change_kind[$path]:-}" ]]; then
+        path_status="added"
+      else
+        path_status="removed"
+      fi
+      printf 'path\t%s\t%s\n' "$path_status" "$path"
+    done
+  fi
+} >"$bundle_dir/lineage.tsv"
+
 set +e
 git -C "$repo" diff --check "$base_sha" -- >"$bundle_dir/diff-check.txt" 2>&1
 diff_check_exit=$?
@@ -182,6 +276,8 @@ git diff --check ${base_sha}
 git diff ${base_sha} -- <path>
 git ls-files --others --exclude-standard
 git diff --no-index /dev/null <untracked-path>
+sha256sum <parent-bundle>
+unzip -p <parent-bundle> '*/files.tsv'
 EOF
 
 cat >"$bundle_dir/README.md" <<EOF
@@ -193,12 +289,17 @@ cat >"$bundle_dir/README.md" <<EOF
 - Base ref: $base_ref
 - Base SHA: $base_sha
 - HEAD SHA: $head_sha
+- Review stage: $safe_review_stage
+- Parent status: $parent_status
+- Parent bundle: $parent_basename
+- Parent SHA-256: $parent_sha256
+- Parent checksum status: $parent_checksum_status
 - Changed files: ${#changed_paths[@]}
 - Diff check exit: $diff_check_exit
 
-This bundle is review evidence only. It does not assert that tests passed or that the change is
-approved. Paths classified as likely credentials, private keys, or dumps are rejected before archive
-creation.
+This bundle is historical review evidence only. It does not prove current source freshness or assert
+that tests passed, the change was validated, or the change is approved. Paths classified as likely
+credentials, private keys, or dumps are rejected before archive creation.
 EOF
 
 zip_path="$output_dir/$bundle_name.zip"
