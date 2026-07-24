@@ -319,7 +319,7 @@ Dispatch a fresh sub-agent following the **Verifier** role described in [sub-age
 
 **What the Verifier does (full description in [validate.md](validate.md) and [sub-agents.md](sub-agents.md)):**
 1. **Spec-anchored coverage check** — re-derives coverage evidence-or-zero; confirms each test's asserted value matches the spec-defined outcome; flags spec-precision gaps.
-2. **Discrimination sensor** — injects a small behavior-level fault (flip a condition, change a return value, off-by-one) in a scratch/throwaway state (git stash or temp copy), runs the relevant tests, confirms they kill the mutant, then discards the mutation. Reports killed/survived; surviving mutants become fix tasks.
+2. **Discrimination sensor** — injects a small behavior-level fault (flip a condition, change a return value, off-by-one) in a scratch/throwaway state (temporary worktree or disposable copy), runs the relevant tests, confirms they kill the mutant, then discards the mutation. The real worktree is never edited or stashed. Reports killed/survived; surviving mutants become fix tasks.
 3. **Persisted report** — writes `.specs/features/[feature]/validation.md` with PASS/FAIL, per-AC evidence (`file:line` + assertion + spec outcome), gate exit results, sensor result, and the diff/commit range covered.
 4. **Chat return** — returns a compact verdict + ranked gap list to the orchestrator in chat; the orchestrator surfaces it and routes gaps to fix tasks.
 
