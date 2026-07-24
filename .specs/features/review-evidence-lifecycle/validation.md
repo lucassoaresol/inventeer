@@ -1,8 +1,8 @@
 # Review Evidence Lifecycle Validation
 
-**Date:** 2026-07-24  
-**Spec:** `.specs/features/review-evidence-lifecycle/spec.md`  
-**Diff range:** `4b18e5a..332128f`  
+**Date:** 2026-07-24
+**Spec:** `.specs/features/review-evidence-lifecycle/spec.md`
+**Diff range:** `4b18e5a..332128f`
 **Verifier:** primary implementation agent; provisional fallback after three independent sub-agent
 attempts terminated without a response or report
 
@@ -115,7 +115,7 @@ PASS until a fresh author ≠ verifier reruns the gates and sensors over the fin
 
 ## Summary
 
-**Overall:** behaviorally ready, formally pending independent verification.  
-**Spec check:** 21/21. **Gate:** 29/29 plus static gates. **Sensor:** 3/3 killed.  
+**Overall:** behaviorally ready, formally pending independent verification.
+**Spec check:** 21/21. **Gate:** 29/29 plus static gates. **Sensor:** 3/3 killed.
 **Next step:** commit the report and lifecycle bookkeeping, then rerun an independent verifier when
 the sub-agent mechanism is operational.
