@@ -2,120 +2,165 @@
 
 **Date:** 2026-07-24
 **Spec:** `.specs/features/review-evidence-lifecycle/spec.md`
-**Diff range:** `4b18e5a..332128f`
-**Verifier:** primary implementation agent; provisional fallback after three independent sub-agent
-attempts terminated without a response or report
+**Diff range:** `4b18e5a..afb1fe3`
+**Evidence head:** `afb1fe322e876b091c398b031c9b9d4ac274ebbd`
+**Verifier:** independent TLC sub-agent (author != verifier)
 
 ## Verdict
 
-**PROVISIONAL PASS — independent verification pending.** All 21 requirements have implementation
-evidence, the complete Build gate is green, and 3/3 disposable mutants were killed. This report is
-not an independent TLC PASS because author and verifier are the same agent.
+**FAIL.** The deterministic Build gate is green and all three discrimination mutants were killed,
+but three requirements are not satisfied: an adjacent checksum can verify a different file while the
+parent is recorded as verified (REL-12/REL-14), and `sub-agents.md` still permits stash-based sensor
+mutation (REL-19).
 
 ## Delivery Evidence
 
-- **Validation state:** `pending-delivery`
-- **Evidence binding:** committed implementation range `4b18e5a..332128f`; work head `332128f`
-- **Requirement contract:** approved `spec.md`, `design.md`, and `tasks.md` at this work head
-- **Gate state:** green — 29/29 behavior tests, ShellCheck, 3/3 skill validators, and range-scoped
-  diff integrity
-- **Pending delivery conditions:** commit this report and obtain an independent author ≠ verifier
-  rerun over the resulting final range
-- **High-risk paths:** Git range parsing, parent-bundle checksum/manifest parsing, and lesson signal
-  grounding
-- **Promotion readiness:** no; provisional evidence cannot satisfy the independent-verifier gate
+- **Validation state:** `fail`
+- **Evidence binding:** committed range `4b18e5a..afb1fe3`; work SHA
+  `afb1fe322e876b091c398b031c9b9d4ac274ebbd`; source worktree clean before and after verification
+- **Requirement contract:** approved `spec.md`, `design.md`, and `tasks.md` at `afb1fe3`
+- **Gate state:** green — 29/29 behavior tests, ShellCheck, three skill validators, and
+  `git diff --check 4b18e5a..afb1fe3`
+- **Pending delivery conditions:** correct F1 and F2 below, add regressions, commit the correction and
+  rerun an independent verifier over the new final range
+- **High-risk paths:** adjacent parent-checksum binding and TLC sensor-isolation instructions
+- **Promotion readiness:** no
 
 ## Task Completion
 
 | Task | Status | Evidence |
 | --- | --- | --- |
-| T1 | Done | `f32e75c` |
-| T2 | Done | `2b2f94f`; inspector 14/14 |
-| T3 | Done | `ed28e54`; bundle 13/13 |
-| T4 | Done | `79ac96b`; lessons 2/2 |
-| T5 | Done | `1bf0706` plus whitespace correction `727de55` |
-| T6 | Partial | Provisional validation complete; independent rerun pending |
+| T1 | PASS | `f32e75c`; approved spec/design/tasks present |
+| T2 | PASS | `2b2f94f`; inspector 14/14, ShellCheck and validator green |
+| T3 | FAIL | Ordinary lineage cases pass, but adversarial adjacent-checksum binding violates REL-12/14 |
+| T4 | FAIL | New `validate.md` is correct, but linked `sub-agents.md` retains forbidden stash guidance |
+| T5 | PASS | AD-023 and workspace handoff are present |
+| T6 | FAIL | Independent verification found F1 and F2 |
 
-## Spec-Anchored Requirements
+## Spec-Anchored Acceptance Criteria
 
-| Requirement | Spec-defined outcome | Evidence and assertion | Result |
+For policy-only criteria, the assertion expression below is the independent verifier's exact contract
+comparison. Executable criteria cite the assertion that ran.
+
+| Requirement | Spec-defined outcome | `file:line` + assertion expression | Result |
 | --- | --- | --- | --- |
-| REL-01 | Implementation and validation have independent maturity | `continuity-policy.md:43-57` defines the two axes and their states | PASS |
-| REL-02 | Changed bound evidence makes prior validation stale | `continuity-policy.md:53-57` binds PASS and invalidates changed inputs | PASS |
-| REL-03 | Delivery-only conditions produce `pending-delivery` | `continuity-policy.md:56-57`; promotion rejects it at `:258-259` | PASS |
-| REL-04 | Review changes trigger reassessment | `continuity-policy.md:224-230` recomputes commits, surface, gates, head/base | PASS |
-| REL-05 | Scope uses typed path surfaces | `continuity-policy.md:161-167` lists exact paths, families, renames, generated and forbidden artifacts | PASS |
-| REL-06 | File count alone is not scope creep | `continuity-policy.md:169-170` makes semantics and direction decisive | PASS |
-| REL-07 | Inspector schema v2 emits review commits | `test-inspect-git-front.sh:93-101` asserts schema and review commits | PASS |
-| REL-08 | Inspector emits rename-aware entries | `test-inspect-git-front.sh:102-105` asserts `changed_entry R*` source and target | PASS |
-| REL-09 | Worktree surfaces are separated read-only | `test-inspect-git-front.sh:113-115,155-164` asserts three classes and unchanged fingerprint | PASS |
-| REL-10 | Identical snapshot inputs are deterministic | `test-inspect-git-front.sh:125-133` compares byte-identical output | PASS |
-| REL-11 | First bundle records stage and no parent | `test-create-review-bundle.sh:51-53` asserts `initial` and `parent_status none` | PASS |
-| REL-12 | Child records verified parent and heads | `test-create-review-bundle.sh:73-75`; producer fields at `create-review-bundle.sh:234-241` | PASS |
-| REL-13 | Lineage classifies path delta | `test-create-review-bundle.sh:76-79` asserts retained, added, and removed | PASS |
-| REL-14 | Bad parent evidence fails closed | `test-create-review-bundle.sh:95-117` asserts no child ZIP on checksum/manifest failures | PASS |
-| REL-15 | Bundle does not claim approval/freshness | `create-review-bundle/SKILL.md:46-60` limits lineage to historical review evidence | PASS |
-| REL-16 | Specify covers compatibility and representation | `specify.md:11-15` names all required compatibility dimensions | PASS |
-| REL-17 | Atomicity is one reversible semantic invariant | `tasks.md:29-39` allows verifiable multi-file mechanical refactors | PASS |
-| REL-18 | Full gates support coverage-equivalent resource recipes | `tasks.md:74-79,117-121` requires complete shards and aggregation | PASS |
-| REL-19 | Mutations use disposable state only | `validate.md:84-93` forbids stash/edit/restore of the real worktree | PASS |
-| REL-20 | Validation exposes delivery evidence | `validate.md:181-190` requires range/head, gates, pending conditions, and risks | PASS |
-| REL-21 | Confirmed review findings are grounded lesson signals | `test-lessons.py:29-64` accepts grounded `review_finding` and rejects empty source | PASS |
+| REL-01 | Separate implementation and validation state sets | `continuity-policy.md:43-57` — `implementation == {working-tree, committed, pushed, pr-observed} && validation == {missing, pass, fail, stale, pending-delivery}` | PASS |
+| REL-02 | Any bound SHA/diff/contract/gate change makes PASS stale | `continuity-policy.md:53-57` — `changed(bound_input) => validation == stale` | PASS |
+| REL-03 | A delivery-only remainder produces pending-delivery and blocks reviewable | `continuity-policy.md:56-57,258-259` — `pass && delivery_guard => pending-delivery && !reviewable` | PASS |
+| REL-04 | Review correction recomputes affected boundaries/surfaces/gates/validation | `continuity-policy.md:224-230` — `changed(review_head_or_dirty_surface) => stale(validation) && reassess(review_commits,surface,gates,head,base)` | PASS |
+| REL-05 | Scope has all five typed collections | `continuity-policy.md:161-167` — `surface_fields == {exact,families,renames,generated,forbidden}` | PASS |
+| REL-06 | Expected mechanical rename is not scope creep by count alone | `continuity-policy.md:169-170` — `expected_rename && many_files => file_count_is_informational` | PASS |
+| REL-07 | Schema v2 emits merge-base-relative commits | `test-inspect-git-front.sh:93,100-102` — `grep schema_version\\t2` and `[[ "$review_commits" == "$expected_review_commits" ]]` | PASS |
+| REL-08 | Rename/copy entries include status, source and target | `test-inspect-git-front.sh:103-105` — `grep R100 | grep rename-source.txt | grep rename-target.txt` | PASS |
+| REL-09 | Dirty paths are split and inspection is read-only | `test-inspect-git-front.sh:113-115,154-156` — exact `grep` per class and `[[ "$fingerprint_before" == "$fingerprint_after" ]]` | PASS |
+| REL-10 | Same refs/worktree/timestamp are byte-identical | `test-inspect-git-front.sh:126-133` — `[[ "$output" == "$second_output" ]]` | PASS |
+| REL-11 | No-parent bundle records stage and explicit absence | `test-create-review-bundle.sh:51-53` — exact `grep` for `review_stage initial` and `parent_status none` | PASS |
+| REL-12 | Child records the supplied parent's computed hash and truthful adjacent-checksum status | `test-create-review-bundle.sh:72-75` passes the ordinary case, but `create-review-bundle.sh:163-168` runs the sidecar's named target; adversarial probe assertion `[[ child_exit -ne 0 ]]` observed `child_exit=0`, child created, `parent_checksum_status=verified` | FAIL |
+| REL-13 | Manifest union is classified added/removed/retained | `test-create-review-bundle.sh:76-79` — exact `grep` for retained, added and removed rows | PASS |
+| REL-14 | Invalid parent/checksum fails with no child ZIP or source mutation | `test-create-review-bundle.sh:95-118` covers mismatch and duplicate manifest, but the wrong-target sidecar probe at `create-review-bundle.sh:163-168` observed success and a child ZIP; expected `exit != 0 && child_created == no` | FAIL |
+| REL-15 | Lineage never claims freshness, validation or approval | `create-review-bundle/SKILL.md:62-64` — `lineage_role == historical_review_evidence_only` | PASS |
+| REL-16 | Compatibility rubric names every required representation concern | `specify.md:11-15` — `dimensions` includes wire format, persistence, migration/backfill, rollout compatibility, exact encoding/precision and safe disclosure | PASS |
+| REL-17 | Broad mechanical atomicity follows one reversible invariant, not file count | `tasks.md:29-39` — `atomic == one_reversible_semantic_deliverable` | PASS |
+| REL-18 | Resource constraints require complete deterministic shards and aggregation | `tasks.md:74-79,117-127` — `resource_recipe => all_shards && aggregate_counts && !weaken_coverage` | PASS |
+| REL-19 | Sensors permit only disposable worktrees/copies and forbid stash | `validate.md:84-93` is compliant, but `sub-agents.md:100-106` says scratch state may be `git stash or temp copy`; assertion `rg -n "git stash" TLC sensor guidance` expected no permissive match and found one at line 102 | FAIL |
+| REL-20 | Validation closes with exact evidence/range, gates, pending conditions and risks | `validate.md:181-190,202-209` — report and compact-summary contracts require every field | PASS |
+| REL-21 | Confirmed grounded review finding is accepted; empty grounding rejected | `test-lessons.py:29-49,51-64` — `lesson["signal"] == "review_finding"`, exact feature/evidence values, then `expect=2` and unchanged count for empty source | PASS |
 
-**Status:** 21/21 requirements matched their specified outcomes. No spec-precision gaps found.
+**Status:** 18/21 requirements fully matched; no spec-precision gaps. REL-12, REL-14 and REL-19 fail
+precise outcomes.
+
+## Edge Cases
+
+- PASS — uncommitted validation remains `working-tree`/promotion-blocking in policy.
+- PASS — missing adjacent checksum records `missing` and continues (`test-create-review-bundle.sh:83-93`).
+- FAIL — an adjacent sidecar that validly checks a different file is accepted as verification of the
+  supplied parent (`create-review-bundle.sh:163-168`).
+- PASS — diverged rename retains the three-dot surface (`test-inspect-git-front.sh:96-105,157`).
+- PASS — resource-aware gating requires complete deterministic shards (`tasks.md:74-79`).
 
 ## Gate Check
 
-- **Behavior tests:** inspector 14/14; bundle 13/13; lessons 2/2; total 29/29
-- **Test count before feature:** 20 (12 inspector, 8 bundle, 0 focused lessons probe)
-- **Test count after feature:** 29; delta +9; no deletions or skips
-- **ShellCheck:** passed for both production scripts and Bash harnesses
-- **Skill validation:** `advance-delivery-front`, `create-review-bundle`, and `tlc-spec-driven` valid
-- **Diff integrity:** `git diff --check 4b18e5a..332128f` passed
-- **Failures/skips:** none
+- **Behavior commands:**
+  - `bash .agents/skills/advance-delivery-front/scripts/test-inspect-git-front.sh` — 14 passed
+  - `bash .agents/skills/create-review-bundle/scripts/test-create-review-bundle.sh` — 13 passed
+  - `python3 .agents/skills/tlc-spec-driven/scripts/test-lessons.py` — 2 passed
+- **ShellCheck:** production scripts and both Bash harnesses — passed, zero findings
+- **Skill validators:** `quick_validate.py` for `advance-delivery-front`, `create-review-bundle`, and
+  `tlc-spec-driven` — 3/3 valid
+- **Diff integrity:** `git diff --check 4b18e5a..afb1fe3` — passed
+- **Result:** 29 passed, 0 failed, 0 skipped in the declared behavior suite; all static gates green
+- **Test integrity:** baseline `4b18e5a` rerun produced 12 inspector + 8 bundle tests and no focused
+  lessons probe; evidence head produced 14 + 13 + 2 = 29, delta +9. No deletion, skip, or weakened
+  assertion was found in the feature diff.
+- **Unclaimed tests:** none; legacy cases map to retained safety/done-when behavior, and the nine added
+  cases map to REL-07..14 and REL-21.
 
 ## Discrimination Sensor
 
-The committed tree at `332128f` was exported with `git archive` to a disposable `/tmp` directory.
-The real worktree was not mutated or stashed, and the disposable directory was removed afterward.
+All mutations ran in three separate `git archive afb1fe3` exports under `/tmp`; the real worktree was
+never edited, stashed, or restored.
 
-| Mutation | Assertion expected to detect it | Result |
-| --- | --- | --- |
-| Inspector `schema_version 2` → `9` | Harness requires exact schema v2 | KILLED — exit 1, `schema version missing` |
-| Bundle lineage stage → `corrupted` | Harness requires the supplied `initial` stage | KILLED — exit 1, `initial review stage missing` |
-| Remove `review_finding` from lesson signals | Probe requires grounded signal acceptance | KILLED — exit 1, invalid signal choice |
+| Mutation | File:line | Fault and expected assertion | Result |
+| --- | --- | --- | --- |
+| M1 | `inspect-git-front.sh:144` | Change three-dot changed-path range to two-dot; exact review-surface equality at `test-inspect-git-front.sh:96-97` must fail | KILLED, harness exit 1 |
+| M2 | `create-review-bundle.sh:163-168` | Continue after an actual parent checksum mismatch; fail-closed assertion at `test-create-review-bundle.sh:99-105` must fail | KILLED, harness exit 1 |
+| M3 | `lessons.py:38-45` | Remove `review_finding` from accepted signals; grounded-add probe at `test-lessons.py:29-49` must fail | KILLED, probe exit 1 |
 
-**Sensor depth:** lightweight, one high-risk behavior per changed skill. **Result:** 3/3 killed.
+**Sensor depth:** lightweight. **Result:** 3/3 killed, 0 survived. This does not erase the separate
+wrong-target checksum edge failure discovered by forward testing.
 
-## Code Quality and Edge Cases
+## Code Quality
 
-- Changes stay within the three approved workflow improvements and their evidence artifacts.
-- The vendored TLC fork was changed in isolated commits (`79ac96b`, `332128f`) per AD-016.
-- Missing parent checksum remains explicit and non-fatal; invalid checksum and ambiguous manifest fail
-  closed; rename evidence retains three-dot semantics; deterministic shards cannot weaken coverage.
-- No interactive UAT applies because this feature changes engineering workflow and CLI evidence only.
+| Principle | Status |
+| --- | --- |
+| Minimum/surgical scope; no unrelated feature | PASS |
+| Existing patterns and read-only product-repo boundaries | PASS |
+| Test assertions map to specified values/states | FAIL — no assertion binds an adjacent checksum entry to the supplied parent basename/hash |
+| Per-layer coverage and listed edge cases | FAIL — invalid-checksum coverage misses the wrong-target sidecar case |
+| Cross-reference consistency | FAIL — `sub-agents.md:102` contradicts REL-19 and `validate.md:88-93` |
+| Documented guidance followed | PASS — `AGENTS.md`, TLC validate/coding principles, and feature tasks were applied |
+| Senior-engineer approval | FAIL until F1/F2 are corrected |
 
-## Finding and Resolution
+All 21 paths in `4b18e5a..afb1fe3` were reviewed. No product repository, Linear state, GitHub state,
+or implementation/test file was modified by this verifier.
 
-### F1 — Working-tree-only diff integrity missed committed whitespace
+## Fix Plans
 
-- **Severity:** Major workflow gap, resolved
-- **Observed signal:** plain `git diff --check` passed on a clean worktree while the complete feature
-  range still contained blank-line-at-EOF errors; `git diff --check 4b18e5a..HEAD` exposed them.
-- **Correction:** `727de55` removed the whitespace defects; `332128f` now requires validation to bind
-  diff integrity to the exact evidence base/head in both Tasks and Validate guidance.
-- **Regression evidence:** range-scoped diff gate is green at `4b18e5a..332128f`.
+### F1 — Bind the adjacent checksum to the supplied parent bundle
 
-## Independence Limitation
+- **Severity:** Major
+- **Requirements:** REL-12, REL-14
+- **Root cause:** `create-review-bundle.sh:163-168` delegates to `sha256sum -c` and accepts success for
+  whatever filename the sidecar names; it never proves that the checked entry is the supplied parent.
+- **Fix task:** parse/validate the adjacent checksum contract and require its expected hash/target to
+  bind exactly to the supplied parent (or directly compare its declared digest with the already
+  computed `parent_sha256`); reject malformed, ambiguous, or wrong-target sidecars before creating the
+  child. Add the reproduced decoy-target case to the bundle harness and retain source fingerprint/no
+  child assertions.
+- **Done when:** correct parent sidecar is `verified`; missing remains `missing`; wrong hash, malformed,
+  ambiguous, and wrong-target sidecars all exit non-zero without source mutation or child ZIP.
 
-Three fresh verifier executions ended without payload and without writing `validation.md`. The user
-authorized this primary-agent fallback on 2026-07-24. Therefore this artifact deliberately uses
-`PROVISIONAL PASS` and `pending-delivery`; it must not be promoted or rewritten as an independent
-PASS until a fresh author ≠ verifier reruns the gates and sensors over the final committed range.
+### F2 — Remove stash permission from every TLC verifier entry point
+
+- **Severity:** Major
+- **Requirement:** REL-19
+- **Root cause:** the feature corrected `validate.md` but did not update the linked verifier summary in
+  `sub-agents.md:102`.
+- **Fix task:** replace stash guidance with disposable worktree/copy wording consistent with
+  `validate.md:88-93`; add a focused static regression that rejects permissive stash-based sensor
+  guidance across the TLC verifier references.
+- **Done when:** all verifier entry points allow only disposable worktrees/copies, the focused static
+  regression and TLC validator pass, and no permissive `git stash` sensor instruction remains.
+
+## Lessons Handoff
+
+This validation contains grounded `ac_gap`/forward-test failure signals for F1 and F2. Per the
+orchestrator's explicit scope, the verifier did not modify `.specs/lessons.json`, `.specs/LESSONS.md`,
+or TLC lesson files; lesson distillation must be handled by the orchestrator after accepting the
+findings.
 
 ## Summary
 
-**Overall:** behaviorally ready, formally pending independent verification.
-**Spec check:** 21/21. **Gate:** 29/29 plus static gates. **Sensor:** 3/3 killed.
-**Next step:** commit the report and lifecycle bookkeeping, then rerun an independent verifier when
-the sub-agent mechanism is operational.
+**Overall:** FAIL — not promotion-ready. **Spec check:** 18/21. **Gate:** 29/29 plus all static gates.
+**Sensor:** 3/3 killed. **Next step:** route F1 and F2 to an implementer, then independently reverify
+the corrective evidence range.

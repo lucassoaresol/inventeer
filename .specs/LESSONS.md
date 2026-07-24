@@ -32,6 +32,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: .specs/features/review-evidence-lifecycle/validation.md:F1 (workflow)
 - last seen: 2026-07-24T14:00:43Z
 
+### L-004 — Bind adjacent checksum entries to the exact artifact basename and digest before treating evidence as verified.
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `review-bundle` · harmful: 0
+- features: review-evidence-lifecycle
+- evidence: validation.md:F1 REL-12/REL-14 (review-bundle)
+- last seen: 2026-07-24T14:36:08Z
+
 ## Quarantined (failed when applied — ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

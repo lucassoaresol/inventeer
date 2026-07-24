@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 4,
+  "next_id": 5,
   "lessons": [
     {
       "id": "L-001",
@@ -58,6 +58,24 @@
       ],
       "created": "2026-07-24T14:00:43Z",
       "last_seen": "2026-07-24T14:00:43Z"
+    },
+    {
+      "id": "L-004",
+      "key": "ac_gap::bind adjacent checksum entries to the exact artifact basename and digest before treating evidence as verified",
+      "text": "Bind adjacent checksum entries to the exact artifact basename and digest before treating evidence as verified.",
+      "signal": "ac_gap",
+      "scope": "review-bundle",
+      "status": "candidate",
+      "features": [
+        "review-evidence-lifecycle"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "validation.md:F1 REL-12/REL-14 (review-bundle)"
+      ],
+      "created": "2026-07-24T14:36:08Z",
+      "last_seen": "2026-07-24T14:36:08Z"
     }
   ]
 }
