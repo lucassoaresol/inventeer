@@ -161,7 +161,11 @@ if [[ -n "$parent_bundle" ]]; then
   parent_sha256="$(sha256sum "$parent_bundle" | cut -d' ' -f1)"
 
   if [[ -f "$parent_bundle.sha256" ]]; then
-    if ! (cd "$(dirname "$parent_bundle")" && sha256sum -c "$(basename "$parent_bundle").sha256" >/dev/null 2>&1); then
+    mapfile -t parent_checksum_entries <"$parent_bundle.sha256"
+    if [[ ${#parent_checksum_entries[@]} -ne 1 ||
+      ! "${parent_checksum_entries[0]}" =~ ^([0-9a-fA-F]{64})[[:space:]]([\ \*])(.*)$ ||
+      "${BASH_REMATCH[1],,}" != "$parent_sha256" ||
+      "${BASH_REMATCH[3]}" != "$parent_basename" ]]; then
       echo "Erro: checksum adjacente do parent bundle é inválido: $parent_bundle.sha256" >&2
       exit 4
     fi

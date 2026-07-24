@@ -104,6 +104,39 @@ bad_count_after="$(find "$out" -maxdepth 1 -type f -name 'bad-review-*.zip' | wc
 [[ "$bad_count_before" -eq "$bad_count_after" ]] || fail "failed lineage left a child ZIP"
 echo "ok 7 - fails closed on an invalid parent checksum without a child ZIP"
 
+sidecar_parent="$tmp_dir/sidecar-parent.zip"
+cp "$zip_file" "$sidecar_parent"
+decoy="$tmp_dir/decoy.zip"
+printf 'not the parent\n' >"$decoy"
+sidecar_status_before="$(git -C "$repo" status --porcelain=v1)"
+sidecar_count_before="$(find "$out" -maxdepth 1 -type f -name 'sidecar-review-*.zip' | wc -l)"
+
+(cd "$tmp_dir" && sha256sum "$(basename "$decoy")" >"$(basename "$sidecar_parent").sha256")
+if "$subject" --repo "$repo" --base HEAD --output-dir "$out" --label Sidecar \
+  --parent-bundle "$sidecar_parent" >/dev/null 2>&1; then
+  fail "adjacent checksum for another file should fail"
+fi
+
+printf 'malformed checksum\n' >"$sidecar_parent.sha256"
+if "$subject" --repo "$repo" --base HEAD --output-dir "$out" --label Sidecar \
+  --parent-bundle "$sidecar_parent" >/dev/null 2>&1; then
+  fail "malformed adjacent checksum should fail"
+fi
+
+{
+  printf '%s  %s\n' "$(sha256sum "$sidecar_parent" | cut -d' ' -f1)" "$(basename "$sidecar_parent")"
+  printf '%s  %s\n' "$(sha256sum "$decoy" | cut -d' ' -f1)" "$(basename "$decoy")"
+} >"$sidecar_parent.sha256"
+if "$subject" --repo "$repo" --base HEAD --output-dir "$out" --label Sidecar \
+  --parent-bundle "$sidecar_parent" >/dev/null 2>&1; then
+  fail "ambiguous adjacent checksum should fail"
+fi
+
+sidecar_count_after="$(find "$out" -maxdepth 1 -type f -name 'sidecar-review-*.zip' | wc -l)"
+[[ "$sidecar_count_before" -eq "$sidecar_count_after" ]] || fail "rejected sidecar left a child ZIP"
+[[ "$sidecar_status_before" == "$(git -C "$repo" status --porcelain=v1)" ]] || fail "rejected sidecar mutated source"
+echo "ok 8 - binds one valid adjacent checksum to the supplied parent"
+
 malformed_root="$tmp_dir/malformed-root"
 mkdir -p "$malformed_root/one" "$malformed_root/two"
 printf '# Git Review Bundle\n\n- HEAD SHA: %s\n' "$(git -C "$repo" rev-parse HEAD)" >"$malformed_root/one/README.md"
@@ -115,7 +148,7 @@ if "$subject" --repo "$repo" --base HEAD --output-dir "$out" --label Malformed \
   --parent-bundle "$malformed_parent" >/dev/null 2>&1; then
   fail "parent with duplicate files.tsv should fail"
 fi
-echo "ok 8 - rejects a parent without a unique manifest contract"
+echo "ok 9 - rejects a parent without a unique manifest contract"
 
 internal_before="$(git -C "$repo" status --porcelain=v1)"
 if "$subject" --repo "$repo" --output-dir "$repo/review-output" >/dev/null 2>&1; then
@@ -124,13 +157,13 @@ fi
 [[ ! -e "$repo/review-output" ]] || fail "rejected internal output left a directory behind"
 internal_after="$(git -C "$repo" status --porcelain=v1)"
 [[ "$internal_before" == "$internal_after" ]] || fail "rejected internal output changed source status"
-echo "ok 9 - rejects non-ignored output inside the source repository without residue"
+echo "ok 10 - rejects non-ignored output inside the source repository without residue"
 
 "$subject" --repo "$repo" --output-dir "$repo/session-context" --label internal >/dev/null
 [[ -n "$(find "$repo/session-context" -maxdepth 1 -type f -name 'internal-review-*.zip' -print -quit)" ]] || fail "ignored internal output was not created"
 ignored_after="$(git -C "$repo" status --porcelain=v1)"
 [[ "$internal_before" == "$ignored_after" ]] || fail "ignored internal output changed source status"
-echo "ok 10 - permits ignored output inside the source repository"
+echo "ok 11 - permits ignored output inside the source repository"
 
 clean_repo="$tmp_dir/clean"
 git init --initial-branch=main "$clean_repo" >/dev/null
@@ -142,15 +175,15 @@ git -C "$clean_repo" commit -m initial >/dev/null
 if "$subject" --repo "$clean_repo" --output-dir "$tmp_dir/clean-out" >/dev/null 2>&1; then
   fail "clean repository should be rejected"
 fi
-echo "ok 11 - rejects an empty change set"
+echo "ok 12 - rejects an empty change set"
 
 if "$subject" --repo "$repo" --base missing-ref --output-dir "$tmp_dir/bad-base" >/dev/null 2>&1; then
   fail "invalid base should be rejected"
 fi
-echo "ok 12 - rejects an invalid base"
+echo "ok 13 - rejects an invalid base"
 
 printf 'token=value\n' >"$clean_repo/.env"
 if "$subject" --repo "$clean_repo" --output-dir "$tmp_dir/sensitive" >/dev/null 2>&1; then
   fail "sensitive path should be rejected"
 fi
-echo "ok 13 - rejects likely credential files"
+echo "ok 14 - rejects likely credential files"
