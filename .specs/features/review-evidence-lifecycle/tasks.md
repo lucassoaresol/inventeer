@@ -102,7 +102,7 @@ remain one task even when they touch several files.
 | --- | --- | --- |
 | T1 | Complete | `f32e75c`; 21/21 requirements traced; diff check passed |
 | T2 | Complete | `2b2f94f`; inspector 14/14, ShellCheck and skill validator passed |
-| T3 | Complete | `ed28e54`; bundle harness 13/13, ShellCheck and skill validator passed |
-| T4 | Complete | `79ac96b`; lessons probe 2/2 and skill validator passed |
+| T3 | Complete | `ed28e54` + `c94ca0d`; bundle harness 14/14, ShellCheck and skill validator passed |
+| T4 | Complete | `79ac96b` + `b90ab1e`; TLC probes 3/3 and skill validator passed |
 | T5 | Complete | `1bf0706`; AD-023, README, handoff, and execution record; whitespace correction `727de55` |
-| T6 | Partial | Provisional 21/21 validation, 29/29 gate, 3/3 killed mutants; independent rerun pending |
+| T6 | Complete | Independent PASS at `aaa2343`; 21/21 requirements, 31/31 tests, 3/3 killed mutants |

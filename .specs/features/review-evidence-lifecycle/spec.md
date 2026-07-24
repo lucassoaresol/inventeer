@@ -117,10 +117,10 @@ delivery coordination consumes evidence, bundles package it, and TLC produces va
 
 | Requirements | Component | Provenance | Status |
 | --- | --- | --- | --- |
-| REL-01..06 | Delivery policy and skill | User-approved retrospective | Provisionally verified; independent rerun pending |
-| REL-07..10 | Git inspector and harness | User-approved retrospective | Provisionally verified; independent rerun pending |
-| REL-11..15 | Bundle skill, script, and harness | User-approved retrospective | Provisionally verified; independent rerun pending |
-| REL-16..21 | TLC fork references, script, and tests | User-approved retrospective | Provisionally verified; independent rerun pending |
+| REL-01..06 | Delivery policy and skill | User-approved retrospective | Independently verified at `aaa2343` |
+| REL-07..10 | Git inspector and harness | User-approved retrospective | Independently verified at `aaa2343` |
+| REL-11..15 | Bundle skill, script, and harness | User-approved retrospective | Independently verified at `aaa2343` |
+| REL-16..21 | TLC fork references, script, and tests | User-approved retrospective | Independently verified at `aaa2343` |
 
 ## Success Criteria
 

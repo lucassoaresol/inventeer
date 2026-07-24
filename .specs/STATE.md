@@ -252,15 +252,13 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ## Handoff
 
 - **Feature**: Review evidence lifecycle
-- **Phase / Task**: Execute — T1..T5 complete; T6 provisionally validated, independent rerun pending
-- **Completed**: approved spec/design/tasks; delivery evidence maturity and inspector schema v2 with
-  14 passing cases; review bundle lineage with 13 passing cases; isolated TLC workflow improvements
-  with grounded `review_finding` probe; README and AD-023 updated; range-scoped diff gate fixed in
-  `332128f`; provisional validation covers 21/21 requirements, 29/29 tests, and 3/3 killed mutants
-- **In-progress**: none; the implementation is behaviorally complete and awaiting only independent
-  confirmation of the provisional report
-- **Next step**: when sub-agents are operational, dispatch a fresh TLC Verifier over the final commit
-  range and replace `PROVISIONAL PASS`/`pending-delivery` only if author ≠ verifier evidence passes
-- **Blockers**: independent verifier infrastructure ended three executions without payload or report
-- **Uncommitted files**: provisional validation, traceability/handoff closure, and candidate lesson
+- **Phase / Task**: Execute complete — T1..T6 independently verified
+- **Completed**: delivery evidence lifecycle, inspector schema v2, bundle lineage with parent-bound
+  checksums, disposable-only TLC verification guidance, AD-023, corrective commits `c94ca0d` and
+  `b90ab1e`, and independent PASS at `aaa2343` covering 21/21 requirements, 31/31 tests, and 3/3
+  killed mutants
+- **In-progress**: none
+- **Next step**: feature complete; select the next workspace task or publish the local commits when desired
+- **Blockers**: none
+- **Uncommitted files**: none after the closure commit
 - **Branch**: main
