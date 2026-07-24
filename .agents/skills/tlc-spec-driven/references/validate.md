@@ -62,8 +62,12 @@ From spec.md edge cases:
 Run the Build-level gate check from the **Gate Check Commands** section in tasks.md. This is NOT optional.
 
 1. Run: `[Build gate command from the Gate Check Commands section in tasks.md]`
-2. Non-zero exit code = STOP. Do not proceed to Code Quality Check.
-3. Record results:
+2. Resolve the exact evidence base and evidence head used by the Delivery Evidence Block, then run
+   the diff-integrity gate from tasks.md over that complete range (normally
+   `git diff --check <evidence-base>..<evidence-head>`). A clean result from plain
+   `git diff --check` is not evidence for already committed feature changes.
+3. Non-zero exit code from either gate = STOP. Do not proceed to Code Quality Check.
+4. Record results:
    - Total test count: [N]
    - Passed: [N]
    - Failed: [list]
@@ -304,6 +308,7 @@ The Verifier returns this block to the orchestrator after completing all checks:
 ## Gate Check
 
 - **Gate command**: [Build gate command from the Gate Check Commands section in tasks.md]
+- **Diff-integrity command**: [range-scoped command bound to the Delivery Evidence range]
 - **Result**: [X] passed, [Y] failed, [Z] skipped
 - **Test count before feature**: [N]
 - **Test count after feature**: [M]
@@ -356,6 +361,8 @@ Update spec.md requirement statuses:
 - **Validation is never prompted** — it always runs after the last task; do not ask the user whether to run it
 - **Spec-anchored, not just covered** — "there is an assertion" is not enough; the assertion must target the spec-defined outcome
 - **Sensor in scratch only** — never mutate or stash the real tree; use a disposable worktree/copy
+- **Diff integrity follows the evidence range** — a working-tree-only check cannot validate commits
+  already bound to the report
 - **Surviving mutants are fix tasks** — do not mark the feature done if the sensor found weak tests
 - **P1 first** — MVP must work before P2/P3
 - **WHEN/THEN = Test** — Each criterion is a test case

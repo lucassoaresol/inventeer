@@ -119,6 +119,12 @@ These defaults may exceed the current repo's depth. That is intentional — they
 | Quick | After tasks with unit tests only | [unit test command] | [usually same command] |
 | Full | After tasks with e2e/integration tests | [unit + e2e commands] | [complete deterministic shard recipe + aggregation, or N/A] |
 | Build | After phase completion or config/entity-only tasks | [build + lint + all tests] | [coverage-equivalent constrained recipe, or N/A] |
+| Diff integrity | At feature validation, against the evidence range | `git diff --check <evidence-base>..<evidence-head>` | N/A |
+
+The diff-integrity command MUST cover the exact commit range bound to validation evidence. A plain
+`git diff --check` inspects only uncommitted changes and is insufficient after feature commits have
+left the working tree clean. If validation is intentionally bound to an uncommitted fingerprint,
+record and check both the base-to-`HEAD` range and the staged/unstaged surfaces explicitly.
 
 ---
 
@@ -207,6 +213,10 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ## Gate Check Commands
 
 [Generated in step 1.5 — see process above]
+
+The generated commands MUST include a diff-integrity gate bound to the complete feature evidence
+range, following the contract in step 1.5. Do not substitute a working-tree-only
+`git diff --check` after the feature has been committed.
 
 ---
 
