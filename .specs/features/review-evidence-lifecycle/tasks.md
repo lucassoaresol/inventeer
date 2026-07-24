@@ -19,7 +19,7 @@
 | --- | --- |
 | Quick | Relevant Bash harness or isolated lessons probe |
 | Full | Both Bash harnesses plus three skill validators |
-| Build | Full gate + ShellCheck + `git diff --check` |
+| Build | Full gate + ShellCheck + `git diff --check <evidence-base>..<evidence-head>` |
 
 ## Execution Plan
 
@@ -104,5 +104,5 @@ remain one task even when they touch several files.
 | T2 | Complete | `2b2f94f`; inspector 14/14, ShellCheck and skill validator passed |
 | T3 | Complete | `ed28e54`; bundle harness 13/13, ShellCheck and skill validator passed |
 | T4 | Complete | `79ac96b`; lessons probe 2/2 and skill validator passed |
-| T5 | In progress | AD-023, README, handoff, and execution record |
-| T6 | Pending | Independent Verifier after T5 |
+| T5 | Complete | `1bf0706`; AD-023, README, handoff, and execution record; whitespace correction `727de55` |
+| T6 | Partial | Provisional 21/21 validation, 29/29 gate, 3/3 killed mutants; independent rerun pending |

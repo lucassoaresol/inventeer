@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 3,
+  "next_id": 4,
   "lessons": [
     {
       "id": "L-001",
@@ -40,6 +40,24 @@
       ],
       "created": "2026-07-22T20:39:26Z",
       "last_seen": "2026-07-22T20:39:26Z"
+    },
+    {
+      "id": "L-003",
+      "key": "gate_fail::run final diff integrity checks against the complete feature evidence range not only the working tree",
+      "text": "Run final diff integrity checks against the complete feature evidence range, not only the working tree.",
+      "signal": "gate_fail",
+      "scope": "workflow",
+      "status": "candidate",
+      "features": [
+        "review-evidence-lifecycle"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".specs/features/review-evidence-lifecycle/validation.md:F1 (workflow)"
+      ],
+      "created": "2026-07-24T14:00:43Z",
+      "last_seen": "2026-07-24T14:00:43Z"
     }
   ]
 }

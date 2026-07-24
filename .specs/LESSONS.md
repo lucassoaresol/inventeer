@@ -26,6 +26,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: validation.md:M2 (git-inspector)
 - last seen: 2026-07-22T20:39:26Z
 
+### L-003 — Run final diff integrity checks against the complete feature evidence range, not only the working tree.
+- signal: `gate_fail` · recurrence: 1 feature(s) · scope: `workflow` · harmful: 0
+- features: review-evidence-lifecycle
+- evidence: .specs/features/review-evidence-lifecycle/validation.md:F1 (workflow)
+- last seen: 2026-07-24T14:00:43Z
+
 ## Quarantined (failed when applied — ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.
