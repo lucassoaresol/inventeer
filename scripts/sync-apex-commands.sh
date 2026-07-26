@@ -24,12 +24,13 @@ CATALOG=""
 
 usage() {
   cat >&2 <<'EOF'
-Uso: sync-apex-commands.sh --check  --catalog <arquivo.json>
-     sync-apex-commands.sh --apply  --catalog <arquivo.json>
+Uso: sync-apex-commands.sh --check  --catalog <arquivo.json> [--skills-dir <dir>]
+     sync-apex-commands.sh --apply  --catalog <arquivo.json> [--skills-dir <dir>]
      sync-apex-commands.sh --print-contract
 
-  --check   Relata criações, atualizações e remoções sem escrever. Sai 1 se houver divergência.
-  --apply   Reconcilia os wrappers no disco. Não cria commits.
+  --check        Relata criações, atualizações e remoções sem escrever. Sai 1 se houver divergência.
+  --apply        Reconcilia os wrappers no disco. Não cria commits.
+  --skills-dir   Diretório alvo dos wrappers. Padrão: .agents/skills. Use apenas em testes.
 EOF
   exit 2
 }
@@ -84,6 +85,11 @@ while [[ $# -gt 0 ]]; do
     --catalog)
       [[ $# -ge 2 ]] || usage
       CATALOG="$2"
+      shift 2
+      ;;
+    --skills-dir)
+      [[ $# -ge 2 ]] || usage
+      SKILLS_DIR="$2"
       shift 2
       ;;
     --print-contract)

@@ -1,6 +1,6 @@
 # Inventeer Engineering Workspace
 
-Workspace pessoal de engenharia para trabalhar com projetos da Inventeer usando Codex.
+Workspace pessoal de engenharia para trabalhar com projetos da Inventeer usando Codex e Claude Code.
 
 Este repositório mantém skills reutilizáveis e pontos de entrada dos projetos. O código dos
 produtos fica em repositórios Git independentes sob `repos/`, que é ignorado por este repositório.
@@ -12,7 +12,9 @@ Esse arquivo registra memória do workspace; specs de produto permanecem nos res
 
 ```text
 .
-├── .agents/skills/        Skills versionadas e descobertas pelo Codex
+├── .agents/skills/        Skills versionadas; fonte única para os dois engines
+├── .claude/skills/        Symlinks para .agents/skills/, porque o Claude não lê .agents/
+├── AGENTS.md              Instruções do workspace; CLAUDE.md apenas as importa
 ├── .specs/STATE.md        Decisões e handoff deste workspace
 ├── projects/              Pontos de entrada versionados dos projetos
 ├── scripts/               Automações locais do workspace
@@ -42,6 +44,7 @@ specs e evidências que precisem persistir continuam pertencendo às respectivas
 | `advance-delivery-front` | Local | — | Coordenar a próxima task e a maturidade da evidência enquanto PRs aguardam |
 | `discover-project-context` | Local | — | Descobrir projetos e fluxos sem exigir uma issue Linear |
 | `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência, diffs e lineage opcional |
+| `apex-*` (28) | Gerado | — | Executar workflows do APEX no Codex; ver Workflows do APEX abaixo |
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
 global. A `tlc-spec-driven` é um fork local vendorizado e deve ser atualizada separadamente das
@@ -107,6 +110,48 @@ O ZIP inclui manifesto, lineage, status, commits, checksum e um diff por arquivo
 corretivas podem usar `--parent-bundle <bundle-anterior.zip>` para registrar o checksum do parent e o
 delta de paths. A base padrão é `HEAD`, adequada para revisar apenas mudanças não commitadas.
 Caminhos prováveis de credenciais, chaves ou dumps são recusados.
+
+## Engines
+
+O workspace é operado por Codex e por Claude Code sobre a mesma fonte de skills (AD-024). Cada
+engine enxergava metade do conjunto, e a diferença é coberta por arquivo:
+
+| | Codex | Claude Code |
+|---|---|---|
+| Instruções | `AGENTS.md` nativo | `CLAUDE.md`, que importa `AGENTS.md` |
+| Skills | `.agents/skills/` nativo | symlinks em `.claude/skills/` |
+| MCP `apex` | `.codex/config.toml` | `.mcp.json` |
+| Workflows APEX | skills `apex-*` geradas | comandos nativos do MCP |
+
+Uma skill global de mesmo nome em `~/.claude/skills/` suprime a deste workspace sem aviso, e as
+`description` podem ser idênticas. Se uma skill parecer desatualizada no Claude Code, verifique
+essa colisão antes de editar arquivos.
+
+## Workflows do APEX
+
+O Claude Code recebe os workflows do APEX nativamente, como comandos do servidor MCP. O Codex
+consome apenas tools e resources, então precisa de wrappers em arquivo. Eles ficam em
+`.agents/skills/apex-<id>/` e não são expostos ao Claude, onde apenas duplicariam comandos
+existentes.
+
+Os wrappers não copiam o corpo dos workflows: cada um lê `apex://framework/workflows/<id>` em tempo
+de execução, mantendo o APEX como fonte canônica. São conteúdo derivado — não edite.
+
+Para regenerar, o agente obtém o catálogo pela tool `apex_framework_index` e o entrega ao script:
+
+```bash
+./scripts/sync-apex-commands.sh --print-contract
+./scripts/sync-apex-commands.sh --check --catalog <catalogo.json>
+./scripts/sync-apex-commands.sh --apply --catalog <catalogo.json>
+```
+
+O `--check` relata criações, atualizações e remoções sem escrever, e sai 1 quando há divergência.
+São aceitos os workflows com `description` não vazia e não depreciados — hoje 28 dos 30, excluindo
+`README` e `warm-up` (ADR 0032). O contrato de aquisição proíbe ler `apex://framework/runtime`
+diretamente, arquivos de credencial do host ou o gateway por HTTP, porque nenhuma dessas rotas é
+reproduzível nos dois engines.
+
+Valide o script com `./scripts/test-sync-apex-commands.sh`.
 
 ## Repositórios locais
 

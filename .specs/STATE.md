@@ -249,16 +249,60 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-23
 - **Status**: active
 
+### AD-024
+- **Decision**: Operar este workspace com Codex e Claude Code sobre uma única fonte de skills em
+  `.agents/skills/`, expondo-a ao Claude por symlinks em `.claude/skills/` e instruções por
+  `CLAUDE.md` importando `AGENTS.md`; declarar o MCP `apex` também em `.mcp.json`; e derivar
+  wrappers `apex-<id>` a partir da tool `apex_framework_index`, apenas para o Codex.
+- **Reason**: Cada engine enxerga metade do conjunto. O Claude não descobre `.agents/skills/` nem lê
+  `AGENTS.md`; o Codex consome tools e resources do APEX mas não materializa seus prompts como
+  comandos. As duas lacunas se resolvem por arquivo, sem duplicar conteúdo nem eleger um engine.
+- **Trade-off**: O repositório passa a carregar uma camada de exposição que precisa acompanhar cada
+  skill nova, e os wrappers são conteúdo derivado que exige re-sync quando o catálogo APEX mudar. Os
+  symlinks dependem de `core.symlinks` habilitado no clone. Em troca, não há cópia divergente e
+  nenhum engine vira cidadão de segunda classe.
+- **Alternatives considered**: Copiar as skills para `.claude/skills/`; manter a TLC instalada
+  globalmente; materializar o corpo dos workflows APEX nos wrappers; obter o catálogo por
+  `resources/read` de `apex://framework/runtime`; expor os wrappers também ao Claude.
+- **Scope**: Descoberta de skills, instruções e MCP deste workspace nos dois engines; geração dos
+  wrappers APEX. Não altera produtos, Linear, GitHub nem o conteúdo das skills.
+- **Date**: 2026-07-26
+- **Status**: active
+
+### AD-025
+- **Decision**: Tratar o APEX como executor de entrega nos repositórios de produto e manter
+  `tlc-spec-driven` como fallback restrito a este workspace e aos repos sem `ENV.md`. As skills
+  locais de contexto continuam responsáveis pela preparação, em qualquer um dos dois casos.
+- **Reason**: O APEX cobre o pipeline de entrega de ponta a ponta e vai além da TLC em deploy,
+  release, segurança e gates determinísticos; manter os dois como executores criaria pipelines
+  concorrentes de spec, task e gate. Mas o APEX exige repo de produto, ticket e stack profile, e não
+  cobre o desenvolvimento das próprias skills deste workspace — que é o que a TLC vem executando.
+- **Trade-off**: Duas rotas de execução coexistem enquanto a adoção do APEX não se completa, e a
+  escolha entre elas depende de verificar `ENV.md` no repo alvo. A TLC também não tem equivalente
+  APEX para sua camada de lessons e para a rastreabilidade de requisitos, que ficam sem sucessora
+  caso ela seja aposentada.
+- **Alternatives considered**: Aposentar a TLC imediatamente; manter os dois executores sem
+  precedência; copiar a TLC para cada repo de produto; adiar o APEX até cobrir os casos da TLC.
+- **Scope**: Escolha do executor de entrega neste workspace e nos repositórios registrados sob
+  `repos/`. Hoje apenas `portal-api` e `portal-web` têm `ENV.md` e `AGENTS.md` do APEX.
+- **Date**: 2026-07-26
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Review evidence lifecycle
-- **Phase / Task**: Execute complete — T1..T6 independently verified
-- **Completed**: delivery evidence lifecycle, inspector schema v2, bundle lineage with parent-bound
-  checksums, disposable-only TLC verification guidance, AD-023, corrective commits `c94ca0d` and
-  `b90ab1e`, and independent PASS at `aaa2343` covering 21/21 requirements, 31/31 tests, and 3/3
-  killed mutants
+- **Feature**: Dual-engine workspace (Codex + Claude Code)
+- **Phase / Task**: Execute complete — three commits delivered
+- **Completed**: exposure layer at `d14b489` (7 skill symlinks, `CLAUDE.md`, `.mcp.json`,
+  `.claude/settings.json`); `scripts/sync-apex-commands.sh` and 28 APEX wrappers at `35a9910`;
+  AD-024, AD-025, docs and `scripts/test-sync-apex-commands.sh` with 14/14 tests and 6/6 killed
+  mutants in this commit
 - **In-progress**: none
-- **Next step**: feature complete; select the next workspace task or publish the local commits when desired
+- **Next step**: run `init-apex` on `assistants`, `ids`, `inv-cortex` and `portal` to complete the
+  APEX adoption assumed by AD-025; re-sync the wrappers when the APEX catalog changes
 - **Blockers**: none
 - **Uncommitted files**: none after the closure commit
 - **Branch**: main
+- **Open questions**: `config.command` of `apex://framework/runtime` is visible to Claude Code but
+  not to Codex, suggesting the gateway negotiates per client; not investigated, and not required by
+  the acquisition contract, which uses `apex_framework_index`. The global copy at
+  `~/.claude/skills-backup-tlc-spec-driven-3.1.0` is outside Git and still awaits disposal.

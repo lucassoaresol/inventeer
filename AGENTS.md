@@ -32,6 +32,17 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Não clone repositórios automaticamente sem solicitação.
 - Trate `inventeer-hub` como referência read-only, salvo quando o escopo for manutenção do Playbook.
 
+## Engines
+
+- Este workspace é operado por Codex e por Claude Code (AD-024).
+- `AGENTS.md` é a fonte das instruções; `CLAUDE.md` apenas o importa. Edite este arquivo.
+- `.agents/skills/` é a fonte única das skills. O Codex a descobre nativamente; o Claude a alcança
+  por symlinks relativos em `.claude/skills/`. Ao criar uma skill, crie também o symlink.
+- Uma skill global de mesmo nome em `~/.claude/skills/` suprime a versão deste workspace sem aviso,
+  e as `description` podem ser idênticas. Suspeite dessa colisão antes de concluir que uma skill
+  está desatualizada.
+- O MCP `apex` é declarado por workspace nos dois engines: `.codex/config.toml` e `.mcp.json`.
+
 ## Skills
 
 - As skills requeridas ficam em `.agents/skills/`; não presuma equivalentes globais.
@@ -46,7 +57,15 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   não use discovery para contornar uma issue existente.
 - Use `create-review-bundle` para empacotar evidências e diffs por arquivo sem modificar o repo
   revisado.
-- Use `tlc-spec-driven` quando o trabalho exigir especificação, design, implementação ou validação.
+- Use as skills `apex-*` para executar workflows do APEX. Elas são wrappers gerados que leem
+  `apex://framework/workflows/<id>`; não edite seu conteúdo e não as trate como fonte. No Claude
+  Code os mesmos workflows chegam nativamente como comandos do MCP `apex`, e por isso os wrappers
+  existem apenas para o Codex.
+- Escolha o executor de entrega pelo repositório alvo (AD-025): use o APEX quando o repo tiver
+  `ENV.md`; caso contrário use `tlc-spec-driven`. A preparação continua sendo das skills locais de
+  contexto nos dois casos.
+- Use `tlc-spec-driven` quando o trabalho exigir especificação, design, implementação ou validação
+  em repositório ainda sem APEX, ou no próprio workspace.
 - Mantenha a divisão: triage compara issues e ondas; `advance-delivery-front` coordena a topologia de
   PRs/tasks; a skill de produto prepara uma issue; a TLC executa e verifica essa issue.
 - Não duplique o workflow da TLC em skills específicas de projeto.
