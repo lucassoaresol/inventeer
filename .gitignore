@@ -7,5 +7,11 @@
 !.env.example
 .skill-results/
 
+# Estado local de sessão do oh-my-claudecode.
+/.omc/
+
+# Configuração local do Claude Code; a versionada é .claude/settings.json.
+/.claude/settings.local.json
+
 # Ephemeral documents supplied as context for the current work session.
 /session-context/

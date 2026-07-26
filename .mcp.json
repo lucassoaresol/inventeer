@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "apex": {
+      "type": "http",
+      "url": "https://apex-gw.dev.inventeer.tech/api/v1/mcp"
+    }
+  }
+}
