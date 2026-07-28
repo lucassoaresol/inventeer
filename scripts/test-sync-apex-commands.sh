@@ -78,7 +78,8 @@ ok "wrapper aponta para o recurso MCP em vez de copiar o corpo"
 
 grep -q 'não use como executor de entrega' "$skills/apex-eng-start/SKILL.md" \
   || fail "wrapper claims or implies supported APEX execution"
-grep -q 'Use `tlc-spec-driven` como executor' "$skills/apex-eng-start/SKILL.md" \
+# shellcheck disable=SC2016 # Backticks are literal Markdown in the generated wrapper.
+grep -Fq 'Use `tlc-spec-driven` como executor' "$skills/apex-eng-start/SKILL.md" \
   || fail "wrapper omits the Codex execution fallback"
 ok "wrapper declara o limite experimental e roteia entrega Codex para TLC"
 

@@ -208,7 +208,7 @@ done <<< "$selected"
 for dir in "$SKILLS_DIR/$PREFIX"*/; do
   [[ -d "$dir" ]] || continue
   name="$(basename "$dir")"
-  id="${name#$PREFIX}"
+  id="${name#"$PREFIX"}"
   [[ -z "${wanted[$id]:-}" ]] || continue
   to_remove+=("$id")
 done

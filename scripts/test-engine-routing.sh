@@ -25,7 +25,8 @@ grep -A26 '^### AD-026$' .specs/STATE.md \
   || fail "AD-026 is not active"
 ok "a decisao antiga foi supersedida e a rota engine-aware esta ativa"
 
-grep -q 'no Codex, use sempre `tlc-spec-driven`' AGENTS.md \
+# shellcheck disable=SC2016 # Backticks are literal Markdown in the searched text.
+grep -Fq 'no Codex, use sempre `tlc-spec-driven`' AGENTS.md \
   || fail "AGENTS.md does not route Codex delivery to TLC"
 grep -q 'no Claude Code, use APEX quando o repo tiver' AGENTS.md \
   || fail "AGENTS.md does not route eligible Claude delivery to APEX"
@@ -42,7 +43,8 @@ mapfile -t wrappers < <(find .agents/skills -mindepth 2 -maxdepth 2 -path '*/ape
 for wrapper in "${wrappers[@]}"; do
   grep -q 'não use como executor de entrega' "$wrapper" \
     || fail "$wrapper omits the experimental boundary"
-  grep -q 'Use `tlc-spec-driven` como executor' "$wrapper" \
+  # shellcheck disable=SC2016 # Backticks are literal Markdown in the wrapper.
+  grep -Fq 'Use `tlc-spec-driven` como executor' "$wrapper" \
     || fail "$wrapper omits the Codex executor"
 done
 ok "todos os wrappers declaram o limite experimental e o fallback TLC"
@@ -57,6 +59,7 @@ if find .claude/skills -maxdepth 1 -name 'apex-*' -print -quit | grep -q .; then
 fi
 ok "Claude continua usando comandos nativos, sem wrappers duplicados"
 
+# shellcheck disable=SC2088 # Tildes are literal documentation text, not filesystem paths.
 for path in '~/.codex/sessions/' '~/.claude/projects/'; do
   grep -Fq "$path" AGENTS.md || fail "AGENTS.md omits history source $path"
   grep -Fq "$path" README.md || fail "README.md omits history source $path"
