@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 5,
+  "next_id": 6,
   "lessons": [
     {
       "id": "L-001",
@@ -76,6 +76,24 @@
       ],
       "created": "2026-07-24T14:36:08Z",
       "last_seen": "2026-07-24T14:36:08Z"
+    },
+    {
+      "id": "L-005",
+      "key": "ac_gap::assert every workspace policy clause explicitly including exclusions and canonical destinations",
+      "text": "Assert every workspace policy clause explicitly, including exclusions and canonical destinations.",
+      "signal": "ac_gap",
+      "scope": "workspace-policy-tests",
+      "status": "candidate",
+      "features": [
+        "engine-aware-skill-learning"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".specs/features/engine-aware-skill-learning/validation.md:76 (workspace-policy-tests)"
+      ],
+      "created": "2026-07-28T05:27:56Z",
+      "last_seen": "2026-07-28T05:27:56Z"
     }
   ]
 }

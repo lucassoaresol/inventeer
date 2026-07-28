@@ -334,19 +334,16 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Dual-engine workspace (Codex + Claude Code)
-- **Phase / Task**: Execute complete — three commits delivered
-- **Completed**: exposure layer at `d14b489` (7 skill symlinks, `CLAUDE.md`, `.mcp.json`,
-  `.claude/settings.json`); `scripts/sync-apex-commands.sh` and 28 APEX wrappers at `35a9910`;
-  AD-024, AD-025, docs and `scripts/test-sync-apex-commands.sh` with 14/14 tests and 6/6 killed
-  mutants in this commit
+- **Feature**: Engine-aware skill learning (`.specs/features/engine-aware-skill-learning/`)
+- **Phase / Task**: Execute and standalone validation complete
+- **Completed**: AD-026/AD-027 and spec at `4e6c942`; documentation at `b5e1791`; 28 diagnostic
+  wrappers and enforcement at `ef61dd7`; shell lint fix at `fd15cb1`; coverage correction at
+  `4c3b208`; 24/24 checks and 3/3 killed mutants recorded in `validation.md`
 - **In-progress**: none
-- **Next step**: run `init-apex` on `assistants`, `ids`, `inv-cortex` and `portal` to complete the
-  APEX adoption assumed by AD-025; re-sync the wrappers when the APEX catalog changes
+- **Next step**: review and publish the six feature/evidence commits when desired
 - **Blockers**: none
-- **Uncommitted files**: none after the closure commit
+- **Uncommitted files**: none after the validation-evidence commit; pre-existing
+  `.agents/skills/create-review-bundle/.omc/` remains intentionally untracked
 - **Branch**: main
-- **Open questions**: `config.command` of `apex://framework/runtime` is visible to Claude Code but
-  not to Codex, suggesting the gateway negotiates per client; not investigated, and not required by
-  the acquisition contract, which uses `apex_framework_index`. The global copy at
-  `~/.claude/skills-backup-tlc-spec-driven-3.1.0` is outside Git and still awaits disposal.
+- **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
+  session communication failures

@@ -38,6 +38,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: validation.md:F1 REL-12/REL-14 (review-bundle)
 - last seen: 2026-07-24T14:36:08Z
 
+### L-005 — Assert every workspace policy clause explicitly, including exclusions and canonical destinations.
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `workspace-policy-tests` · harmful: 0
+- features: engine-aware-skill-learning
+- evidence: .specs/features/engine-aware-skill-learning/validation.md:76 (workspace-policy-tests)
+- last seen: 2026-07-28T05:27:56Z
+
 ## Quarantined (failed when applied — ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.
