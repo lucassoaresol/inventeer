@@ -340,7 +340,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
   wrappers and enforcement at `ef61dd7`; shell lint fix at `fd15cb1`; coverage correction at
   `4c3b208`; 24/24 checks and 3/3 killed mutants recorded in `validation.md`
 - **In-progress**: none
-- **Next step**: review and publish the six feature/evidence commits when desired
+- **Next step**: review and publish the feature/evidence commits when desired
 - **Blockers**: none
 - **Uncommitted files**: none after the validation-evidence commit; pre-existing
   `.agents/skills/create-review-bundle/.omc/` remains intentionally untracked

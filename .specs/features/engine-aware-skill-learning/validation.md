@@ -48,7 +48,7 @@ All mutations ran in disposable archives under `/tmp`; the source worktree was n
 | M2 | `AGENTS.md:61` | Changed “does not create supported execution” into “creates supported execution” | ✅ Killed by `test-engine-routing.sh`: `AGENTS.md conflates APEX resource access with supported execution` |
 | M3 | `README.md:167` | Changed exclusion of the current retrospective into inclusion | ✅ Killed by `test-engine-routing.sh`: `README.md does not exclude the current retrospective` |
 
-**Sensor depth**: lightweight, three targeted policy mutations  
+**Sensor depth**: lightweight, three targeted policy mutations
 **Result**: 3/3 killed — PASS ✅
 
 ## Gate Check
