@@ -30,8 +30,16 @@ grep -Fq 'no Codex, use sempre `tlc-spec-driven`' AGENTS.md \
   || fail "AGENTS.md does not route Codex delivery to TLC"
 grep -q 'no Claude Code, use APEX quando o repo tiver' AGENTS.md \
   || fail "AGENTS.md does not route eligible Claude delivery to APEX"
+grep -q 'A preparação continua sendo das skills locais de contexto' AGENTS.md \
+  || fail "AGENTS.md does not preserve context-skill preparation before execution"
 ok "AGENTS.md diferencia o executor por engine"
 
+grep -q 'não criam uma execução APEX suportada' AGENTS.md \
+  || fail "AGENTS.md conflates APEX resource access with supported execution"
+grep -q 'invocação, contexto de' README.md \
+  || fail "README.md omits workflow invocation and session context requirements"
+grep -q 'sessão, artifacts e gates completos' README.md \
+  || fail "README.md omits artifact and gate requirements"
 grep -q 'única engine deste workspace que usa APEX como executor de entrega' README.md \
   || fail "README.md does not state the current APEX execution boundary"
 grep -q 'entregas no Codex usam TLC' README.md \
@@ -64,7 +72,31 @@ for path in '~/.codex/sessions/' '~/.claude/projects/'; do
   grep -Fq "$path" AGENTS.md || fail "AGENTS.md omits history source $path"
   grep -Fq "$path" README.md || fail "README.md omits history source $path"
 done
+grep -q 'sessões principais, continuations e cópias' AGENTS.md \
+  || fail "AGENTS.md does not distinguish primary sessions from continuations and copies"
+grep -q 'não conte a própria retrospectiva como evidência' AGENTS.md \
+  || fail "AGENTS.md does not exclude the current retrospective"
+grep -q 'Sessions retomadas,' README.md \
+  || fail "README.md does not identify resumed sessions"
+grep -q 'sidechains e cópias' README.md \
+  || fail "README.md does not distinguish sidechains and copies"
+grep -q 'retrospectiva é excluída do recorte' README.md \
+  || fail "README.md does not exclude the current retrospective"
 ok "as duas fontes de historico participam das retrospectivas"
+
+grep -q 'decisão transversal em.*STATE.md' AGENTS.md \
+  || fail "AGENTS.md does not route transversal decisions to STATE.md"
+grep -q 'lesson de' AGENTS.md \
+  || fail "AGENTS.md does not route confirmed execution lessons through TLC"
+grep -q 'achado de produto na fonte do produto' AGENTS.md \
+  || fail "AGENTS.md does not keep product findings in the product source"
+grep -q 'decisões transversais em.*STATE.md' README.md \
+  || fail "README.md does not route transversal decisions to STATE.md"
+grep -q 'falhas de execução confirmadas por' README.md \
+  || fail "README.md does not route confirmed execution failures through TLC"
+grep -q 'achados específicos de produto no repositório ou fonte' README.md \
+  || fail "README.md does not keep product findings in the product source"
+ok "cada classe de aprendizado tem destino canonico explicito"
 
 if git ls-files '*.jsonl' | grep -q .; then
   fail "raw session transcripts are tracked by Git"
