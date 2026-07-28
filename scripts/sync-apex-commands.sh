@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-# Gera wrappers de workflow APEX em .agents/skills/apex-<id>/ para o Codex.
+# Gera wrappers experimentais de inspeção APEX em .agents/skills/apex-<id>/ para o Codex.
 #
 # O Claude Code recebe os mesmos workflows nativamente, como prompts MCP do servidor apex; o Codex
-# CLI consome apenas tools e resources, então precisa dos wrappers em arquivo. Por isso os wrappers
-# não são expostos em .claude/skills/: lá eles apenas duplicariam comandos já existentes.
+# CLI consome apenas tools e resources, então os wrappers preservam descoberta e diagnóstico em
+# arquivo, mas não constituem execução suportada do workflow. Por isso eles não são expostos em
+# .claude/skills/: lá apenas duplicariam comandos nativos já existentes.
 #
 # Os wrappers não copiam o corpo dos workflows. Cada um aponta para apex://framework/workflows/<id>,
 # mantendo o APEX como fonte canônica e evitando drift.
@@ -157,7 +158,7 @@ render_wrapper() {
   local description="$2"
   local summary
 
-  summary="$(printf 'APEX · %s Wrapper gerado: lê e executa %s/%s. Requer o servidor MCP apex.' \
+  summary="$(printf 'APEX · %s Wrapper experimental: inspeciona %s/%s no Codex; não use como executor de entrega.' \
     "$description" "$RESOURCE_BASE" "$id" | jq -Rs .)"
 
   cat <<EOF
@@ -174,13 +175,14 @@ Arquivo gerado por \`scripts/sync-apex-commands.sh\` a partir de \`apex_framewor
 manualmente: o próximo sync sobrescreve. A fonte canônica do workflow é o recurso MCP, não este
 arquivo.
 
-## Execução
+## Limite operacional
 
-1. Leia o recurso MCP \`$RESOURCE_BASE/$id\`.
-2. Pare e relate indisponibilidade se o servidor MCP \`apex\` não estiver conectado, se o recurso
-   não existir ou se o conteúdo retornado estiver vazio. Não improvise um substituto nem troque
-   por outra skill.
-3. Siga integralmente o workflow retornado, incluindo suas próprias regras, gates e handoffs.
+1. Use este wrapper somente quando o usuário pedir inspeção ou diagnóstico explícito da integração
+   APEX no Codex.
+2. Leia o recurso MCP \`$RESOURCE_BASE/$id\` e pare se o servidor, recurso ou conteúdo não estiver
+   disponível.
+3. Não execute o workflow como entrega no Codex: leitura do recurso não cria prompt nativo,
+   contexto de sessão, artifacts nem tools obrigatórias. Use \`tlc-spec-driven\` como executor.
 EOF
 }
 

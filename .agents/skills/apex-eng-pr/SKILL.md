@@ -1,6 +1,6 @@
 ---
 name: apex-eng-pr
-description: "APEX · Branch creation, commit and pull request (PR) Wrapper gerado: lê e executa apex://framework/workflows/eng-pr. Requer o servidor MCP apex."
+description: "APEX · Branch creation, commit and pull request (PR) Wrapper experimental: inspeciona apex://framework/workflows/eng-pr no Codex; não use como executor de entrega."
 ---
 
 # APEX · eng-pr
@@ -11,10 +11,11 @@ Arquivo gerado por `scripts/sync-apex-commands.sh` a partir de `apex_framework_i
 manualmente: o próximo sync sobrescreve. A fonte canônica do workflow é o recurso MCP, não este
 arquivo.
 
-## Execução
+## Limite operacional
 
-1. Leia o recurso MCP `apex://framework/workflows/eng-pr`.
-2. Pare e relate indisponibilidade se o servidor MCP `apex` não estiver conectado, se o recurso
-   não existir ou se o conteúdo retornado estiver vazio. Não improvise um substituto nem troque
-   por outra skill.
-3. Siga integralmente o workflow retornado, incluindo suas próprias regras, gates e handoffs.
+1. Use este wrapper somente quando o usuário pedir inspeção ou diagnóstico explícito da integração
+   APEX no Codex.
+2. Leia o recurso MCP `apex://framework/workflows/eng-pr` e pare se o servidor, recurso ou conteúdo não estiver
+   disponível.
+3. Não execute o workflow como entrega no Codex: leitura do recurso não cria prompt nativo,
+   contexto de sessão, artifacts nem tools obrigatórias. Use `tlc-spec-driven` como executor.
