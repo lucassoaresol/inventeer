@@ -44,7 +44,7 @@ specs e evidências que precisem persistir continuam pertencendo às respectivas
 | `advance-delivery-front` | Local | — | Coordenar a próxima task e a maturidade da evidência enquanto PRs aguardam |
 | `discover-project-context` | Local | — | Descobrir projetos e fluxos sem exigir uma issue Linear |
 | `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência, diffs e lineage opcional |
-| `apex-*` (28) | Gerado | — | Executar workflows do APEX no Codex; ver Workflows do APEX abaixo |
+| `apex-*` (28) | Gerado | — | Inspecionar workflows APEX no Codex; superfície experimental, não executor |
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
 global. A `tlc-spec-driven` é um fork local vendorizado e deve ser atualizada separadamente das
@@ -85,8 +85,8 @@ Use uma rota de contexto antes da TLC:
 | Comparar ciclo, backlog ou várias issues | `triage-project-cycle` | Skill de task do produto após selecionar uma issue |
 | Continuar o ciclo enquanto uma PR aguarda review ou merge | `advance-delivery-front` | Contrato read-only com uma próxima ação; skill de task do produto para a issue selecionada |
 | Entender projeto ou fluxo sem issue | `discover-project-context` | Criar/clarificar issue antes de implementar |
-| Preparar uma issue Assistants | `assistants-task-context` | `tlc-spec-driven`, quando necessário |
-| Preparar uma issue Portal | `portal-task-context` | `tlc-spec-driven`, quando necessário |
+| Preparar uma issue Assistants | `assistants-task-context` | Codex: TLC; Claude: APEX se houver `ENV.md`, senão TLC |
+| Preparar uma issue Portal | `portal-task-context` | Codex: TLC; Claude: APEX se houver `ENV.md`, senão TLC |
 | Empacotar trabalho para review | `create-review-bundle` | Review externo; não implica aprovação |
 
 `advance-delivery-front` mantém a topologia da PR pronta e da próxima task ativa/draft, classifica
@@ -121,7 +121,7 @@ engine enxergava metade do conjunto, e a diferença é coberta por arquivo:
 | Instruções | `AGENTS.md` nativo | `CLAUDE.md`, que importa `AGENTS.md` |
 | Skills | `.agents/skills/` nativo | symlinks em `.claude/skills/` |
 | MCP `apex` | `.codex/config.toml` | `.mcp.json` |
-| Workflows APEX | skills `apex-*` geradas | comandos nativos do MCP |
+| Workflows APEX | wrappers experimentais `apex-*` | comandos nativos do MCP |
 
 Uma skill global de mesmo nome em `~/.claude/skills/` suprime a deste workspace sem aviso, e as
 `description` podem ser idênticas. Se uma skill parecer desatualizada no Claude Code, verifique
@@ -129,13 +129,19 @@ essa colisão antes de editar arquivos.
 
 ## Workflows do APEX
 
-O Claude Code recebe os workflows do APEX nativamente, como comandos do servidor MCP. O Codex
-consome apenas tools e resources, então precisa de wrappers em arquivo. Eles ficam em
-`.agents/skills/apex-<id>/` e não são expostos ao Claude, onde apenas duplicariam comandos
-existentes.
+O Claude Code recebe os workflows do APEX nativamente, como comandos do servidor MCP, e é hoje a
+única engine deste workspace que usa APEX como executor de entrega. O Codex consome tools e
+resources, mas as sessões reais mostraram que isso não fornece por si só invocação, contexto de
+sessão, artifacts e gates completos. Portanto, entregas no Codex usam TLC, inclusive em repos com
+`ENV.md` (AD-026).
 
-Os wrappers não copiam o corpo dos workflows: cada um lê `apex://framework/workflows/<id>` em tempo
-de execução, mantendo o APEX como fonte canônica. São conteúdo derivado — não edite.
+Os wrappers em `.agents/skills/apex-<id>/` preservam uma superfície experimental para inspeção e
+diagnóstico no Codex. Eles não são expostos ao Claude e não devem ser tratados como execução APEX
+suportada.
+
+Os wrappers não copiam o corpo dos workflows: cada um aponta para
+`apex://framework/workflows/<id>`, mantendo o APEX como fonte canônica. São conteúdo derivado — não
+edite.
 
 Para regenerar, o agente obtém o catálogo pela tool `apex_framework_index` e o entrega ao script:
 
@@ -152,6 +158,18 @@ diretamente, arquivos de credencial do host ou o gateway por HTTP, porque nenhum
 reproduzível nos dois engines.
 
 Valide o script com `./scripts/test-sync-apex-commands.sh`.
+
+## Aprendizados de sessão
+
+Retrospectivas de skills usam os históricos locais das duas engines associados a esta raiz:
+`~/.codex/sessions/` e o projeto correspondente em `~/.claude/projects/`. Sessions retomadas,
+sidechains e cópias não contam automaticamente como evidências independentes, e a sessão que faz a
+retrospectiva é excluída do recorte.
+
+Os transcripts são evidência efêmera e não são copiados para o repositório. O resultado destilado
+segue três destinos: decisões transversais em `.specs/STATE.md`; falhas de execução confirmadas por
+validação no mecanismo de lessons da TLC; e achados específicos de produto no repositório ou fonte
+canônica do produto. Consulte AD-027.
 
 ## Repositórios locais
 

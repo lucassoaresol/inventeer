@@ -57,19 +57,24 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   não use discovery para contornar uma issue existente.
 - Use `create-review-bundle` para empacotar evidências e diffs por arquivo sem modificar o repo
   revisado.
-- Use as skills `apex-*` para executar workflows do APEX. Elas são wrappers gerados que leem
-  `apex://framework/workflows/<id>`; não edite seu conteúdo e não as trate como fonte. No Claude
-  Code os mesmos workflows chegam nativamente como comandos do MCP `apex`, e por isso os wrappers
-  existem apenas para o Codex.
-- Escolha o executor de entrega pelo repositório alvo (AD-025): use o APEX quando o repo tiver
-  `ENV.md`; caso contrário use `tlc-spec-driven`. A preparação continua sendo das skills locais de
-  contexto nos dois casos.
-- Use `tlc-spec-driven` quando o trabalho exigir especificação, design, implementação ou validação
-  em repositório ainda sem APEX, ou no próprio workspace.
+- Trate as skills `apex-*` como wrappers experimentais de inspeção no Codex. Elas leem
+  `apex://framework/workflows/<id>`, mas não criam uma execução APEX suportada nem substituem
+  prompts nativos, contexto de sessão, artifacts ou gates ausentes. Não as use como executor de
+  entrega; não edite seu conteúdo gerado. No Claude Code, use os workflows nativos do MCP `apex`.
+- Escolha o executor por engine e repositório (AD-026): no Claude Code, use APEX quando o repo tiver
+  `ENV.md` e TLC nos demais; no Codex, use sempre `tlc-spec-driven` para especificação,
+  implementação e validação, inclusive em repos com `ENV.md`, até nova decisão baseada em uma
+  execução APEX end-to-end. A preparação continua sendo das skills locais de contexto.
 - Mantenha a divisão: triage compara issues e ondas; `advance-delivery-front` coordena a topologia de
   PRs/tasks; a skill de produto prepara uma issue; a TLC executa e verifica essa issue.
 - Não duplique o workflow da TLC em skills específicas de projeto.
 - Trate `tlc-spec-driven` como conteúdo vendorizado e atualize-a em commit isolado.
+- Em retrospectivas de skills e fluxo, consulte os históricos locais das duas engines associados a
+  esta raiz: `~/.codex/sessions/` e o projeto correspondente em `~/.claude/projects/`. Diferencie
+  sessões principais, continuations e cópias; não conte a própria retrospectiva como evidência.
+  Não copie transcripts para o Git. Destile decisão transversal em `.specs/STATE.md`, lesson de
+  execução somente após validação pelo script da TLC e achado de produto na fonte do produto
+  (AD-027).
 
 ## Segurança
 
