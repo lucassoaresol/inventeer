@@ -286,6 +286,50 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Scope**: Escolha do executor de entrega neste workspace e nos repositórios registrados sob
   `repos/`. Hoje apenas `portal-api` e `portal-web` têm `ENV.md` e `AGENTS.md` do APEX.
 - **Date**: 2026-07-26
+- **Status**: superseded by AD-026
+
+### AD-026
+- **Decision**: Escolher o executor de entrega por engine e por repositório: no Claude Code, usar
+  APEX quando o repo tiver `ENV.md` e TLC nos demais; no Codex, usar TLC para especificação,
+  implementação e validação em todos os repos até uma nova validação end-to-end do APEX. Tools,
+  resources e wrappers `apex-*` no Codex são superfície experimental e diagnóstica, não execução
+  suportada do workflow. As skills locais de contexto continuam preparando a task nos dois engines.
+- **Reason**: Sessões Codex reais (`019fa649-046f-7500-a0d1-050760e68e5e` e
+  `019fa683-cb7c-7b33-b5d3-26077367ff48`) conseguiram ler workflows e chamar tools APEX, mas não
+  receberam `preflight`, `write_session_artifact`, `run_gate`, `SESSION_ID` ou acesso do runner ao
+  repo, impedindo o pipeline completo. A sessão Claude
+  `e6a4a1c9-9d9c-4ba7-8aa0-1c92d1c473d7` operou workflow, artifacts e entrega APEX da INV-3286,
+  declarando seus fallbacks quando algumas tools não estavam expostas.
+- **Trade-off**: A rota diverge entre engines e mantém os wrappers Codex sem função de entrega; em
+  troca, o workspace deixa de confundir conectividade MCP com execução do framework e evita gates
+  improvisados apresentados como APEX. A paridade poderá ser reavaliada quando uma sessão Codex
+  criar contexto e artifacts, executar os gates requeridos e concluir um workflow end-to-end.
+- **Alternatives considered**: Manter AD-025 baseado apenas em `ENV.md`; retirar o APEX também do
+  Claude; considerar leitura de resource equivalente a invocação; remover imediatamente os
+  wrappers experimentais.
+- **Scope**: Seleção do executor neste workspace e nos repositórios sob `repos/`; não altera o APEX,
+  produtos, Linear ou GitHub.
+- **Date**: 2026-07-28
+- **Status**: active
+
+### AD-027
+- **Decision**: Usar os históricos locais de Codex e Claude Code associados à raiz do workspace
+  como evidência retrospectiva para evolução das skills, sem versionar transcripts; distinguir
+  sessões principais, continuations e cópias, excluir a retrospectiva corrente e destilar cada
+  achado na fonte adequada: decisão transversal em `STATE.md`, lesson de execução somente após
+  validação pelo script da TLC e achado de produto na fonte canônica do produto.
+- **Reason**: As retrospectivas anteriores consultaram apenas o histórico Codex, enquanto a adoção
+  dual-engine e a INV-3286 mostraram comportamentos relevantes somente no Claude. Contar arquivos
+  ou resumes como experiências independentes inflaria recorrência, e copiar transcripts criaria
+  uma fonte de contexto sensível, ruidosa e não portátil.
+- **Trade-off**: A análise exige deduplicação e julgamento de proveniência, e seus ponteiros de
+  sessão podem não existir em outra máquina; em troca, a memória versionada permanece pequena,
+  sanitizada e coerente com as fontes canônicas e com o hard gate de lessons da TLC.
+- **Alternatives considered**: Analisar somente a engine ativa; importar JSONL para o repo; registrar
+  toda observação como lesson; tratar continuations e sidechains como recorrências distintas.
+- **Scope**: Retrospectivas e manutenção de skills e workflows deste workspace; não autoriza ler,
+  copiar ou persistir credenciais, dados de clientes ou outputs de produção.
+- **Date**: 2026-07-28
 - **Status**: active
 
 ## Handoff
