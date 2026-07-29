@@ -388,14 +388,14 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 - **Feature**: Workspace MCP and resource preflight
   (`.specs/features/workspace-mcp-resource-preflight/`)
-- **Phase / Task**: Execute and standalone validation complete
-- **Completed**: spec `869306a`; resource preflight and TLC guidance `6fed3b6`; Context7 parity and
-  AD-028/AD-029 `9f365d9`; diff-integrity correction `7d8eb2c`; 37/37 checks and 3/3 killed mutants
-  recorded in `validation.md`; grounded gate failure distilled as candidate lesson L-006
+- **Phase / Task**: shadcn continuation Execute and standalone validation complete
+- **Completed**: AD-030 and revised contract `71f129a`; shadcn routing and target-resolution tests
+  `544d022`; approval and ownership guidance `9822ae1`; 41/41 checks, shadcn smoke, and 3/3 killed
+  mutants recorded in `validation.md`
 - **In-progress**: none
-- **Next step**: review and publish the feature/evidence commits when desired
+- **Next step**: restart both engines from this root and confirm shadcn appears connected
 - **Blockers**: none
-- **Uncommitted files**: none after the evidence/lesson closure commit; pre-existing
+- **Uncommitted files**: none after the evidence closure commit; pre-existing
   `.agents/skills/create-review-bundle/.omc/` remains intentionally untracked
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
