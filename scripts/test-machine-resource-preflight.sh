@@ -46,4 +46,3 @@ ok "vendored fork manifest tracks the preflight customization"
 
 echo
 echo "$passed teste(s) passaram."
-

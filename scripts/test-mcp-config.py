@@ -63,4 +63,3 @@ assert "Step 3: Context7 MCP" in tlc
 ok(6, "Context7 remains behind canonical codebase and project documentation")
 
 print("\n6 teste(s) passaram.")
-

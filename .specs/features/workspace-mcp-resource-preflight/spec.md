@@ -36,4 +36,3 @@ MCP that has durable, cross-project value in both Codex and Claude Code.
 - Context7 is configured in `.codex/config.toml` and `.mcp.json` with matching command and arguments.
 - No secret, API key, Cloudflare, AWS, or root-scoped shadcn server is added.
 - Static and mutation checks detect removal of Context7 or weakening of the preflight contract.
-

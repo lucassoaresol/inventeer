@@ -30,4 +30,3 @@ printf 'swap_total_bytes\t%s\n' "$swap_total"
 printf 'swap_free_bytes\t%s\n' "$swap_free"
 printf 'filesystem_total_bytes\t%s\n' "$filesystem_total"
 printf 'filesystem_available_bytes\t%s\n' "$filesystem_available"
-
