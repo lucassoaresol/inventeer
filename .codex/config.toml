@@ -11,3 +11,10 @@ default_tools_approval_mode = "prompt"
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]
 enabled = true
+
+[mcp_servers.shadcn]
+command = "npx"
+args = ["shadcn@latest", "mcp"]
+cwd = "../repos/portal-web"
+enabled = true
+default_tools_approval_mode = "writes"
