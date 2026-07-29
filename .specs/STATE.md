@@ -332,6 +332,40 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-28
 - **Status**: active
 
+### AD-028
+- **Decision**: Exigir um snapshot read-only de CPUs, carga, memória disponível, swap e filesystem
+  antes de cargas potencialmente pesadas e fazer a TLC adaptar concorrência ou sharding sem reduzir
+  a cobertura do gate.
+- **Reason**: Sessões independentes nas duas engines registraram quedas durante suítes, paralelismo e
+  uso de agentes; o host atual tem 2 CPUs, memória disponível limitada e nenhum swap. A TLC já
+  permitia shards equivalentes, mas não exigia medir a capacidade corrente antes da execução.
+- **Trade-off**: Toda etapa pesada ganha um preflight curto e pode executar com menos concorrência;
+  em troca, a estratégia deixa de depender de capacidade presumida e preserva a sessão e a cobertura.
+- **Alternatives considered**: Fixar sempre um worker; registrar apenas a limitação do `portal-api`;
+  confiar na observação manual depois que a carga começar; reduzir o gate em máquinas menores.
+- **Scope**: Trabalho complexo neste workspace e fork local da TLC; não define capacidade de CI nem
+  altera comandos canônicos dos repositórios de produto.
+- **Date**: 2026-07-28
+- **Status**: active
+
+### AD-029
+- **Decision**: Versionar o MCP `context7` no escopo desta raiz para Codex e Claude Code, sem
+  credenciais, preservando código e documentação local como fontes anteriores na cadeia de
+  conhecimento; não configurar aqui MCPs de shadcn, Cloudflare ou AWS.
+- **Reason**: A TLC já referencia Context7 e os repos usam stacks externas diversas, mas o servidor
+  não estava disponível de forma reproduzível. Shadcn depende do cwd de `portal-web`; Cloudflare
+  perde utilidade com a migração do Portal para AWS; e a superfície AWS atual exige uma decisão
+  canônica de migração, autenticação e autoridade ainda ausente dos ponteiros versionados.
+- **Trade-off**: O primeiro start de Context7 depende de Node/npm e rede e suas respostas continuam
+  sendo contexto externo não canônico. Em troca, os dois engines ganham a mesma consulta atual de
+  bibliotecas sem ampliar acesso a contas ou infraestrutura.
+- **Alternatives considered**: Manter apenas busca web; adicionar Context7 globalmente; configurar
+  shadcn com wrapper de cwd na raiz; adotar Cloudflare Docs pelo runtime legado; antecipar AWS MCP.
+- **Scope**: Configuração MCP e documentação desta raiz; qualquer MCP de produto exige mudança
+  separada no repositório owner.
+- **Date**: 2026-07-28
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Engine-aware skill learning (`.specs/features/engine-aware-skill-learning/`)

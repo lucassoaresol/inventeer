@@ -120,12 +120,39 @@ engine enxergava metade do conjunto, e a diferença é coberta por arquivo:
 |---|---|---|
 | Instruções | `AGENTS.md` nativo | `CLAUDE.md`, que importa `AGENTS.md` |
 | Skills | `.agents/skills/` nativo | symlinks em `.claude/skills/` |
-| MCP `apex` | `.codex/config.toml` | `.mcp.json` |
+| MCPs versionados | `apex`, `linear`, `context7` em `.codex/config.toml` | `apex`, `context7` em `.mcp.json` |
 | Workflows APEX | wrappers experimentais `apex-*` | comandos nativos do MCP |
 
 Uma skill global de mesmo nome em `~/.claude/skills/` suprime a deste workspace sem aviso, e as
 `description` podem ser idênticas. Se uma skill parecer desatualizada no Claude Code, verifique
 essa colisão antes de editar arquivos.
+
+## MCPs do workspace
+
+`Context7` é compartilhado pelos dois engines para documentação atual e version-specific das
+bibliotecas usadas pelos projetos. Ele usa o servidor stdio oficial por `npx` sem credencial
+versionada. Na cadeia de conhecimento da TLC,
+código e documentação local continuam tendo precedência; o MCP é consulta externa posterior, não
+fonte canônica de produto.
+
+Os demais candidatos permanecem fora desta raiz por limites de ownership e operação:
+
+- `shadcn` pertence ao `portal-web`, onde existe o `components.json` que define registries e destino
+  de instalação. Na raiz agregadora, o servidor resolve o cwd errado e não deve escrever componentes.
+- Cloudflare Docs não tem uso durável durante a migração do Portal para AWS.
+- Um MCP AWS só deve ser escolhido quando a migração estiver representada na fonte canônica e houver
+  um contrato explícito de autenticação e autoridade; Context7 cobre consultas de biblioteca sem
+  antecipar acesso à conta ou mutações de infraestrutura.
+
+Alterações de configuração exigem reiniciar o engine. No Claude Code, aprove o `.mcp.json` do projeto
+e confirme em `/mcp`; no Codex, confirme o servidor ativo após reiniciar a sessão pela raiz confiável.
+
+## Preflight de recursos
+
+Antes de suíte completa, build, containers, navegador, mutation testing ou agentes em paralelo,
+execute `./scripts/check-machine-resources.sh`. O snapshot informa CPUs, carga, memória disponível,
+swap e disco do workspace. Use-o para limitar concorrência ou definir shards completos; limitação da
+máquina muda o agendamento, nunca a cobertura exigida pelo gate.
 
 ## Workflows do APEX
 

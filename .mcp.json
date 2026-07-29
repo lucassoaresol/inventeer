@@ -3,6 +3,10 @@
     "apex": {
       "type": "http",
       "url": "https://apex-gw.dev.inventeer.tech/api/v1/mcp"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
     }
   }
 }
