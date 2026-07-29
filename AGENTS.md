@@ -76,6 +76,17 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   execução somente após validação pelo script da TLC e achado de produto na fonte do produto
   (AD-027).
 
+## MCPs
+
+- Use Context7 somente depois de código e documentação local, para confirmar APIs e padrões atuais
+  de bibliotecas.
+- Use o MCP shadcn somente para trabalho em `repos/portal-web`; ele opera com cwd nesse repo e segue
+  seu `components.json`, suas instruções locais e seu worktree.
+- Antes de qualquer ferramenta de escrita do shadcn, confirme que `repos/portal-web` está clonado,
+  leia as instruções do repo, verifique o worktree e obtenha a aprovação exigida pelo engine.
+- A disponibilidade do MCP nesta raiz não transfere ownership nem autoriza mudanças de produto.
+- Cloudflare e AWS permanecem fora da configuração até uma nova decisão transversal explícita.
+
 ## Recursos da máquina
 
 - Antes de tarefas potencialmente pesadas — suíte completa, build, containers, navegador, mutation

@@ -130,15 +130,18 @@ essa colisão antes de editar arquivos.
 ## MCPs do workspace
 
 `Context7` é compartilhado pelos dois engines para documentação atual e version-specific das
-bibliotecas usadas pelos projetos. Ele usa o servidor stdio oficial por `npx` sem credencial
-versionada. Na cadeia de conhecimento da TLC,
-código e documentação local continuam tendo precedência; o MCP é consulta externa posterior, não
-fonte canônica de produto.
+bibliotecas usadas pelos projetos. Ele usa um servidor stdio por `npx` sem credencial versionada. Na
+cadeia de conhecimento da TLC, código e documentação local continuam tendo precedência; o MCP é
+consulta externa posterior, não fonte canônica de produto.
 
-Os demais candidatos permanecem fora desta raiz por limites de ownership e operação:
+`shadcn` pertence ao `portal-web` e também está disponível nos dois engines iniciados por esta raiz.
+O servidor shadcn opera com cwd em `repos/portal-web`, onde o `components.json` define registries,
+aliases e destinos de instalação. Por isso, o clone desse repo é pré-requisito para iniciar o
+servidor. Ferramentas de escrita do shadcn exigem aprovação e só podem ser usadas depois de ler as
+instruções locais e verificar o worktree do produto; a configuração na raiz não transfere ownership.
 
-- `shadcn` pertence ao `portal-web`, onde existe o `components.json` que define registries e destino
-  de instalação. Na raiz agregadora, o servidor resolve o cwd errado e não deve escrever componentes.
+Os candidatos de infraestrutura permanecem fora desta raiz por limites de necessidade e autoridade:
+
 - Cloudflare Docs não tem uso durável durante a migração do Portal para AWS.
 - Um MCP AWS só deve ser escolhido quando a migração estiver representada na fonte canônica e houver
   um contrato explícito de autenticação e autoridade; Context7 cobre consultas de biblioteca sem

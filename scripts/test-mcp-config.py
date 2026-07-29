@@ -68,10 +68,21 @@ for phrase in (
     "Context7",
     "código e documentação local continuam tendo precedência",
     "`shadcn` pertence ao `portal-web`",
+    "servidor shadcn opera com cwd em `repos/portal-web`",
+    "Ferramentas de escrita do shadcn exigem aprovação",
     "migração do Portal para AWS",
 ):
     assert phrase in readme, f"README omits boundary: {phrase}"
-ok(7, "README documents source precedence and deferred MCP boundaries")
+ok(7, "README documents source precedence, shadcn routing, and provider boundaries")
+
+agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+for phrase in (
+    "Use o MCP shadcn somente para trabalho em `repos/portal-web`",
+    "verifique o worktree e obtenha a aprovação exigida pelo engine",
+    "não transfere ownership nem autoriza mudanças de produto",
+):
+    assert phrase in agents, f"AGENTS.md omits shadcn guardrail: {phrase}"
+ok(8, "workspace instructions preserve Portal Web ownership and write approval")
 
 state = (ROOT / ".specs/STATE.md").read_text(encoding="utf-8")
 for decision in ("AD-028", "AD-030"):
@@ -79,12 +90,12 @@ for decision in ("AD-028", "AD-030"):
     assert "**Status**: active" in section, f"{decision} is not active"
 ad_029 = state.split("### AD-029", 1)[1].split("### ", 1)[0]
 assert "**Status**: superseded by AD-030" in ad_029
-ok(8, "workspace decisions record resource preflight and shadcn adoption")
+ok(9, "workspace decisions record resource preflight and shadcn adoption")
 
 tlc = (ROOT / ".agents/skills/tlc-spec-driven/SKILL.md").read_text(encoding="utf-8")
 assert "Step 1: Codebase" in tlc
 assert "Step 2: Project docs" in tlc
 assert "Step 3: Context7 MCP" in tlc
-ok(9, "Context7 remains behind canonical codebase and project documentation")
+ok(10, "Context7 remains behind canonical codebase and project documentation")
 
-print("\n9 teste(s) passaram.")
+print("\n10 teste(s) passaram.")
