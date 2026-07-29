@@ -76,6 +76,17 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   execução somente após validação pelo script da TLC e achado de produto na fonte do produto
   (AD-027).
 
+## Recursos da máquina
+
+- Antes de tarefas potencialmente pesadas — suíte completa, build, containers, navegador, mutation
+  testing ou agentes em paralelo — execute `./scripts/check-machine-resources.sh` e registre no chat
+  a disponibilidade observada e a decisão de concorrência.
+- Dimensione workers pela capacidade disponível no momento, não apenas pelo total nominal da
+  máquina. Em host restrito, prefira concorrência limitada e shards determinísticos; execute todos
+  os shards e agregue o resultado antes de chamar o gate de completo.
+- Refaça o snapshot antes de uma etapa pesada posterior quando a sessão for longa ou a carga do host
+  tiver mudado. Uma limitação de recurso pode alterar a estratégia, nunca reduzir a cobertura.
+
 ## Segurança
 
 - Não armazene credenciais, tokens, dados de clientes ou saídas de produção neste workspace.

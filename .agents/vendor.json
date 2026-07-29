@@ -11,7 +11,8 @@
       "review contract and artifact lifecycle",
       "orientation before decision questions",
       "operational enablement discovery",
-      "requirement provenance"
+      "requirement provenance",
+      "resource-aware execution preflight"
     ]
   }
 }

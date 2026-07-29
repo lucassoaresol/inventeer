@@ -34,6 +34,18 @@ done, commit hashes, test counts, deviations/blockers) to the orchestrator. See
 
 Before implementing anything, if a formal `tasks.md` with an Execution Plan exists, **count its total tasks** and pack the phases into task-budgeted batches (~7 tasks per worker, whole phases — see [sub-agents.md](sub-agents.md)). If that yields **more than one batch** (> ~8 tasks), you MUST present the sub-agent offer to the user and wait for their choice before starting Execute — do not silently proceed inline. If the feature fits a single batch (≤ ~8 tasks, or the user declines), execute inline. Skip this check only when you are already a batch worker executing a delegated batch (the orchestrator already made the delegation decision).
 
+### Resource preflight before heavy work
+
+Before a full suite, build, containers, browser automation, mutation testing, or parallel agents,
+inspect the host's current online CPUs, load, available memory, swap, and workspace disk capacity.
+Run the repository's read-only preflight command when one exists; otherwise use OS-native read-only
+commands. State the observed capacity and the chosen concurrency before starting the heavy action.
+
+On a constrained host, use bounded concurrency or deterministic shards and run every required shard.
+Isolate per-worker services when the repository requires it, and aggregate results before declaring
+the gate complete. A resource-aware plan changes scheduling, never required coverage. Re-run the
+snapshot before a later heavy phase when the session is long or host load has materially changed.
+
 ### 0. List Atomic Steps (MANDATORY when Tasks phase was skipped)
 
 If there is no `tasks.md` for this feature, you MUST list atomic steps before writing any code. This is non-negotiable — it prevents the agent from losing focus and doing too many things at once.
