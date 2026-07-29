@@ -368,16 +368,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Engine-aware skill learning (`.specs/features/engine-aware-skill-learning/`)
+- **Feature**: Workspace MCP and resource preflight
+  (`.specs/features/workspace-mcp-resource-preflight/`)
 - **Phase / Task**: Execute and standalone validation complete
-- **Completed**: AD-026/AD-027 and spec at `4e6c942`; documentation at `b5e1791`; 28 diagnostic
-  wrappers and enforcement at `ef61dd7`; shell lint fix at `fd15cb1`; coverage correction at
-  `4c3b208`; 24/24 checks and 3/3 killed mutants recorded in `validation.md`
+- **Completed**: spec `869306a`; resource preflight and TLC guidance `6fed3b6`; Context7 parity and
+  AD-028/AD-029 `9f365d9`; diff-integrity correction `7d8eb2c`; 37/37 checks and 3/3 killed mutants
+  recorded in `validation.md`; grounded gate failure distilled as candidate lesson L-006
 - **In-progress**: none
 - **Next step**: review and publish the feature/evidence commits when desired
 - **Blockers**: none
-- **Uncommitted files**: none after the validation-evidence commit; pre-existing
+- **Uncommitted files**: none after the evidence/lesson closure commit; pre-existing
   `.agents/skills/create-review-bundle/.omc/` remains intentionally untracked
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
-  session communication failures
+  recurring session communication failures

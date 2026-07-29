@@ -44,6 +44,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: .specs/features/engine-aware-skill-learning/validation.md:76 (workspace-policy-tests)
 - last seen: 2026-07-28T05:27:56Z
 
+### L-006 — Run a staged or equivalent diff-integrity check for new files before committing
+- signal: `gate_fail` · recurrence: 1 feature(s) · scope: `workspace-delivery` · harmful: 0
+- features: workspace-mcp-resource-preflight
+- evidence: .specs/features/workspace-mcp-resource-preflight/validation.md:63-67 (workspace-delivery)
+- last seen: 2026-07-29T00:45:42Z
+
 ## Quarantined (failed when applied — ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

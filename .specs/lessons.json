@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 6,
+  "next_id": 7,
   "lessons": [
     {
       "id": "L-001",
@@ -94,6 +94,24 @@
       ],
       "created": "2026-07-28T05:27:56Z",
       "last_seen": "2026-07-28T05:27:56Z"
+    },
+    {
+      "id": "L-006",
+      "key": "gate_fail::run a staged or equivalent diff integrity check for new files before committing",
+      "text": "Run a staged or equivalent diff-integrity check for new files before committing",
+      "signal": "gate_fail",
+      "scope": "workspace-delivery",
+      "status": "candidate",
+      "features": [
+        "workspace-mcp-resource-preflight"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".specs/features/workspace-mcp-resource-preflight/validation.md:63-67 (workspace-delivery)"
+      ],
+      "created": "2026-07-29T00:45:42Z",
+      "last_seen": "2026-07-29T00:45:42Z"
     }
   ]
 }
