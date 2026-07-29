@@ -5,8 +5,8 @@
 
 ## Objective
 
-Make complex work adapt to the machine before consuming resources and expose only the documentation
-MCP that has durable, cross-project value in both Codex and Claude Code.
+Make complex work adapt to the machine before consuming resources and expose the credential-free
+documentation and frontend tooling that has durable value in both Codex and Claude Code.
 
 ## Requirements
 
@@ -20,19 +20,24 @@ MCP that has durable, cross-project value in both Codex and Claude Code.
    stdio server definition without checked-in credentials.
 5. **WMR-05 — Current-doc chain:** Context7 SHALL remain after codebase and project documentation in
    the TLC knowledge chain; it SHALL not replace canonical repository sources.
-6. **WMR-06 — Cwd-sensitive MCP boundary:** The workspace SHALL NOT configure shadcn at this root
-   because its tools resolve `components.json` and write targets from the server working directory.
-   A future adoption belongs in `repos/portal-web` under a separately authorized product change.
+6. **WMR-06 — Cwd-sensitive shadcn routing:** Codex and Claude Code SHALL receive the same shadcn
+   command with engine-specific working directories that both resolve to
+   `repos/portal-web/components.json`; shadcn writes SHALL remain approval-gated and owned by the
+   Portal Web repository.
 7. **WMR-07 — Provider MCP boundary:** The workspace SHALL NOT configure Cloudflare or AWS MCPs
    without a current canonical need. Cloudflare is being left behind by the Portal migration; the
    current official AWS surface adds authentication and operational authority before that migration
    is represented in the registered project sources.
-8. **WMR-08 — Verification:** Automated checks SHALL parse both MCP configs, run the machine snapshot,
-   validate the TLC skill, and assert the resource and boundary contracts above.
+8. **WMR-08 — Verification:** Automated checks SHALL parse both MCP configs, prove both shadcn
+   working directories resolve to the existing Portal Web `components.json`, run the machine
+   snapshot, validate the TLC skill, and assert the resource and boundary contracts above.
 
 ## Success Criteria
 
 - The preflight command exits zero on this Linux host and exposes all five resource dimensions.
 - Context7 is configured in `.codex/config.toml` and `.mcp.json` with matching command and arguments.
-- No secret, API key, Cloudflare, AWS, or root-scoped shadcn server is added.
-- Static and mutation checks detect removal of Context7 or weakening of the preflight contract.
+- Shadcn is configured in both files with matching commands and distinct working-directory strings
+  that resolve to the same Portal Web `components.json`.
+- No secret, API key, Cloudflare, or AWS server is added.
+- Static and mutation checks detect removal of Context7, incorrect shadcn routing, or weakening of
+  the preflight contract.

@@ -364,6 +364,24 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Scope**: Configuração MCP e documentação desta raiz; qualquer MCP de produto exige mudança
   separada no repositório owner.
 - **Date**: 2026-07-28
+- **Status**: superseded by AD-030
+
+### AD-030
+- **Decision**: Versionar os MCPs `context7` e `shadcn` nesta raiz para Codex e Claude Code, sem
+  credenciais; executar shadcn com cwd explícito em `repos/portal-web`, manter suas escritas sujeitas
+  a aprovação e não configurar Cloudflare ou AWS neste momento.
+- **Reason**: O EDREN comprovou que os dois formatos de configuração suportam cwd específico por
+  engine, e `portal-web` possui um `components.json` canônico e declara shadcn/ui como direção de UI.
+  Isso torna a dependência de cwd um requisito verificável de roteamento, não um bloqueio técnico.
+- **Trade-off**: O servidor shadcn só inicia em ambientes que clonaram `repos/portal-web`, seu
+  primeiro uso depende de Node/npm e rede, e qualquer escrita ainda precisa respeitar as instruções
+  e o worktree do repo de produto. Cloudflare perde utilidade com a migração para AWS, enquanto AWS
+  continua aguardando contrato canônico de autenticação e autoridade.
+- **Alternatives considered**: Manter shadcn somente no repo de produto; usar wrapper na raiz;
+  manter a exclusão da AD-029; configurar Cloudflare Docs ou antecipar AWS MCP.
+- **Scope**: Disponibilidade dos MCPs nos engines iniciados por esta raiz; não transfere ownership do
+  Portal Web nem autoriza mutações em `repos/portal-web`.
+- **Date**: 2026-07-28
 - **Status**: active
 
 ## Handoff
