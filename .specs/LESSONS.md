@@ -50,6 +50,12 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: .specs/features/workspace-mcp-resource-preflight/validation.md:63-67 (workspace-delivery)
 - last seen: 2026-07-29T00:45:42Z
 
+### L-007 — Resolve MCP working directories from the engine operational workspace root and prove the configured target exists before publication
+- signal: `review_finding` · recurrence: 1 feature(s) · scope: `mcp` · harmful: 0
+- features: workspace-mcp-resource-preflight-cwd-correction
+- evidence: .specs/features/workspace-mcp-resource-preflight/validation.md:Runtime Finding (mcp)
+- last seen: 2026-07-29T01:10:51Z
+
 ## Quarantined (failed when applied — ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

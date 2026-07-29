@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 7,
+  "next_id": 8,
   "lessons": [
     {
       "id": "L-001",
@@ -112,6 +112,24 @@
       ],
       "created": "2026-07-29T00:45:42Z",
       "last_seen": "2026-07-29T00:45:42Z"
+    },
+    {
+      "id": "L-007",
+      "key": "review_finding::resolve mcp working directories from the engine operational workspace root and prove the configured target exists before publication",
+      "text": "Resolve MCP working directories from the engine operational workspace root and prove the configured target exists before publication",
+      "signal": "review_finding",
+      "scope": "mcp",
+      "status": "candidate",
+      "features": [
+        "workspace-mcp-resource-preflight-cwd-correction"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".specs/features/workspace-mcp-resource-preflight/validation.md:Runtime Finding (mcp)"
+      ],
+      "created": "2026-07-29T01:10:51Z",
+      "last_seen": "2026-07-29T01:10:51Z"
     }
   ]
 }
