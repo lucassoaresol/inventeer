@@ -21,7 +21,7 @@ documentation and frontend tooling that has durable value in both Codex and Clau
 5. **WMR-05 — Current-doc chain:** Context7 SHALL remain after codebase and project documentation in
    the TLC knowledge chain; it SHALL not replace canonical repository sources.
 6. **WMR-06 — Cwd-sensitive shadcn routing:** Codex and Claude Code SHALL receive the same shadcn
-   command with engine-specific working directories that both resolve to
+   command and the workspace-relative working directory `repos/portal-web`, which SHALL resolve to
    `repos/portal-web/components.json`; shadcn writes SHALL remain approval-gated and owned by the
    Portal Web repository.
 7. **WMR-07 — Provider MCP boundary:** The workspace SHALL NOT configure Cloudflare or AWS MCPs
@@ -36,8 +36,8 @@ documentation and frontend tooling that has durable value in both Codex and Clau
 
 - The preflight command exits zero on this Linux host and exposes all five resource dimensions.
 - Context7 is configured in `.codex/config.toml` and `.mcp.json` with matching command and arguments.
-- Shadcn is configured in both files with matching commands and distinct working-directory strings
-  that resolve to the same Portal Web `components.json`.
+- Shadcn is configured in both files with matching commands and the same workspace-relative working
+  directory, resolving to the Portal Web `components.json`.
 - No secret, API key, Cloudflare, or AWS server is added.
 - Static and mutation checks detect removal of Context7, incorrect shadcn routing, or weakening of
   the preflight contract.

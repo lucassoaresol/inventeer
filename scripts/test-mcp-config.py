@@ -37,7 +37,7 @@ ok(1, "Codex and Claude use the same credential-free Context7 command")
 shadcn_targets = []
 for label, servers, cwd_base, expected_cwd in (
     ("Claude", claude_servers, ROOT, "repos/portal-web"),
-    ("Codex", codex_servers, ROOT / ".codex", "../repos/portal-web"),
+    ("Codex", codex_servers, ROOT, "repos/portal-web"),
 ):
     shadcn = servers.get("shadcn")
     assert shadcn is not None, f"{label} omits shadcn"
@@ -47,7 +47,7 @@ for label, servers, cwd_base, expected_cwd in (
     shadcn_targets.append((cwd_base / shadcn["cwd"] / "components.json").resolve(strict=True))
 assert shadcn_targets[0] == shadcn_targets[1]
 assert shadcn_targets[0] == (ROOT / "repos/portal-web/components.json").resolve(strict=True)
-ok(2, "shadcn commands use engine-specific cwd values")
+ok(2, "shadcn commands use the same workspace-relative cwd")
 ok(3, "both shadcn cwd values resolve to the Portal Web components.json")
 
 assert codex_servers["shadcn"]["default_tools_approval_mode"] == "writes"
