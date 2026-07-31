@@ -408,16 +408,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Workspace MCP and resource preflight
-  (`.specs/features/workspace-mcp-resource-preflight/`)
-- **Phase / Task**: shadcn cwd correction Execute and standalone validation complete
-- **Completed**: root-relative cwd, corrected WMR-06, and regression assertion `4d53a1c`; 41/41 checks,
-  effective Codex config inspection, shadcn smoke, and 1/1 killed mutant recorded in `validation.md`
+- **Feature**: Portal TLC session artifacts
+  (`.specs/features/portal-tlc-session-artifacts/`)
+- **Phase / Task**: Execute and standalone validation complete
+- **Completed**: policy and Portal handoff `0f7af35`; coverage correction `65c4278`; 8/8 ACs,
+  3/3 edge cases, 18/18 contract checks, structural validation, ShellCheck, diff integrity, and 1/1
+  killed mutant recorded in `validation.md`
 - **In-progress**: none
-- **Next step**: publish the correction, restart both engines from this root, and confirm shadcn appears connected
+- **Next step**: pilot `session-context/portal/<INV-ID>/tlc/` on the next Portal task executed by
+  Codex + TLC and re-evaluate AD-031 after a complete delivery
 - **Blockers**: none
 - **Uncommitted files**: none after the evidence closure commit; pre-existing
-  `.agents/skills/create-review-bundle/.omc/` remains intentionally untracked
+  `.agents/skills/create-review-bundle/.omc/` remains intentionally untracked and out of scope
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
   recurring session communication failures

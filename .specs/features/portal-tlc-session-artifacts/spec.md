@@ -81,11 +81,11 @@ assertion passes without creating a task directory or touching a product reposit
 
 | Requirement | Provenance | Evidence | Status |
 | --- | --- | --- | --- |
-| PTSA-01 | DECISION | User-approved Portal path | Implementing |
-| PTSA-02 | INHERITED | Portal rejects TLC `.specs/` in product branches | Implementing |
-| PTSA-03 | INHERITED | AD-017 session-context lifecycle | Implementing |
-| PTSA-04 | INHERITED | Workspace canonical-source boundaries | Implementing |
-| PTSA-05 | DECISION | User-approved review grouping | Implementing |
-| PTSA-06 | DECISION | User-approved cleanup lifecycle | Implementing |
-| PTSA-07 | INHERITED | AD-026 APEX execution boundary | Implementing |
-| PTSA-08 | DECISION | Portal-only scope | Implementing |
+| PTSA-01 | DECISION | User-approved Portal path | Verified |
+| PTSA-02 | INHERITED | Portal rejects TLC `.specs/` in product branches | Verified |
+| PTSA-03 | INHERITED | AD-017 session-context lifecycle | Verified |
+| PTSA-04 | INHERITED | Workspace canonical-source boundaries | Verified |
+| PTSA-05 | DECISION | User-approved review grouping | Verified |
+| PTSA-06 | DECISION | User-approved cleanup lifecycle | Verified |
+| PTSA-07 | INHERITED | AD-026 APEX execution boundary | Verified |
+| PTSA-08 | DECISION | Portal-only scope | Verified |
