@@ -65,6 +65,12 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   `ENV.md` e TLC nos demais; no Codex, use sempre `tlc-spec-driven` para especificação,
   implementação e validação, inclusive em repos com `ENV.md`, até nova decisão baseada em uma
   execução APEX end-to-end. A preparação continua sendo das skills locais de contexto.
+- Para tasks do Portal executadas por Codex + TLC, mantenha artifacts file-backed da TLC em
+  `session-context/portal/<INV-ID>/tlc/`, nunca em `.specs/` dos repos Portal. Esse material é local,
+  efêmero, não canônico e não durável; agrupe bundles em
+  `session-context/portal/<INV-ID>/review/` e torne o diretório elegível para limpeza após merge e
+  encerramento da issue. A rota é transitória e deve ser retirada quando o Codex executar APEX
+  end-to-end; não a aplique ao Claude/APEX nem a outros produtos (AD-031).
 - Mantenha a divisão: triage compara issues e ondas; `advance-delivery-front` coordena a topologia de
   PRs/tasks; a skill de produto prepara uma issue; a TLC executa e verifica essa issue.
 - Não duplique o workflow da TLC em skills específicas de projeto.

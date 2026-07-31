@@ -34,9 +34,16 @@ ambiguity.
 - partial DoD coverage does not define the exact contribution;
 - existing code or tests expose an unstated compatibility requirement.
 
-Write specs in the implementation repo that owns the behavior, following its existing convention.
-For a cross-repo outcome, identify one coordinating contract and keep implementation-specific specs
-with their respective repos. Do not write Portal product specs into this personal workspace.
+Portal does not accept TLC `.specs/` artifacts as official product artifacts. When Codex + TLC needs
+a file-backed working specification, store it under
+`session-context/portal/<INV-ID>/tlc/` and keep it explicitly local, ephemeral, non-canonical, and
+non-durable. Working TLC artifacts are not product specifications and must not be promoted into
+`repos/portal`, `repos/portal-api`, or `repos/portal-web`.
+
+If the task requires a durable official specification rather than a working TLC contract, follow
+the APEX artifact lifecycle. Until that route is available in the active engine, surface the durable
+artifact need as a delivery constraint instead of presenting the session copy as a substitute. Do
+not write Portal product specs into this personal workspace.
 
 ## Design and ADR boundary
 
@@ -60,3 +67,7 @@ implementation, or validation. Pass it:
 - unresolved questions and readiness verdict.
 
 Let TLC auto-size the depth. Do not recreate its phases in this skill.
+
+When the active engine is Codex, replace TLC's file-backed artifact root for this Portal task with
+`session-context/portal/<INV-ID>/tlc/`. The replacement is a handoff constraint, not a modification
+to the generic TLC skill. Claude/APEX keeps its official artifact lifecycle.

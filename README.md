@@ -33,6 +33,20 @@ Esse local é apenas uma entrada temporária de contexto. Apague seu conteúdo q
 ser necessário e não coloque nele credenciais, dados de clientes ou saídas de produção. Decisões,
 specs e evidências que precisem persistir continuam pertencendo às respectivas fontes canônicas.
 
+### Artifacts TLC transitórios do Portal
+
+Enquanto o Codex não executar o workflow APEX completo, tasks do Portal entregues por Codex + TLC
+guardam somente os artifacts file-backed internos da TLC em
+`session-context/portal/<INV-ID>/tlc/`. Eles apoiam execução, retomada local e review, mas não são
+canônicos, oficiais nem duráveis e nunca devem ser promovidos como `.specs/` de `portal`,
+`portal-api` ou `portal-web`.
+
+Agrupe bundles e checksums em `session-context/portal/<INV-ID>/review/`. Código, testes, ADRs e
+documentação oficial permanecem nos repos de produto; Linear e a PR preservam o resumo oficial da
+entrega. Após merge e encerramento da issue, o diretório local fica elegível para limpeza. A rota é
+um piloto transitório exclusivo do Portal no Codex; Claude/APEX e outros produtos permanecem
+inalterados, e o lifecycle oficial do APEX a substituirá quando houver suporte end-to-end no Codex.
+
 ## Skills
 
 | Skill | Origem | Versão | Uso |
@@ -94,6 +108,10 @@ dependências, separa maturidade de implementação e validação e planeja a re
 Seu MVP não cria branches, altera PRs ou atualiza o Linear; ele entrega um contrato verificável e
 exatamente uma próxima ação antes do handoff para a skill de task do produto e, quando necessário,
 para `tlc-spec-driven`.
+
+No handoff Portal para TLC no Codex, substitua a raiz file-backed padrão da TLC pelo diretório local
+`session-context/portal/<INV-ID>/tlc/`; essa substituição não altera a skill TLC genérica nem cria
+uma spec oficial de produto.
 
 Para gerar um bundle diretamente:
 

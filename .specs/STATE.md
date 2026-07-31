@@ -384,6 +384,28 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-28
 - **Status**: active
 
+### AD-031
+- **Decision**: Durante o piloto de tasks do Portal executadas por Codex + TLC, manter artifacts
+  file-backed internos da TLC em `session-context/portal/<INV-ID>/tlc/` e bundles em
+  `session-context/portal/<INV-ID>/review/`, sem criar ou promover `.specs/` nos repos do Portal; o
+  material local apoia execução, retomada e review, mas não é evidência canônica, oficial ou durável.
+- **Reason**: O Portal aceita o lifecycle oficial de artifacts do APEX, mas o Codex ainda usa TLC e
+  entregas reais mostraram que remover `.specs/` antes da PR deixa a retomada e a validação sem um
+  local de trabalho previsível. `session-context/` já é a superfície efêmera e ignorada pelo Git
+  destinada a contexto local.
+- **Trade-off**: A rota melhora continuidade na mesma máquina sem contaminar branches de produto,
+  mas não oferece portabilidade cross-machine nem persistência oficial; a próxima task Portal deve
+  validar a mecânica antes que a prática seja considerada consolidada.
+- **Alternatives considered**: Continuar removendo `.specs/` no fim da entrega; aceitar `.specs/`
+  nos repos Portal; alterar a TLC genérica; aguardar APEX no Codex sem preservar artifacts locais;
+  tratar bundles efêmeros como fonte canônica.
+- **Scope**: Somente tasks do Portal executadas por Codex + TLC. Não altera Claude/APEX, outros
+  produtos, Linear, repos de produto ou a skill TLC vendorizada. O diretório fica elegível para
+  limpeza após merge e encerramento da issue, e a rota será retirada quando o Codex executar APEX
+  end-to-end.
+- **Date**: 2026-07-31
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Workspace MCP and resource preflight
