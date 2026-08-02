@@ -48,6 +48,12 @@ for property in 'local' 'efêmero' 'não canônico' 'não oferece portabilidade 
 done
 grep -q 'merge.*issue encerrada' <<<"$checkpoint_docs" \
   || fail "README.md does not preserve AD-031 cleanup timing"
+grep -q 'pode perder trabalho posterior' <<<"$checkpoint_docs" \
+  || fail "README.md does not disclose the residual checkpoint window"
+grep -q 'liveness' <<<"$checkpoint_docs" \
+  || fail "README.md does not require stale-process revalidation"
+grep -A24 '^### AD-036$' .specs/STATE.md | grep -q 'single-writer' \
+  || fail "AD-036 does not preserve the single-writer boundary"
 pass "checkpoint lifecycle remains local, ephemeral, non-canonical, and non-portable"
 
 grep -A12 'checkpoints TLC resilientes' AGENTS.md | grep -q 'somente paths' \
