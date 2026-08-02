@@ -42,6 +42,11 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   e as `description` podem ser idênticas. Suspeite dessa colisão antes de concluir que uma skill
   está desatualizada.
 - O MCP `apex` é declarado por workspace nos dois engines: `.codex/config.toml` e `.mcp.json`.
+- Nas sessões Claude iniciadas nesta raiz, mantenha `OMC_STATE_DIR` configurado localmente em
+  `.claude/settings.local.json` para `session-context/runtime/omc`. O caminho deve ser absoluto para
+  permanecer estável após mudanças de `cwd`; hooks não devem criar `.omc/` na raiz, em `repos/` ou
+  nos worktrees de produto. Esse estado é efêmero, ignorado pelo Git, não canônico e só fica
+  elegível para limpeza após as sessões correspondentes encerrarem (AD-035).
 
 ## Skills
 
@@ -85,8 +90,9 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   sessões principais, continuations e cópias; não conte a própria retrospectiva como evidência.
   Use `scripts/audit-session-history.py` como inventário inicial sanitizado, informando o ID da
   sessão corrente em `--exclude-session`; interprete resultados somente depois dessa deduplicação.
-  Diferencie `apex_calls` bem-sucedidas de `apex_failures`, `apex_denials` e `apex_unresolved`;
-  tentativa estruturada não prova execução.
+  Diferencie `apex_tool_successes` de `apex_tool_failures`, `apex_tool_denials` e
+  `apex_tool_unresolved`; esses campos descrevem outcomes de tools, e tentativa ou sucesso de uma
+  tool isolada não prova execução de workflow.
   Não copie transcripts para o Git. Destile decisão transversal em `.specs/STATE.md`, lesson de
   execução somente após validação pelo script da TLC e achado de produto na fonte do produto
   (AD-027).

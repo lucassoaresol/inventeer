@@ -33,6 +33,19 @@ Esse local é apenas uma entrada temporária de contexto. Apague seu conteúdo q
 ser necessário e não coloque nele credenciais, dados de clientes ou saídas de produção. Decisões,
 specs e evidências que precisem persistir continuam pertencendo às respectivas fontes canônicas.
 
+### Estado transitório do Claude/OMC
+
+Sessões Claude iniciadas na raiz deste workspace centralizam o estado do OMC em
+`session-context/runtime/omc/`. A configuração local e específica da máquina fica no campo
+`env.OMC_STATE_DIR` de `.claude/settings.local.json`, com caminho absoluto, para que mudanças de
+`cwd` não criem `.omc/` em `repos/` nem nos worktrees de produto. O OMC acrescenta seu identificador
+de projeto e o escopo da sessão abaixo desse diretório-base.
+
+Esse estado é efêmero, ignorado pelo Git, não canônico e não deve conter credenciais, dados de
+clientes, saídas de produção ou transcripts. Remova-o somente depois de encerrar as sessões que
+possam depender dele. A regra é transversal ao runtime local do Claude e não altera o contrato
+Portal + Codex + TLC da AD-031.
+
 ### Artifacts TLC transitórios do Portal
 
 Enquanto o Codex não executar o workflow APEX completo, tasks do Portal entregues por Codex + TLC
@@ -239,11 +252,13 @@ Use o inventário sanitizado antes da análise qualitativa:
 ```
 
 O relatório contém somente contagens agregadas: sessões principais, continuations, subagents ou
-sidechains, trabalhos lógicos, tentativas APEX e seus outcomes estruturados. `apex_calls` contém
-somente sucessos; falhas, negações e tentativas sem resultado ficam separadas em `apex_failures`,
-`apex_denials` e `apex_unresolved`. Ele não emite prompts, respostas, resultados de tools, caminhos
-dos histories nem corpos de transcript. O vínculo de continuation no Codex é uma heurística
-conservadora: UUID referenciado junto de `caiu` e `continue`; no Claude, apenas sidechains
+sidechains, trabalhos lógicos, tentativas APEX e seus outcomes estruturados.
+`apex_tool_successes` contém somente tools com resultado bem-sucedido; falhas, negações e tentativas
+sem resultado ficam separadas em `apex_tool_failures`, `apex_tool_denials` e
+`apex_tool_unresolved`. Esses campos não afirmam que um workflow APEX terminou. O relatório não
+emite prompts, respostas, resultados de tools, caminhos dos histories nem corpos de transcript. O
+vínculo de continuation no Codex é uma heurística conservadora: UUID referenciado junto de `caiu` e
+`continue`; no Claude, o primeiro `cwd` não vazio define a origem da sessão e apenas sidechains
 estruturadas são deduplicadas automaticamente.
 
 ## Repositórios locais

@@ -468,6 +468,26 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-02
 - **Status**: active
 
+### AD-035
+- **Decision**: Centralizar o estado local do OMC para sessões Claude iniciadas nesta raiz em
+  `session-context/runtime/omc/`, configurando o caminho absoluto por `OMC_STATE_DIR` no arquivo
+  ignorado `.claude/settings.local.json`. Tratar o diretório como runtime efêmero, não canônico e
+  elegível para limpeza somente depois de encerradas as sessões que possam depender dele.
+- **Reason**: Duas sessões Claude reais mudaram de `cwd` durante a execução e hooks do OMC criaram
+  `.omc/` em `repos/assistants` e no diretório agregador `repos/`. `session-context/` já é a
+  superfície local ignorada pelo Git; um state root absoluto mantém a resolução estável e evita
+  contaminar worktrees de produto sem transformar runtime em artifact durável.
+- **Trade-off**: A configuração real é específica desta máquina e não acompanha o Git; uma cópia do
+  workspace em outro caminho precisa configurar seu próprio valor local. Em troca, os repos de
+  produto permanecem limpos e o estado continua disponível para retomada na máquina atual.
+- **Alternatives considered**: Usar `~/.claude/omc`; manter `.omc/` por repo e apenas ignorá-lo;
+  criar um marker `.omc-workspace`; calcular a variável em `SessionStart`; armazenar em `/tmp`.
+- **Scope**: Runtime local do Claude/OMC iniciado nesta raiz. Não altera AD-031, o lifecycle oficial
+  do APEX, repos de produto ou fontes canônicas; não autoriza persistir credenciais, dados de
+  clientes, saídas de produção ou transcripts em `session-context/`.
+- **Date**: 2026-08-02
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: APEX safety and session audit
