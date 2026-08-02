@@ -203,7 +203,12 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         apex_tool="apex_list_workspace_repos",
         outcome="unresolved",
     )
-    claude_session(claude_root, CLAUDE_DRIFT, final_cwd=f"{CWD}/repos")
+    claude_session(
+        claude_root,
+        CLAUDE_DRIFT,
+        apex_tool="apex_fetch_task",
+        final_cwd=f"{CWD}/repos",
+    )
     claude_session(
         claude_root,
         CLAUDE_VISITOR,
@@ -211,7 +216,12 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         final_cwd=CWD,
     )
     claude_session(claude_root, CLAUDE_APEX_RESOURCE, resource_server="apex")
-    claude_session(claude_root, CLAUDE_OTHER_RESOURCE, resource_server="context7")
+    claude_session(
+        claude_root,
+        CLAUDE_OTHER_RESOURCE,
+        resource_server="context7",
+        outcome="failure",
+    )
 
     command = [
         str(SUBJECT),
@@ -250,9 +260,9 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "files": 8,
         "sidechains": 1,
         "logical_sessions": 7,
-        "apex_tool_success_sessions": 2,
-        "apex_tool_attempt_sessions": 5,
-        "apex_tool_successes": {"apex_fetch_task": 1, "read_mcp_resource": 1},
+        "apex_tool_success_sessions": 3,
+        "apex_tool_attempt_sessions": 6,
+        "apex_tool_successes": {"apex_fetch_task": 2, "read_mcp_resource": 1},
         "apex_tool_failures": {"apex_run_tests": 1},
         "apex_tool_denials": {"apex_framework_index": 1},
         "apex_tool_unresolved": {"apex_list_workspace_repos": 1},
