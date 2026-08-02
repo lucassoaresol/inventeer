@@ -512,19 +512,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Claude runtime state and session audit
-  (`.specs/features/claude-runtime-state-audit/`)
-- **Phase / Task**: validation and evidence closure complete
-- **Completed**: spec `dbf3e27`; audit implementation `575f514`; runtime contract `02018ae`;
-  discriminating fixtures `d1cc6f5`; 13/13 ACs, 88/88 workspace checks, 3/3 killed mutants,
-  ignored local-settings fingerprint, and two real Claude smoke sessions recorded in
-  `validation.md`
+- **Feature**: Resilient TLC checkpoints
+  (`.specs/features/resilient-tlc-checkpoints/`)
+- **Phase / Task**: standalone validation and evidence closure complete
+- **Completed**: spec `1928db9`; helper and functional tests `56b9c21`; AD-036 and integration
+  contract `c5681a4`; fresh-eyes edge correction `a054ffa`; 16/16 ACs, 106/106 workspace checks,
+  range diff integrity, and 6/6 killed mutants recorded in `validation.md`
 - **In-progress**: none
-- **Next step**: optionally remove the four verified legacy `.omc/` directories after explicit
-  destructive-action authorization and confirmation that no session depends on them
-- **Blockers**: none for the delivered feature; legacy cleanup remains intentionally unauthorized
-- **Uncommitted files**: ignored `.claude/settings.local.json` and runtime state are machine-local by
-  design; no tracked implementation files remain after the evidence closure commit
+- **Next step**: invoke `scripts/update-tlc-checkpoint.py` after the next successful stable
+  transition of a real Portal + Codex + TLC delivery
+- **Blockers**: none
+- **Uncommitted files**: none after the evidence closure commit; ignored local runtime remains
+  machine-local by design
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
-  the prior session fell
+  recurring session falls

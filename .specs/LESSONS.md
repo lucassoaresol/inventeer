@@ -9,10 +9,10 @@
 Corroborated across multiple features. Safe to apply as guidance.
 
 ### L-008 — In workspace contract tests, assert every named authority surface and declared lifecycle edge case, not only the primary path
-- signal: `ac_gap` · recurrence: 2 feature(s) · scope: `workspace-contract-tests` · harmful: 0
+- signal: `ac_gap` · recurrence: 2 feature(s) · scope: `workspace-contract-tests` · harmful: 1
 - features: portal-tlc-session-artifacts, apex-safety-session-audit
 - evidence: .specs/features/portal-tlc-session-artifacts/validation.md:49 (workspace-contract-tests) (+1 more)
-- last seen: 2026-08-02T05:50:54Z
+- last seen: 2026-08-02T11:28:52Z
 
 ## Candidates (under observation — do NOT load as guidance yet)
 

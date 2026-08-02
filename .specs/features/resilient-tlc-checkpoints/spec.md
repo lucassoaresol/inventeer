@@ -1,6 +1,6 @@
 # Resilient TLC Checkpoints Specification
 
-**Status:** Approved by the user's 2026-08-02 implementation authorization
+**Status:** Verified on 2026-08-02
 **Review language:** Portuguese
 **Canonical language:** English
 
@@ -125,16 +125,16 @@ last file-backed state describes a completed transition rather than an arbitrary
 
 | Requirement | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- |
-| RTCP-01 | ISSUE | Eight INV-3145 session files and four post-retrospective continuations | Helper | Pending |
-| RTCP-02 | DECISION | User approved local per-machine checkpoints | Helper | Pending |
-| RTCP-03 | INHERITED | AD-031 Portal TLC artifact route | Helper | Pending |
-| RTCP-04 | INHERITED | TLC section-scoped memory invariant | Helper | Pending |
-| RTCP-05 | SAFETY | Abrupt failure must not corrupt the last checkpoint | Helper | Pending |
-| RTCP-06 | SAFETY | Target and Markdown input boundaries | Helper | Pending |
-| RTCP-07 | ISSUE | Handoff currently persists only on conscious pause/end | Contract | Pending |
-| RTCP-08 | INHERITED | AD-027 privacy boundary | Contract | Pending |
-| RTCP-09 | INHERITED | AD-031 local lifecycle and cross-machine limitation | Contract | Pending |
-| RTCP-10 | DECISION | Use AD-036 and leave vendored TLC unchanged | Contract | Pending |
+| RTCP-01 | ISSUE | Eight INV-3145 session files and four post-retrospective continuations | Helper | Verified |
+| RTCP-02 | DECISION | User approved local per-machine checkpoints | Helper | Verified |
+| RTCP-03 | INHERITED | AD-031 Portal TLC artifact route | Helper | Verified |
+| RTCP-04 | INHERITED | TLC section-scoped memory invariant | Helper | Verified |
+| RTCP-05 | SAFETY | Abrupt failure must not corrupt the last checkpoint | Helper | Verified |
+| RTCP-06 | SAFETY | Target and Markdown input boundaries | Helper | Verified |
+| RTCP-07 | ISSUE | Handoff currently persists only on conscious pause/end | Contract | Verified |
+| RTCP-08 | INHERITED | AD-027 privacy boundary | Contract | Verified |
+| RTCP-09 | INHERITED | AD-031 local lifecycle and cross-machine limitation | Contract | Verified |
+| RTCP-10 | DECISION | Use AD-036 and leave vendored TLC unchanged | Contract | Verified |
 
 **Coverage:** 10 requirements; all mapped to helper or contract work.
 
