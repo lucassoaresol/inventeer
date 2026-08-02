@@ -91,10 +91,10 @@ can learn from real usage without manually copying or over-counting transcripts.
 
 | Requirement | Provenance | Evidence | Status |
 | --- | --- | --- | --- |
-| ASSA-01 | SAFETY | Current APEX mutation surface and `.codex/config.toml` | Pending |
-| ASSA-02 | INHERITED | AD-026 ownership and executor boundary | Pending |
-| ASSA-03 | SAFETY | `scripts/test-mcp-config.py` regression gate | Pending |
-| ASSA-04 | INHERITED | Claude/APEX route in AD-026 | Pending |
+| ASSA-01 | SAFETY | Current APEX mutation surface and `.codex/config.toml` | Verified |
+| ASSA-02 | INHERITED | AD-026 ownership and executor boundary | Verified |
+| ASSA-03 | SAFETY | `scripts/test-mcp-config.py` regression gate | Verified |
+| ASSA-04 | INHERITED | Claude/APEX route in AD-026 | Verified |
 | ASSA-05 | ISSUE | User requested session-based learning | Pending |
 | ASSA-06 | INHERITED | AD-027 deduplication and privacy boundary | Pending |
 | ASSA-07 | INHERITED | AD-027 excludes the current retrospective | Pending |

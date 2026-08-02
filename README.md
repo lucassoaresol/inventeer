@@ -183,6 +183,10 @@ resources, mas as sessões reais mostraram que isso não fornece por si só invo
 sessão, artifacts e gates completos. Portanto, entregas no Codex usam TLC, inclusive em repos com
 `ENV.md` (AD-026).
 
+A superfície Codex também expõe operações mutáveis de Git, GitHub, Linear e coordenação multi-repo.
+Essas ferramentas exigem aprovação pelo modo `writes`; leituras diagnósticas permanecem disponíveis,
+e a presença das operações não amplia ownership nem transforma o MCP em executor suportado.
+
 Os wrappers em `.agents/skills/apex-<id>/` preservam uma superfície experimental para inspeção e
 diagnóstico no Codex. Eles não são expostos ao Claude e não devem ser tratados como execução APEX
 suportada.

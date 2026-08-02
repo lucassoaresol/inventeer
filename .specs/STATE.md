@@ -406,6 +406,25 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-07-31
 - **Status**: active
 
+### AD-032
+- **Decision**: Manter as leituras diagnósticas do MCP `apex` disponíveis no Codex e exigir
+  aprovação do engine para suas ferramentas de escrita por meio de
+  `default_tools_approval_mode = "writes"`; a superfície mutável não amplia ownership nem torna o
+  APEX um executor suportado no Codex.
+- **Reason**: O catálogo atual passou a expor commit, push, criação de PR, atualização de task e
+  orquestração multi-repo, enquanto AD-026 mantém o uso Codex estritamente experimental e
+  diagnóstico. A configuração anterior não expressava uma fronteira de consentimento para essas
+  mutações.
+- **Trade-off**: Operações APEX mutáveis no Codex ganham uma interação de aprovação; em troca,
+  consultas read-only continuam rápidas e uma expansão do gateway não concede autoridade
+  silenciosamente. Claude/APEX permanece inalterado como rota nativa de entrega elegível.
+- **Alternatives considered**: Exigir prompt para toda tool APEX; desabilitar o servidor no Codex;
+  confiar apenas nas instruções de chat; promover o APEX a executor por disponibilidade de tools.
+- **Scope**: Configuração e uso do MCP APEX no Codex iniciado por esta raiz; não altera Claude,
+  produtos, Linear, GitHub ou repositórios aninhados.
+- **Date**: 2026-08-02
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Portal TLC session artifacts

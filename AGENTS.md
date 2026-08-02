@@ -61,6 +61,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   `apex://framework/workflows/<id>`, mas não criam uma execução APEX suportada nem substituem
   prompts nativos, contexto de sessão, artifacts ou gates ausentes. Não as use como executor de
   entrega; não edite seu conteúdo gerado. No Claude Code, use os workflows nativos do MCP `apex`.
+- No Codex, mantenha ferramentas de escrita do MCP `apex` sujeitas a aprovação. A exposição de
+  operações Git, GitHub, Linear ou multi-repo não amplia ownership nem autoriza execução APEX.
 - Escolha o executor por engine e repositório (AD-026): no Claude Code, use APEX quando o repo tiver
   `ENV.md` e TLC nos demais; no Codex, use sempre `tlc-spec-driven` para especificação,
   implementação e validação, inclusive em repos com `ENV.md`, até nova decisão baseada em uma
