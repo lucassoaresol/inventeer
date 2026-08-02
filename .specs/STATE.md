@@ -472,17 +472,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 - **Feature**: APEX safety and session audit
   (`.specs/features/apex-safety-session-audit/`)
-- **Phase / Task**: Native APEX pilot diagnosed; outcome-aware audit amendment in validation
+- **Phase / Task**: Native APEX pilot and outcome-aware audit amendment complete
 - **Completed**: spec `99293cc`; APEX write approval `6f0fb6d`; sanitized audit `404b8af`;
   coverage correction `b8f40fc`; 11/11 ACs, 85/85 workspace checks, range diff integrity, and 3/3
-  killed mutants recorded in `validation.md`
-- **In-progress**: distinguish successful, failed, denied, and unresolved APEX attempts; record the
-  native Claude pilot without copying its transcript
-- **Next step**: run the full workspace gate, update validation evidence, and re-run `eng-ready` only
-  after the APEX server publishes `preflight` and injects workspace context
+  killed mutants recorded in `validation.md`; native Claude pilot, AD-034, and outcome-aware audit
+  `2223fc9`; amendment gate 85/85 and 2/2 additional mutants
+- **In-progress**: none
+- **Next step**: re-run `eng-ready` only after the APEX server publishes `preflight` and injects
+  workspace context
 - **Blockers**: native `eng-ready` is externally blocked by missing `preflight`; local tooling work
   is not blocked
-- **Uncommitted files**: audit amendment, fixtures, docs, pilot evidence, and active decisions
+- **Uncommitted files**: none after the evidence closure commit
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
   recurring session communication failures

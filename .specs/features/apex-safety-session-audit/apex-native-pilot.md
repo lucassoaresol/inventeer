@@ -1,9 +1,9 @@
 # Native APEX Pilot — `eng-ready`
 
-**Date:** 2026-08-02  
-**Engine:** Claude Code 2.1.220  
-**Repository:** `repos/portal-api`  
-**Mode:** read-only, non-interactive; edit, write, shell, agent, and worktree tools disabled  
+**Date:** 2026-08-02
+**Engine:** Claude Code 2.1.220
+**Repository:** `repos/portal-api`
+**Mode:** read-only, non-interactive; edit, write, shell, agent, and worktree tools disabled
 **Local evidence pointer:** Claude session `33333333-4444-4555-8666-777777777777`
 
 ## Verdict
