@@ -15,6 +15,7 @@ PRIMARY = "11111111-1111-4111-8111-111111111111"
 CONTINUATION = "22222222-2222-4222-8222-222222222222"
 SUBAGENT = "33333333-3333-4333-8333-333333333333"
 EXCLUDED = "44444444-4444-4444-8444-444444444444"
+OLD_PARENT = "66666666-6666-4666-8666-666666666666"
 SECRET = "TRANSCRIPT_CONTENT_MUST_NOT_LEAK"
 
 
@@ -105,7 +106,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
     codex_session(
         codex_root,
         CONTINUATION,
-        user_text=f"A sessão id {PRIMARY} caiu, continue aqui. {SECRET}",
+        user_text=f"A sessão id {OLD_PARENT} caiu, continue aqui. {SECRET}",
     )
     codex_session(
         codex_root,
@@ -121,7 +122,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
     )
     codex_session(
         codex_root,
-        "66666666-6666-4666-8666-666666666666",
+        OLD_PARENT,
         timestamp="2026-07-01T10:00:00Z",
         apex_tool="apex_update_task",
     )
