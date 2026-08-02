@@ -490,19 +490,19 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: APEX safety and session audit
-  (`.specs/features/apex-safety-session-audit/`)
-- **Phase / Task**: Native APEX pilot and outcome-aware audit amendment complete
-- **Completed**: spec `99293cc`; APEX write approval `6f0fb6d`; sanitized audit `404b8af`;
-  coverage correction `b8f40fc`; 11/11 ACs, 85/85 workspace checks, range diff integrity, and 3/3
-  killed mutants recorded in `validation.md`; native Claude pilot, AD-034, and outcome-aware audit
-  `2223fc9`; amendment gate 85/85 and 2/2 additional mutants
+- **Feature**: Claude runtime state and session audit
+  (`.specs/features/claude-runtime-state-audit/`)
+- **Phase / Task**: validation and evidence closure complete
+- **Completed**: spec `dbf3e27`; audit implementation `575f514`; runtime contract `02018ae`;
+  discriminating fixtures `d1cc6f5`; 13/13 ACs, 88/88 workspace checks, 3/3 killed mutants,
+  ignored local-settings fingerprint, and two real Claude smoke sessions recorded in
+  `validation.md`
 - **In-progress**: none
-- **Next step**: re-run `eng-ready` only after the APEX server publishes `preflight` and injects
-  workspace context
-- **Blockers**: native `eng-ready` is externally blocked by missing `preflight`; local tooling work
-  is not blocked
-- **Uncommitted files**: none after the evidence closure commit
+- **Next step**: optionally remove the four verified legacy `.omc/` directories after explicit
+  destructive-action authorization and confirmation that no session depends on them
+- **Blockers**: none for the delivered feature; legacy cleanup remains intentionally unauthorized
+- **Uncommitted files**: ignored `.claude/settings.local.json` and runtime state are machine-local by
+  design; no tracked implementation files remain after the evidence closure commit
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
-  recurring session communication failures
+  the prior session fell

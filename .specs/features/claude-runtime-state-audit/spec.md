@@ -1,6 +1,6 @@
 # Claude Runtime State and Session Audit Specification
 
-**Status:** Approved by the user's 2026-08-02 implementation authorization
+**Status:** Verified on 2026-08-02
 **Review language:** Portuguese
 **Canonical language:** English
 
@@ -114,14 +114,14 @@ that a successful MCP response is never presented as proof of completed APEX wor
 
 | Requirement | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- |
-| CRSA-01 | DECISION | User selected `session-context/` and confirmed root launches | Runtime | Pending |
-| CRSA-02 | INHERITED | AD-017 ephemeral context boundary | Runtime | Pending |
-| CRSA-03 | INHERITED | AD-031 Portal-specific scope boundary | Runtime | Pending |
-| CRSA-04 | ISSUE | `.omc/` files created by Claude hooks in two observed sessions | Runtime | Pending |
-| CRSA-05 | ISSUE | Claude session lost when final `cwd` changed to `repos/` | Audit | Pending |
-| CRSA-06 | SAFETY | Tool success must not imply workflow completion | Audit | Pending |
-| CRSA-07 | ISSUE | Claude resource reads use `ReadMcpResourceTool` | Audit | Pending |
-| CRSA-08 | INHERITED | AD-027 transcript and credential privacy boundary | Validation | Pending |
+| CRSA-01 | DECISION | User selected `session-context/` and confirmed root launches | Runtime | Verified |
+| CRSA-02 | INHERITED | AD-017 ephemeral context boundary | Runtime | Verified |
+| CRSA-03 | INHERITED | AD-031 Portal-specific scope boundary | Runtime | Verified |
+| CRSA-04 | ISSUE | `.omc/` files created by Claude hooks in two observed sessions | Runtime | Verified |
+| CRSA-05 | ISSUE | Claude session lost when final `cwd` changed to `repos/` | Audit | Verified |
+| CRSA-06 | SAFETY | Tool success must not imply workflow completion | Audit | Verified |
+| CRSA-07 | ISSUE | Claude resource reads use `ReadMcpResourceTool` | Audit | Verified |
+| CRSA-08 | INHERITED | AD-027 transcript and credential privacy boundary | Validation | Verified |
 
 **Coverage:** 8 requirements; all mapped to runtime, audit, or validation work.
 
