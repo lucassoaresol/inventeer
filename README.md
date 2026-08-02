@@ -223,6 +223,21 @@ segue três destinos: decisões transversais em `.specs/STATE.md`; falhas de exe
 validação no mecanismo de lessons da TLC; e achados específicos de produto no repositório ou fonte
 canônica do produto. Consulte AD-027.
 
+Use o inventário sanitizado antes da análise qualitativa:
+
+```bash
+./scripts/audit-session-history.py \
+  --cwd "$PWD" \
+  --since 2026-07-29 \
+  --exclude-session <ID-DA-SESSAO-CORRENTE>
+```
+
+O relatório contém somente contagens agregadas: sessões principais, continuations, subagents ou
+sidechains, trabalhos lógicos e chamadas APEX observadas em registros estruturados. Ele não emite
+prompts, respostas, resultados de tools, caminhos dos histories nem corpos de transcript. O vínculo
+de continuation no Codex é uma heurística conservadora: UUID referenciado junto de `caiu` e
+`continue`; no Claude, apenas sidechains estruturadas são deduplicadas automaticamente.
+
 ## Repositórios locais
 
 Clone os projetos dentro de `repos/`, preservando o nome do repositório remoto:

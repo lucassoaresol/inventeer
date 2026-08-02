@@ -80,6 +80,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Em retrospectivas de skills e fluxo, consulte os históricos locais das duas engines associados a
   esta raiz: `~/.codex/sessions/` e o projeto correspondente em `~/.claude/projects/`. Diferencie
   sessões principais, continuations e cópias; não conte a própria retrospectiva como evidência.
+  Use `scripts/audit-session-history.py` como inventário inicial sanitizado, informando o ID da
+  sessão corrente em `--exclude-session`; interprete resultados somente depois dessa deduplicação.
   Não copie transcripts para o Git. Destile decisão transversal em `.specs/STATE.md`, lesson de
   execução somente após validação pelo script da TLC e achado de produto na fonte do produto
   (AD-027).

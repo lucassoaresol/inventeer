@@ -425,6 +425,24 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-02
 - **Status**: active
 
+### AD-033
+- **Decision**: Iniciar retrospectivas deste workspace com
+  `scripts/audit-session-history.py`, que agrega metadados das sessões Codex e Claude, deduplica
+  continuations Codex e sidechains Claude, exclui explicitamente a sessão corrente e conta uso APEX
+  somente a partir de registros estruturados, sem emitir conteúdo dos transcripts.
+- **Reason**: O recorte posterior a AD-027 contém muitas continuations após quedas, e buscas textuais
+  simples também encontram nomes de tools injetados nas instruções, inflando tanto experiências
+  quanto uso APEX. A análise manual é repetitiva e fácil de contaminar.
+- **Trade-off**: A ligação de continuation Codex depende da convenção textual com UUID, `caiu` e
+  `continue`, e o Claude só deduplica sidechains explicitamente marcadas; em troca, o inventário é
+  reproduzível, conservador e não persiste prompts, respostas ou resultados.
+- **Alternatives considered**: Continuar com comandos ad hoc; copiar JSONL para o workspace; contar
+  cada arquivo como sessão independente; inferir uso APEX por ocorrência textual de nomes de tools.
+- **Scope**: Retrospectivas de skills e fluxo deste workspace; não interpreta outcomes de produto,
+  não modifica histories e não transforma metadados locais em fonte canônica.
+- **Date**: 2026-08-02
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Portal TLC session artifacts

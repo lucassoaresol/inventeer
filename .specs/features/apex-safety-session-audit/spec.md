@@ -95,10 +95,10 @@ can learn from real usage without manually copying or over-counting transcripts.
 | ASSA-02 | INHERITED | AD-026 ownership and executor boundary | Verified |
 | ASSA-03 | SAFETY | `scripts/test-mcp-config.py` regression gate | Verified |
 | ASSA-04 | INHERITED | Claude/APEX route in AD-026 | Verified |
-| ASSA-05 | ISSUE | User requested session-based learning | Pending |
-| ASSA-06 | INHERITED | AD-027 deduplication and privacy boundary | Pending |
-| ASSA-07 | INHERITED | AD-027 excludes the current retrospective | Pending |
-| ASSA-08 | SAFETY | Structured call records avoid prompt contamination | Pending |
+| ASSA-05 | ISSUE | User requested session-based learning | Verified |
+| ASSA-06 | INHERITED | AD-027 deduplication and privacy boundary | Verified |
+| ASSA-07 | INHERITED | AD-027 excludes the current retrospective | Verified |
+| ASSA-08 | SAFETY | Structured call records avoid prompt contamination | Verified |
 
 ## Success Criteria
 
