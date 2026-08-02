@@ -137,17 +137,19 @@
       "text": "In workspace contract tests, assert every named authority surface and declared lifecycle edge case, not only the primary path",
       "signal": "ac_gap",
       "scope": "workspace-contract-tests",
-      "status": "candidate",
+      "status": "confirmed",
       "features": [
-        "portal-tlc-session-artifacts"
+        "portal-tlc-session-artifacts",
+        "apex-safety-session-audit"
       ],
-      "recurrence": 1,
+      "recurrence": 2,
       "harmful": 0,
       "evidence": [
-        ".specs/features/portal-tlc-session-artifacts/validation.md:49 (workspace-contract-tests)"
+        ".specs/features/portal-tlc-session-artifacts/validation.md:49 (workspace-contract-tests)",
+        ".specs/features/apex-safety-session-audit/validation.md:Test Adequacy (workspace-contract-tests)"
       ],
       "created": "2026-07-31T06:11:36Z",
-      "last_seen": "2026-07-31T06:11:36Z"
+      "last_seen": "2026-08-02T05:50:54Z"
     }
   ]
 }

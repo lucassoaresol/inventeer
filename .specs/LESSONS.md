@@ -8,7 +8,11 @@
 
 Corroborated across multiple features. Safe to apply as guidance.
 
-_none_
+### L-008 — In workspace contract tests, assert every named authority surface and declared lifecycle edge case, not only the primary path
+- signal: `ac_gap` · recurrence: 2 feature(s) · scope: `workspace-contract-tests` · harmful: 0
+- features: portal-tlc-session-artifacts, apex-safety-session-audit
+- evidence: .specs/features/portal-tlc-session-artifacts/validation.md:49 (workspace-contract-tests) (+1 more)
+- last seen: 2026-08-02T05:50:54Z
 
 ## Candidates (under observation — do NOT load as guidance yet)
 
@@ -55,12 +59,6 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - features: workspace-mcp-resource-preflight-cwd-correction
 - evidence: .specs/features/workspace-mcp-resource-preflight/validation.md:Runtime Finding (mcp)
 - last seen: 2026-07-29T01:10:51Z
-
-### L-008 — In workspace contract tests, assert every named authority surface and declared lifecycle edge case, not only the primary path
-- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `workspace-contract-tests` · harmful: 0
-- features: portal-tlc-session-artifacts
-- evidence: .specs/features/portal-tlc-session-artifacts/validation.md:49 (workspace-contract-tests)
-- last seen: 2026-07-31T06:11:36Z
 
 ## Quarantined (failed when applied — ignore)
 

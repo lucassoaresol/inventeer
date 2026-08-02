@@ -445,18 +445,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Portal TLC session artifacts
-  (`.specs/features/portal-tlc-session-artifacts/`)
-- **Phase / Task**: Execute and standalone validation complete
-- **Completed**: policy and Portal handoff `0f7af35`; coverage correction `65c4278`; 8/8 ACs,
-  3/3 edge cases, 18/18 contract checks, structural validation, ShellCheck, diff integrity, and 1/1
-  killed mutant recorded in `validation.md`
+- **Feature**: APEX safety and session audit
+  (`.specs/features/apex-safety-session-audit/`)
+- **Phase / Task**: Execute and standalone fresh-eyes validation complete
+- **Completed**: spec `99293cc`; APEX write approval `6f0fb6d`; sanitized audit `404b8af`;
+  coverage correction `b8f40fc`; 11/11 ACs, 85/85 workspace checks, range diff integrity, and 3/3
+  killed mutants recorded in `validation.md`
 - **In-progress**: none
-- **Next step**: pilot `session-context/portal/<INV-ID>/tlc/` on the next Portal task executed by
-  Codex + TLC and re-evaluate AD-031 after a complete delivery
+- **Next step**: use the sanitized audit in the next workspace retrospective and re-evaluate Codex
+  APEX only after a session satisfies AD-026's end-to-end execution criteria
 - **Blockers**: none
-- **Uncommitted files**: none after the evidence closure commit; pre-existing
-  `.agents/skills/create-review-bundle/.omc/` remains intentionally untracked and out of scope
+- **Uncommitted files**: none after the evidence closure commit
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
   recurring session communication failures
