@@ -60,6 +60,39 @@ entrega. Após merge e encerramento da issue, o diretório local fica elegível 
 um piloto transitório exclusivo do Portal no Codex; Claude/APEX e outros produtos permanecem
 inalterados, e o lifecycle oficial do APEX a substituirá quando houver suporte end-to-end no Codex.
 
+### Checkpoints resilientes da TLC
+
+Depois de uma transição Portal + Codex + TLC bem-sucedida, atualize o handoff local com
+`scripts/update-tlc-checkpoint.py`. O helper calcula o destino exato
+`session-context/portal/<INV-ID>/tlc/STATE.md`; não aceita um path de saída arbitrário. Os eventos
+permitidos são `gate`, `commit`, `bundle`, `pr` e `validation`. Não grave um evento quando a
+transição correspondente falhar antes de produzir seu resultado.
+
+Exemplo abreviado:
+
+```bash
+./scripts/update-tlc-checkpoint.py \
+  --workspace-root "$PWD" \
+  --issue INV-3145 \
+  --feature "INV-3145 delivery" \
+  --phase-task "Execute / focused gate" \
+  --completed "implementation" \
+  --event gate \
+  --validated-sha abc1234 \
+  --validated-surface "focused tests" \
+  --process "none" \
+  --next-step "run the full gate" \
+  --branch main \
+  --validation-state in-progress
+```
+
+O arquivo é local, efêmero, ignorado, não canônico e não oferece portabilidade cross-machine. Ele
+reduz a janela de reconstrução depois de uma queda, mas pode perder trabalho posterior ao último
+evento registrado. Revalide a liveness de qualquer processo descrito antes de tratá-lo como ativo.
+Registre somente labels de paths para arquivos não commitados; não persista transcripts, diffs e credenciais,
+nem dados de clientes ou saídas de produção. Sob AD-031, o diretório fica elegível para
+limpeza somente após merge e issue encerrada.
+
 ## Skills
 
 | Skill | Origem | Versão | Uso |

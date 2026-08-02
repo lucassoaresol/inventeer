@@ -488,6 +488,28 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-02
 - **Status**: active
 
+### AD-036
+- **Decision**: Para entregas Portal executadas por Codex + TLC, persistir checkpoints locais em
+  `session-context/portal/<INV-ID>/tlc/STATE.md` com
+  `scripts/update-tlc-checkpoint.py` depois de gate, commit, bundle, criação ou atualização de PR e
+  mudança de validation concluídos com sucesso; atualizar somente `## Handoff` e não avançar estado
+  quando a transição correspondente falhar.
+- **Reason**: O histórico de outra máquina para INV-3145 passou de quatro para oito arquivos de
+  sessão, e as quatro continuations adicionais caíram após teste focal, revisão, suíte completa e
+  espera de CI. Como a duração variou de cerca de 30 minutos a 7h38, carga da máquina não explica
+  sozinha a perda de continuidade; o handoff restrito a pausa consciente deixa uma janela evitável.
+- **Trade-off**: O checkpoint reduz a reconstrução ao trabalho posterior à última transição estável,
+  mas continua efêmero, single-writer, local à máquina e sem portabilidade cross-machine. Processos
+  registrados podem estar stale e devem ter sua liveness revalidada na retomada.
+- **Alternatives considered**: Manter handoff apenas em pausas conscientes; tentar escrever somente
+  em um hook de queda; versionar checkpoints no Git; usar Linear ou a PR como log operacional fino;
+  modificar a TLC vendorizada para todos os produtos.
+- **Scope**: Somente Portal + Codex + TLC durante a rota transitória da AD-031. Preserva AD-031,
+  AD-032, Claude/APEX, repos de produto, fontes canônicas e a TLC vendorizada; mantém a privacidade
+  da AD-027 e o lifecycle de limpeza após merge e encerramento da issue.
+- **Date**: 2026-08-02
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Claude runtime state and session audit

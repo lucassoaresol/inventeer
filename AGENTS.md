@@ -81,6 +81,14 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   `session-context/portal/<INV-ID>/review/` e torne o diretório elegível para limpeza após merge e
   encerramento da issue. A rota é transitória e deve ser retirada quando o Codex executar APEX
   end-to-end; não a aplique ao Claude/APEX nem a outros produtos (AD-031).
+- Para checkpoints TLC resilientes nessa rota Portal + Codex + TLC, invoque
+  `scripts/update-tlc-checkpoint.py` somente depois que uma transição produzir seu resultado com sucesso:
+  gate concluído (`gate`), commit atômico criado (`commit`), bundle criado (`bundle`), PR criada ou
+  atualizada (`pr`) ou estado de validation alterado (`validation`); não avance o checkpoint como se uma transição que falhou tivesse concluído.
+  Grave em
+  `session-context/portal/<INV-ID>/tlc/STATE.md`; em `Uncommitted files`, registre somente paths, sem
+  diffs ou conteúdo. Trate processo registrado como contexto e confira sua liveness ao retomar. O
+  helper atualiza apenas `## Handoff`; decisões e outras seções permanecem intactas (AD-036).
 - Mantenha a divisão: triage compara issues e ondas; `advance-delivery-front` coordena a topologia de
   PRs/tasks; a skill de produto prepara uma issue; a TLC executa e verifica essa issue.
 - Não duplique o workflow da TLC em skills específicas de projeto.
