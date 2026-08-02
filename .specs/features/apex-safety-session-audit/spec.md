@@ -1,6 +1,6 @@
 # APEX Safety and Session Audit Specification
 
-**Status:** Approved from the user's 2026-08-02 tooling-retrospective request
+**Status:** Approved and amended by the user's 2026-08-02 native APEX pilot request
 **Review language:** Portuguese
 **Canonical language:** English
 
@@ -10,13 +10,19 @@ The Codex APEX surface has expanded from diagnostic reads to include Git, pull-r
 multi-repository mutations, but its workspace configuration does not explicitly require approval
 for writes. Retrospectives also depend on repeated ad hoc parsing of local Codex and Claude history,
 which makes continuation deduplication and actual APEX usage counts expensive and error-prone.
+A native Claude pilot also showed that a structured tool request is not evidence of execution when
+the call is denied, fails, remains unresolved, or the workflow requires a tool the server does not
+publish.
 
 ## Goals
 
 - Keep APEX diagnostic reads available in Codex while requiring approval for mutating tools.
 - Produce a repeatable, content-safe inventory of workspace sessions across Codex and Claude.
 - Distinguish main sessions, continuations, sub-agent/sidechain sessions, and logical work streams.
-- Count observed APEX calls from structured tool-call records instead of tool descriptions in prompts.
+- Count observed APEX outcomes from structured tool-call and result records instead of tool
+  descriptions in prompts.
+- Preserve a sanitized native-pilot verdict that tests workflow/resource/tool coherence without
+  copying the Claude transcript.
 
 ## Out of Scope
 
@@ -77,6 +83,23 @@ can learn from real usage without manually copying or over-counting transcripts.
    tool names present in injected instructions or descriptions SHALL not count.
 7. WHEN fixture-based tests run, THEN they SHALL detect broken continuation classification,
    exclusion, sidechain classification, APEX counting, and content leakage.
+8. WHEN a structured APEX request has a result, THEN the audit SHALL distinguish successful calls
+   from failures and denials; requests without a result SHALL be reported as unresolved rather than
+   successful usage.
+
+## P1: Native APEX Pilot Evidence
+
+**User Story:** As a tooling maintainer, I want a real Claude/APEX pilot so that executor policy is
+based on the server contract actually exposed to an eligible Portal repository.
+
+**Acceptance Criteria:**
+
+1. WHEN the pilot invokes `eng-ready`, THEN it SHALL fetch the canonical workflow resource and try
+   the required read-only gate without editing product files or mutating external systems.
+2. WHEN a required workflow tool is absent, THEN the pilot SHALL fail closed and identify the
+   contract mismatch instead of presenting a filesystem approximation as APEX execution.
+3. WHEN pilot evidence is versioned, THEN it SHALL contain only sanitized metadata, outcomes, and
+   routes; it SHALL NOT contain transcript bodies, credentials, or tool-result payloads.
 
 ## Edge Cases
 
@@ -99,10 +122,14 @@ can learn from real usage without manually copying or over-counting transcripts.
 | ASSA-06 | INHERITED | AD-027 deduplication and privacy boundary | Verified |
 | ASSA-07 | INHERITED | AD-027 excludes the current retrospective | Verified |
 | ASSA-08 | SAFETY | Structured call records avoid prompt contamination | Verified |
+| ASSA-09 | SAFETY | Native pilot distinguishes requested, denied, failed, unresolved, and successful calls | Verified |
+| ASSA-10 | ISSUE | User requested a real APEX workflow pilot against Portal | Verified |
 
 ## Success Criteria
 
 - Existing APEX read-only inspection remains usable after a Codex restart.
 - Every Codex APEX mutation requires engine approval.
 - The audit reproduces the retrospective counts from synthetic fixtures without emitting content.
+- A denied, failed, or unresolved APEX request never inflates successful usage.
+- The native pilot either completes the canonical gate or fails closed on an exact contract gap.
 - All workspace contract tests and the feature discrimination sensor pass.

@@ -73,7 +73,11 @@ def empty_codex() -> dict[str, Any]:
         "subagents": 0,
         "logical_work_streams": 0,
         "apex_sessions": 0,
+        "apex_attempt_sessions": 0,
         "apex_calls": {},
+        "apex_failures": {},
+        "apex_denials": {},
+        "apex_unresolved": {},
     }
 
 
@@ -88,10 +92,12 @@ def scan_codex(
 
     accepted = []
     apex_totals: collections.Counter[str] = collections.Counter()
+    apex_failures: collections.Counter[str] = collections.Counter()
     for path in sorted(root.rglob("*.jsonl")):
         metadata = None
         parent = None
         apex_calls: collections.Counter[str] = collections.Counter()
+        failed_calls: collections.Counter[str] = collections.Counter()
         for record in json_lines(path):
             payload = record.get("payload", {})
             if not isinstance(payload, dict):
@@ -111,7 +117,11 @@ def scan_codex(
                 if isinstance(invocation, dict) and invocation.get("server") == "apex":
                     tool = invocation.get("tool")
                     if isinstance(tool, str) and tool:
-                        apex_calls[tool] += 1
+                        result = payload.get("result", {})
+                        if isinstance(result, dict) and "Ok" in result:
+                            apex_calls[tool] += 1
+                        else:
+                            failed_calls[tool] += 1
 
         if not metadata or metadata.get("cwd") != cwd:
             continue
@@ -123,11 +133,19 @@ def scan_codex(
             continue
         source = metadata.get("source")
         is_subagent = isinstance(source, dict) and "subagent" in source
-        accepted.append((is_subagent, bool(parent) and not is_subagent, bool(apex_calls)))
+        accepted.append(
+            (
+                is_subagent,
+                bool(parent) and not is_subagent,
+                bool(apex_calls),
+                bool(apex_calls or failed_calls),
+            )
+        )
         apex_totals.update(apex_calls)
+        apex_failures.update(failed_calls)
 
-    subagents = sum(is_subagent for is_subagent, _, _ in accepted)
-    continuations = sum(is_continuation for _, is_continuation, _ in accepted)
+    subagents = sum(is_subagent for is_subagent, _, _, _ in accepted)
+    continuations = sum(is_continuation for _, is_continuation, _, _ in accepted)
     main_sessions = len(accepted) - subagents
     return {
         "files": len(accepted),
@@ -135,8 +153,12 @@ def scan_codex(
         "continuations": continuations,
         "subagents": subagents,
         "logical_work_streams": main_sessions - continuations,
-        "apex_sessions": sum(has_apex for _, _, has_apex in accepted),
+        "apex_sessions": sum(has_success for _, _, has_success, _ in accepted),
+        "apex_attempt_sessions": sum(has_attempt for _, _, _, has_attempt in accepted),
         "apex_calls": dict(sorted(apex_totals.items())),
+        "apex_failures": dict(sorted(apex_failures.items())),
+        "apex_denials": {},
+        "apex_unresolved": {},
     }
 
 
@@ -146,7 +168,11 @@ def empty_claude() -> dict[str, Any]:
         "sidechains": 0,
         "logical_sessions": 0,
         "apex_sessions": 0,
+        "apex_attempt_sessions": 0,
         "apex_calls": {},
+        "apex_failures": {},
+        "apex_denials": {},
+        "apex_unresolved": {},
     }
 
 
@@ -161,12 +187,16 @@ def scan_claude(
 
     accepted = []
     apex_totals: collections.Counter[str] = collections.Counter()
+    failure_totals: collections.Counter[str] = collections.Counter()
+    denial_totals: collections.Counter[str] = collections.Counter()
+    unresolved_totals: collections.Counter[str] = collections.Counter()
     for path in sorted(project.glob("*.jsonl")):
         session_id = None
         session_cwd = None
         timestamps = []
         is_sidechain = False
-        apex_calls: collections.Counter[str] = collections.Counter()
+        apex_attempts: dict[str, str] = {}
+        apex_outcomes: dict[str, str] = {}
         for record in json_lines(path):
             if isinstance(record.get("sessionId"), str):
                 session_id = record["sessionId"]
@@ -177,33 +207,68 @@ def scan_claude(
                 timestamps.append(timestamp)
             is_sidechain = is_sidechain or record.get("isSidechain") is True
 
-            if record.get("type") != "assistant":
-                continue
             message = record.get("message", {})
             content = message.get("content", []) if isinstance(message, dict) else []
             if not isinstance(content, list):
                 continue
             for item in content:
-                if not isinstance(item, dict) or item.get("type") != "tool_use":
+                if not isinstance(item, dict):
                     continue
-                name = item.get("name")
-                if isinstance(name, str) and name.startswith("mcp__apex__"):
-                    apex_calls[name.removeprefix("mcp__apex__")] += 1
+                if record.get("type") == "assistant" and item.get("type") == "tool_use":
+                    tool_id = item.get("id")
+                    name = item.get("name")
+                    if (
+                        isinstance(tool_id, str)
+                        and isinstance(name, str)
+                        and name.startswith("mcp__apex__")
+                    ):
+                        apex_attempts[tool_id] = name.removeprefix("mcp__apex__")
+                    continue
+                if record.get("type") == "user" and item.get("type") == "tool_result":
+                    tool_id = item.get("tool_use_id")
+                    if not isinstance(tool_id, str) or tool_id not in apex_attempts:
+                        continue
+                    if record.get("toolDenialKind"):
+                        apex_outcomes[tool_id] = "denial"
+                    elif item.get("is_error") is True:
+                        apex_outcomes[tool_id] = "failure"
+                    else:
+                        apex_outcomes[tool_id] = "success"
 
         if session_cwd != cwd or not session_id or session_id in excluded:
             continue
         if not timestamps or min(timestamps) < since:
             continue
-        accepted.append((is_sidechain, bool(apex_calls)))
-        apex_totals.update(apex_calls)
+        session_successes: collections.Counter[str] = collections.Counter()
+        session_failures: collections.Counter[str] = collections.Counter()
+        session_denials: collections.Counter[str] = collections.Counter()
+        session_unresolved: collections.Counter[str] = collections.Counter()
+        for tool_id, tool in apex_attempts.items():
+            outcome = apex_outcomes.get(tool_id, "unresolved")
+            {
+                "success": session_successes,
+                "failure": session_failures,
+                "denial": session_denials,
+                "unresolved": session_unresolved,
+            }[outcome][tool] += 1
 
-    sidechains = sum(is_sidechain for is_sidechain, _ in accepted)
+        accepted.append((is_sidechain, bool(session_successes), bool(apex_attempts)))
+        apex_totals.update(session_successes)
+        failure_totals.update(session_failures)
+        denial_totals.update(session_denials)
+        unresolved_totals.update(session_unresolved)
+
+    sidechains = sum(is_sidechain for is_sidechain, _, _ in accepted)
     return {
         "files": len(accepted),
         "sidechains": sidechains,
         "logical_sessions": len(accepted) - sidechains,
-        "apex_sessions": sum(has_apex for _, has_apex in accepted),
+        "apex_sessions": sum(has_success for _, has_success, _ in accepted),
+        "apex_attempt_sessions": sum(has_attempt for _, _, has_attempt in accepted),
         "apex_calls": dict(sorted(apex_totals.items())),
+        "apex_failures": dict(sorted(failure_totals.items())),
+        "apex_denials": dict(sorted(denial_totals.items())),
+        "apex_unresolved": dict(sorted(unresolved_totals.items())),
     }
 
 
@@ -222,17 +287,30 @@ def render_text(report: dict[str, Any]) -> str:
         "subagents",
         "logical_work_streams",
         "apex_sessions",
+        "apex_attempt_sessions",
     ):
         lines.append(f"  {key}: {codex[key]}")
     lines.append("  apex_calls:")
     lines.extend(f"    {tool}: {count}" for tool, count in codex["apex_calls"].items())
+    for key in ("apex_failures", "apex_denials", "apex_unresolved"):
+        lines.append(f"  {key}:")
+        lines.extend(f"    {tool}: {count}" for tool, count in codex[key].items())
 
     lines.extend(("", "Claude"))
     claude = report["claude"]
-    for key in ("files", "sidechains", "logical_sessions", "apex_sessions"):
+    for key in (
+        "files",
+        "sidechains",
+        "logical_sessions",
+        "apex_sessions",
+        "apex_attempt_sessions",
+    ):
         lines.append(f"  {key}: {claude[key]}")
     lines.append("  apex_calls:")
     lines.extend(f"    {tool}: {count}" for tool, count in claude["apex_calls"].items())
+    for key in ("apex_failures", "apex_denials", "apex_unresolved"):
+        lines.append(f"  {key}:")
+        lines.extend(f"    {tool}: {count}" for tool, count in claude[key].items())
     return "\n".join(lines) + "\n"
 
 

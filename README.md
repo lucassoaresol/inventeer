@@ -183,6 +183,12 @@ resources, mas as sessões reais mostraram que isso não fornece por si só invo
 sessão, artifacts e gates completos. Portanto, entregas no Codex usam TLC, inclusive em repos com
 `ENV.md` (AD-026).
 
+A rota nativa também falha fechada quando o resource do workflow e a superfície de tools divergem.
+O piloto read-only de 2026-08-02 leu `eng-ready` no Claude, mas não conseguiu executá-lo: o workflow
+exige `preflight`, a tool não foi publicada e o bloco `=== APEX WORKSPACE ===` não chegou à sessão.
+Uma chamada negada, com erro ou sem resultado não é execução APEX. Consulte o
+[piloto sanitizado](.specs/features/apex-safety-session-audit/apex-native-pilot.md) e AD-034.
+
 A superfície Codex também expõe operações mutáveis de Git, GitHub, Linear e coordenação multi-repo.
 Essas ferramentas exigem aprovação pelo modo `writes`; leituras diagnósticas permanecem disponíveis,
 e a presença das operações não amplia ownership nem transforma o MCP em executor suportado.
@@ -233,10 +239,12 @@ Use o inventário sanitizado antes da análise qualitativa:
 ```
 
 O relatório contém somente contagens agregadas: sessões principais, continuations, subagents ou
-sidechains, trabalhos lógicos e chamadas APEX observadas em registros estruturados. Ele não emite
-prompts, respostas, resultados de tools, caminhos dos histories nem corpos de transcript. O vínculo
-de continuation no Codex é uma heurística conservadora: UUID referenciado junto de `caiu` e
-`continue`; no Claude, apenas sidechains estruturadas são deduplicadas automaticamente.
+sidechains, trabalhos lógicos, tentativas APEX e seus outcomes estruturados. `apex_calls` contém
+somente sucessos; falhas, negações e tentativas sem resultado ficam separadas em `apex_failures`,
+`apex_denials` e `apex_unresolved`. Ele não emite prompts, respostas, resultados de tools, caminhos
+dos histories nem corpos de transcript. O vínculo de continuation no Codex é uma heurística
+conservadora: UUID referenciado junto de `caiu` e `continue`; no Claude, apenas sidechains
+estruturadas são deduplicadas automaticamente.
 
 ## Repositórios locais
 

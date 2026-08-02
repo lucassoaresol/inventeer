@@ -17,6 +17,9 @@ SUBAGENT = "33333333-3333-4333-8333-333333333333"
 EXCLUDED = "44444444-4444-4444-8444-444444444444"
 OLD_PARENT = "66666666-6666-4666-8666-666666666666"
 SECRET = "TRANSCRIPT_CONTENT_MUST_NOT_LEAK"
+CLAUDE_DENIED = "99999999-9999-4999-8999-999999999999"
+CLAUDE_FAILED = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+CLAUDE_UNRESOLVED = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
 
 
 def write_jsonl(path: pathlib.Path, records: list[dict]) -> None:
@@ -33,6 +36,7 @@ def codex_session(
     source: object = "cli",
     user_text: str = SECRET,
     apex_tool: str | None = None,
+    apex_ok: bool = True,
 ) -> None:
     records = [
         {
@@ -60,7 +64,7 @@ def codex_session(
                 "payload": {
                     "type": "mcp_tool_call_end",
                     "invocation": {"server": "apex", "tool": apex_tool},
-                    "result": {"content": SECRET},
+                    "result": {"Ok" if apex_ok else "Err": SECRET},
                 },
             }
         )
@@ -73,23 +77,52 @@ def claude_session(
     *,
     sidechain: bool = False,
     apex_tool: str | None = None,
+    outcome: str = "success",
 ) -> None:
     content = [{"type": "text", "text": SECRET}]
+    tool_id = f"tool-{session_id}"
     if apex_tool:
-        content.append({"type": "tool_use", "name": f"mcp__apex__{apex_tool}", "input": {}})
-    write_jsonl(
-        root / f"{session_id}.jsonl",
-        [
+        content.append(
             {
-                "type": "assistant",
-                "sessionId": session_id,
-                "cwd": CWD,
-                "timestamp": "2026-08-01T11:00:00Z",
-                "isSidechain": sidechain,
-                "message": {"role": "assistant", "content": content},
+                "type": "tool_use",
+                "id": tool_id,
+                "name": f"mcp__apex__{apex_tool}",
+                "input": {},
             }
-        ],
-    )
+        )
+    records = [
+        {
+            "type": "assistant",
+            "sessionId": session_id,
+            "cwd": CWD,
+            "timestamp": "2026-08-01T11:00:00Z",
+            "isSidechain": sidechain,
+            "message": {"role": "assistant", "content": content},
+        }
+    ]
+    if apex_tool and outcome != "unresolved":
+        result = {
+            "type": "user",
+            "sessionId": session_id,
+            "cwd": CWD,
+            "timestamp": "2026-08-01T11:00:01Z",
+            "isSidechain": sidechain,
+            "message": {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_id,
+                        "is_error": outcome != "success",
+                        "content": SECRET,
+                    }
+                ],
+            },
+        }
+        if outcome == "denial":
+            result["toolDenialKind"] = "user-rejected"
+        records.append(result)
+    write_jsonl(root / f"{session_id}.jsonl", records)
 
 
 with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
@@ -126,9 +159,23 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         timestamp="2026-07-01T10:00:00Z",
         apex_tool="apex_update_task",
     )
+    codex_session(
+        codex_root,
+        "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        apex_tool="apex_run_tests",
+        apex_ok=False,
+    )
 
     claude_session(claude_root, "77777777-7777-4777-8777-777777777777", apex_tool="apex_fetch_task")
     claude_session(claude_root, "88888888-8888-4888-8888-888888888888", sidechain=True)
+    claude_session(claude_root, CLAUDE_DENIED, apex_tool="apex_framework_index", outcome="denial")
+    claude_session(claude_root, CLAUDE_FAILED, apex_tool="apex_run_tests", outcome="failure")
+    claude_session(
+        claude_root,
+        CLAUDE_UNRESOLVED,
+        apex_tool="apex_list_workspace_repos",
+        outcome="unresolved",
+    )
 
     command = [
         str(SUBJECT),
@@ -151,25 +198,35 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
 
     assert report["excluded_sessions"] == 1
     assert report["codex"] == {
-        "files": 3,
-        "main_sessions": 2,
+        "files": 4,
+        "main_sessions": 3,
         "continuations": 1,
         "subagents": 1,
-        "logical_work_streams": 1,
+        "logical_work_streams": 2,
         "apex_sessions": 1,
+        "apex_attempt_sessions": 2,
         "apex_calls": {"apex_framework_index": 1},
+        "apex_failures": {"apex_run_tests": 1},
+        "apex_denials": {},
+        "apex_unresolved": {},
     }
     assert report["claude"] == {
-        "files": 2,
+        "files": 5,
         "sidechains": 1,
-        "logical_sessions": 1,
+        "logical_sessions": 4,
         "apex_sessions": 1,
+        "apex_attempt_sessions": 4,
         "apex_calls": {"apex_fetch_task": 1},
+        "apex_failures": {"apex_run_tests": 1},
+        "apex_denials": {"apex_framework_index": 1},
+        "apex_unresolved": {"apex_list_workspace_repos": 1},
     }
 
     text_output = subprocess.run(command[:-1] + ["text"], check=True, capture_output=True, text=True)
-    assert "logical_work_streams: 1" in text_output.stdout
+    assert "logical_work_streams: 2" in text_output.stdout
     assert "apex_framework_index: 1" in text_output.stdout
+    assert "apex_denials:" in text_output.stdout
+    assert "apex_unresolved:" in text_output.stdout
     assert SECRET not in text_output.stdout
     assert str(fixture) not in text_output.stdout
 
@@ -196,7 +253,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
 print("ok 1 - Codex sessions are filtered, classified, and deduplicated")
 print("ok 2 - excluded and out-of-scope sessions do not affect APEX counts")
 print("ok 3 - Claude sessions and sidechains are classified")
-print("ok 4 - only structured APEX calls contribute to usage")
+print("ok 4 - successful, failed, denied, and unresolved APEX calls stay distinct")
 print("ok 5 - JSON and text reports do not emit transcript content")
 print("ok 6 - missing history directories return empty summaries")
 print("\n6 teste(s) passaram.")

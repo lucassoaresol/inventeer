@@ -63,6 +63,9 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   entrega; não edite seu conteúdo gerado. No Claude Code, use os workflows nativos do MCP `apex`.
 - No Codex, mantenha ferramentas de escrita do MCP `apex` sujeitas a aprovação. A exposição de
   operações Git, GitHub, Linear ou multi-repo não amplia ownership nem autoriza execução APEX.
+- Antes de declarar um workflow APEX executável, confirme que o servidor publica todas as tools que
+  o resource canônico exige e que a sessão recebeu o bloco `=== APEX WORKSPACE ===`. Falta de tool,
+  contexto, aprovação ou resultado bloqueia a execução; não apresente fallback manual como APEX.
 - Escolha o executor por engine e repositório (AD-026): no Claude Code, use APEX quando o repo tiver
   `ENV.md` e TLC nos demais; no Codex, use sempre `tlc-spec-driven` para especificação,
   implementação e validação, inclusive em repos com `ENV.md`, até nova decisão baseada em uma
@@ -82,6 +85,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   sessões principais, continuations e cópias; não conte a própria retrospectiva como evidência.
   Use `scripts/audit-session-history.py` como inventário inicial sanitizado, informando o ID da
   sessão corrente em `--exclude-session`; interprete resultados somente depois dessa deduplicação.
+  Diferencie `apex_calls` bem-sucedidas de `apex_failures`, `apex_denials` e `apex_unresolved`;
+  tentativa estruturada não prova execução.
   Não copie transcripts para o Git. Destile decisão transversal em `.specs/STATE.md`, lesson de
   execução somente após validação pelo script da TLC e achado de produto na fonte do produto
   (AD-027).

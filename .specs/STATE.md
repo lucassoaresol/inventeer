@@ -428,8 +428,9 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ### AD-033
 - **Decision**: Iniciar retrospectivas deste workspace com
   `scripts/audit-session-history.py`, que agrega metadados das sessões Codex e Claude, deduplica
-  continuations Codex e sidechains Claude, exclui explicitamente a sessão corrente e conta uso APEX
-  somente a partir de registros estruturados, sem emitir conteúdo dos transcripts.
+  continuations Codex e sidechains Claude, exclui explicitamente a sessão corrente e conta outcomes
+  APEX somente a partir de pares estruturados de chamada e resultado, sem emitir conteúdo dos
+  transcripts. Sucessos, falhas, negações e tentativas sem resultado permanecem separados.
 - **Reason**: O recorte posterior a AD-027 contém muitas continuations após quedas, e buscas textuais
   simples também encontram nomes de tools injetados nas instruções, inflando tanto experiências
   quanto uso APEX. A análise manual é repetitiva e fácil de contaminar.
@@ -443,19 +444,45 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-02
 - **Status**: active
 
+### AD-034
+- **Decision**: Considerar um workflow APEX executável somente quando a sessão recebe o contexto de
+  workspace exigido pelo resource canônico, o servidor publica todas as tools requeridas e cada
+  gate produz um resultado estruturado. Ausência de contexto/tool, negação, erro ou tentativa sem
+  resultado bloqueia a execução e não pode ser substituída silenciosamente por inspeção manual
+  apresentada como APEX.
+- **Reason**: Um piloto read-only no Claude Code 2.1.220 contra `repos/portal-api` leu com sucesso
+  `apex://framework/workflows/eng-ready`, mas não recebeu o bloco `=== APEX WORKSPACE ===` e não
+  encontrou a tool `preflight` exigida pelo próprio workflow. Duas chamadas diagnósticas também
+  foram negadas pelo modo não interativo. Assim, a rota nativa reproduziu a mesma lacuna contratual
+  observada no Codex e não concluiu Step 1.
+- **Trade-off**: A presença de `ENV.md`, `AGENTS.md`, do servidor MCP e do resource deixa de bastar
+  para declarar readiness, e workflows com version skew param cedo. Em troca, o workspace não
+  confunde descoberta, tentativa ou fallback com execução e ganha um critério objetivo de
+  revalidação end-to-end.
+- **Alternatives considered**: Considerar a leitura do resource como execução; conceder aprovação e
+  ignorar a tool ausente; reproduzir `preflight` manualmente com Glob/Read; retirar imediatamente a
+  escolha de APEX no Claude para todos os workflows.
+- **Scope**: Declarações de execução APEX neste workspace, nos dois engines. Não altera o servidor
+  APEX, os repositórios de produto, Linear ou GitHub; AD-026 continua escolhendo o executor, mas a
+  execução deve falhar fechada quando o contrato do workflow não estiver disponível.
+- **Date**: 2026-08-02
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: APEX safety and session audit
   (`.specs/features/apex-safety-session-audit/`)
-- **Phase / Task**: Execute and standalone fresh-eyes validation complete
+- **Phase / Task**: Native APEX pilot diagnosed; outcome-aware audit amendment in validation
 - **Completed**: spec `99293cc`; APEX write approval `6f0fb6d`; sanitized audit `404b8af`;
   coverage correction `b8f40fc`; 11/11 ACs, 85/85 workspace checks, range diff integrity, and 3/3
   killed mutants recorded in `validation.md`
-- **In-progress**: none
-- **Next step**: use the sanitized audit in the next workspace retrospective and re-evaluate Codex
-  APEX only after a session satisfies AD-026's end-to-end execution criteria
-- **Blockers**: none
-- **Uncommitted files**: none after the evidence closure commit
+- **In-progress**: distinguish successful, failed, denied, and unresolved APEX attempts; record the
+  native Claude pilot without copying its transcript
+- **Next step**: run the full workspace gate, update validation evidence, and re-run `eng-ready` only
+  after the APEX server publishes `preflight` and injects workspace context
+- **Blockers**: native `eng-ready` is externally blocked by missing `preflight`; local tooling work
+  is not blocked
+- **Uncommitted files**: audit amendment, fixtures, docs, pilot evidence, and active decisions
 - **Branch**: main
 - **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
   recurring session communication failures
