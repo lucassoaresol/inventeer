@@ -2,27 +2,25 @@
 
 **Date:** 2026-08-07
 **Spec:** `.specs/features/pr-review-pilot-hardening/spec.md`
-**Evidence base:** `0fef72a23c0a1c52798a59b3827a1e4f02c9ad51` plus the explicit working-tree fingerprint below
+**Evidence base:** functional commit `46ebfd9a24bd5ede15b4ff60df4754f49bec66fb`
 **Verifier:** standalone fresh-eyes fallback; no sub-agent per user constraint
 
 ## Verdict
 
-**Behavioral PASS; pending delivery.** All eight requirements match their specified outcomes, the
-complete workspace gate is green, and four disposable-copy mutants were killed. The result is not
-promotion-ready because the implementation and earlier review-pilot changes remain one uncommitted
-working-tree surface whose final commit identity does not yet exist.
+**Delivered behavioral PASS.** All eight requirements match their specified outcomes, the complete
+workspace gate is green, and four disposable-copy mutants were killed. The implementation is bound
+to an attributable functional commit. Transversal promotion remains intentionally deferred until
+the prospective 5–10-review pilot produces real outcome evidence.
 
 ## Delivery Evidence
 
-- **Validation state:** `pending-delivery`
-- **Evidence binding:** base HEAD `0fef72a23c0a1c52798a59b3827a1e4f02c9ad51`; tracked binary-diff
-  SHA-256 before this report `67dca8f1d79127ab9c7126504cd334447a52116ef96a3e076469536a9755344c`;
-  behavior-bearing untracked hashes are listed below
+- **Validation state:** `delivered`
+- **Evidence binding:** functional commit `46ebfd9a24bd5ede15b4ff60df4754f49bec66fb`;
+  behavior-bearing hashes are listed below
 - **Requirement contract:** verified `spec.md`, AD-038, and AD-039 as observed on 2026-08-07
-- **Gate state:** green — `bash scripts/test-workspace.sh`, 18 suites, 133 explicit harness checks,
-  36 skill-folder validations, Shell syntax, and `git diff --check`
-- **Pending delivery conditions:** create one attributable commit surface, then rebind evidence to
-  its final SHA; pushing or opening a PR was not requested
+- **Gate state:** green on the clean functional commit — `bash scripts/test-workspace.sh`, 18 suites,
+  133 explicit harness checks, 36 skill-folder validations, Shell syntax, and `git diff --check`
+- **Delivery boundary:** committed locally; pushing or opening a PR was not requested
 - **High-risk paths:** closed-schema/path-boundary enforcement and append-only JSONL in
   `scripts/pr-review-pilot.py`; stale base/head identity and outcome aggregation in the same helper
 - **External smoke evidence:** GitHub MCP loaded with `GITHUB_PAT_TOKEN` and read the private root
@@ -32,7 +30,7 @@ working-tree surface whose final commit identity does not yet exist.
 
 | File | SHA-256 |
 | --- | --- |
-| `.specs/features/pr-review-pilot-hardening/spec.md` | `8a8ffa2a8ed54e0326fbf90a7660dab2c56ed52a66979a59d8d7320e7a0f4431` |
+| `.specs/features/pr-review-pilot-hardening/spec.md` | `d3b8b5aa85d6d58ce9c55d8bb08f8db048706705bc7e5849b5e639c169b11559` |
 | `.agents/skills/review-pull-request/SKILL.md` | `ecc3f50a31e65e2fe37bef0d791bd35ee8ab4b431843acea40ba5382bd5b254e` |
 | `.agents/skills/review-pull-request/references/review-contract.md` | `00842bfbd418d165de0ec5f2cbf9715db42e16feabd240d3a9bf9bdee6d7f482` |
 | `scripts/pr-review-pilot.py` | `0b84b8b6256134280ca8c01384f1dd227256cbf5be1aa51d6acb303b98eaf906` |
@@ -109,6 +107,6 @@ This is a clean behavioral PASS: no failed criterion, surviving mutant, spec-pre
 
 ## Summary
 
-**Overall:** behavioral PASS, `pending-delivery`. **Spec check:** 8/8. **Gate:** 18/18 suites,
-133 explicit checks. **Sensor:** 4/4 killed. **Next:** after an attributable commit exists and the
-evidence is rebound to its SHA, begin the 5–10 real-review pilot using the sanitized ledger.
+**Overall:** delivered behavioral PASS. **Spec check:** 8/8. **Gate:** 18/18 suites, 133 explicit
+checks. **Sensor:** 4/4 killed. **Next:** collect the 5–10 real reviews through normal use and then
+assess transversal promotion from the sanitized aggregate.

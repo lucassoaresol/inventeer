@@ -600,28 +600,21 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ## Handoff
 
 - **Feature**: Evidence-bound pull request review pilot (`review-pull-request`)
-- **Phase / Task**: pilot hardening behaviorally verified; attributable delivery pending
+- **Phase / Task**: pilot hardening delivered and behaviorally verified
 - **Completed**: official GitHub MCP read-only integration; 10-PR historical baseline; dedicated
   skill, review/outcome contract, progressive Linear context across review/triage/continuity,
   explicit full-task-preparation boundary, Claude symlink, AD-038/AD-039, sanitized pilot ledger,
   behavioral tests, unified workspace gate, documentation, PR #280 dry run, successful read-only
   GitHub MCP smoke query, 18-suite root gate and standalone 4/4 killed-mutant validation recorded in
-  `.specs/features/pr-review-pilot-hardening/validation.md`
+  `.specs/features/pr-review-pilot-hardening/validation.md`; attributable functional commit
+  `46ebfd9` validated again from its clean tree
 - **In-progress**: none
-- **Next step**: when delivery is authorized, create an attributable commit and rebind validation to
-  its SHA; then use `review-pull-request` prospectively in 5–10 real reviews and aggregate acceptance,
-  false-positive, stale-base/head and confirmed-escape outcomes before considering transversal
-  promotion
-- **Blockers**: no behavioral blocker; the verified working-tree surface remains uncommitted
-- **Uncommitted files**: `.codex/config.toml`, `.mcp.json`, `.specs/STATE.md`, `AGENTS.md`,
-  `.specs/features/pr-review-pilot-hardening/`, `CLAUDE.md`, `README.md`,
-  `.agents/skills/advance-delivery-front/SKILL.md`,
-  `.agents/skills/assistants-task-context/SKILL.md`, `.agents/skills/portal-task-context/SKILL.md`,
-  `.agents/skills/triage-project-cycle/SKILL.md`, `.agents/skills/review-pull-request/`,
-  `.claude/skills/review-pull-request`, `scripts/pr-review-pilot.py`,
-  `scripts/test-mcp-config.py`, `scripts/test-pr-review-pilot.py`,
-  `scripts/test-pr-review-workflow.py`, `scripts/test-workspace-structure.py`,
-  `scripts/test-workspace.sh`
+- **Next step**: use `review-pull-request` prospectively as real reviews arise; after 5–10 reviews,
+  aggregate acceptance, false-positive, stale-base/head and confirmed-escape outcomes before
+  considering transversal promotion
+- **Blockers**: none
+- **Uncommitted files**: none after the evidence commit that records this handoff
 - **Branch**: main
-- **Validation mode**: behavioral PASS, pending-delivery; deterministic full root gate plus
-  standalone disposable-copy sensor, with no sub-agent per user request
+- **Validation mode**: delivered behavioral PASS bound to functional commit `46ebfd9`;
+  deterministic full root gate plus standalone disposable-copy sensor, with no sub-agent per user
+  request

@@ -1,6 +1,6 @@
 # PR Review Pilot Hardening Specification
 
-**Status:** Verified on 2026-08-07
+**Status:** Delivered and verified on 2026-08-07 (`46ebfd9`)
 **Review language:** Portuguese
 **Canonical language:** English for skill and script contracts
 
@@ -62,5 +62,5 @@ Workspace validation is also spread across independent commands.
 | PRH-07 | Unified workspace gate and structural validation | Verified |
 | PRH-08 | Least-privilege token documentation and MCP contract test | Verified |
 
-**Coverage:** 8/8 requirements verified; behavioral delivery remains `pending-delivery` until the
-current workspace change set is committed as one attributable surface.
+**Coverage:** 8/8 requirements verified and delivered in the attributable functional commit
+`46ebfd9`.
