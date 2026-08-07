@@ -14,6 +14,8 @@ EXPECTED_SHADCN = {
     "command": "npx",
     "args": ["shadcn@latest", "mcp"],
 }
+EXPECTED_GITHUB_URL = "https://api.githubcopilot.com/mcp/"
+EXPECTED_GITHUB_TOOLSETS = "pull_requests,repos,actions,git"
 FORBIDDEN_PROVIDER_SERVERS = {"cloudflare", "cloudflare-docs", "aws", "aws-docs"}
 
 
@@ -57,19 +59,37 @@ assert codex_servers["shadcn"]["default_tools_approval_mode"] == "writes"
 ok(5, "Codex approval remains mandatory for shadcn writes")
 
 for label, servers in (("Claude", claude_servers), ("Codex", codex_servers)):
+    github = servers.get("github")
+    assert github is not None, f"{label} omits GitHub"
+    assert github["url"] == EXPECTED_GITHUB_URL
+    headers = github.get("headers", github.get("http_headers"))
+    assert headers["X-MCP-Toolsets"] == EXPECTED_GITHUB_TOOLSETS
+    assert headers["X-MCP-Readonly"] == "true"
+assert claude_servers["github"]["headers"]["Authorization"] == "Bearer ${GITHUB_PAT_TOKEN}"
+assert codex_servers["github"]["bearer_token_env_var"] == "GITHUB_PAT_TOKEN"
+ok(6, "Codex and Claude use the same scoped read-only GitHub MCP")
+
+assert codex_servers["github"]["default_tools_approval_mode"] == "writes"
+ok(7, "GitHub is server-side read-only with Codex write approval as defense in depth")
+
+for label, servers in (("Claude", claude_servers), ("Codex", codex_servers)):
     forbidden = FORBIDDEN_PROVIDER_SERVERS.intersection(servers)
     assert not forbidden, f"{label} config contains provider servers: {sorted(forbidden)}"
-ok(6, "Cloudflare and AWS MCPs remain deferred")
+ok(8, "Cloudflare and AWS MCPs remain deferred")
 
 serialized_configs = json.dumps(claude_servers) + json.dumps(codex_servers)
-for secret_marker in ("API_KEY", "ACCESS_KEY", "SECRET_KEY", "TOKEN"):
+for secret_marker in ("ghp_", "github_pat_", "API_KEY=", "ACCESS_KEY=", "SECRET_KEY="):
     assert secret_marker not in serialized_configs
-ok(7, "versioned MCP definitions contain no credential markers")
+assert serialized_configs.count("GITHUB_PAT_TOKEN") == 2
+ok(9, "versioned MCP definitions contain only the GitHub token variable name")
 
 readme = (ROOT / "README.md").read_text(encoding="utf-8")
 for phrase in (
     "Context7",
     "código e documentação local continuam tendo precedência",
+    "`github` é compartilhado pelos dois engines",
+    "`X-MCP-Readonly: true` remove operações mutáveis",
+    "Linear permanece canônico para issues",
     "`shadcn` pertence ao `portal-web`",
     "servidor shadcn opera com cwd em `repos/portal-web`",
     "Ferramentas de escrita do shadcn exigem aprovação",
@@ -77,30 +97,37 @@ for phrase in (
     "migração do Portal para AWS",
 ):
     assert phrase in readme, f"README omits boundary: {phrase}"
-ok(8, "README documents MCP approval, routing, and provider boundaries")
+ok(10, "README documents MCP approval, routing, and provider boundaries")
 
 agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 for phrase in (
     "Use o MCP shadcn somente para trabalho em `repos/portal-web`",
+    "Use o MCP GitHub read-only para evidência de PRs",
+    "Mantenha o MCP GitHub restrito aos toolsets `pull_requests,repos,actions,git`",
+    "Sua disponibilidade não autoriza comentários, approvals, merges",
+    "revalide ambos antes do parecer",
     "verifique o worktree e obtenha a aprovação exigida pelo engine",
     "não transfere ownership nem autoriza mudanças de produto",
     "mantenha ferramentas de escrita do MCP `apex` sujeitas a aprovação",
 ):
     assert phrase in agents, f"AGENTS.md omits shadcn guardrail: {phrase}"
-ok(9, "workspace instructions preserve MCP ownership and write approval")
+ok(11, "workspace instructions preserve MCP ownership and write approval")
 
 state = (ROOT / ".specs/STATE.md").read_text(encoding="utf-8")
-for decision in ("AD-028", "AD-030", "AD-032"):
+for decision in ("AD-028", "AD-030", "AD-032", "AD-037"):
     section = state.split(f"### {decision}", 1)[1].split("### ", 1)[0]
     assert "**Status**: active" in section, f"{decision} is not active"
 ad_029 = state.split("### AD-029", 1)[1].split("### ", 1)[0]
 assert "**Status**: superseded by AD-030" in ad_029
-ok(10, "workspace decisions record resource preflight and MCP write approval")
+ad_037 = state.split("### AD-037", 1)[1].split("## Handoff", 1)[0]
+for phrase in ("GITHUB_PAT_TOKEN", "X-MCP-Readonly: true", "não altera GitHub"):
+    assert phrase in ad_037, f"AD-037 omits GitHub MCP boundary: {phrase}"
+ok(12, "workspace decisions record resource preflight and MCP boundaries")
 
 tlc = (ROOT / ".agents/skills/tlc-spec-driven/SKILL.md").read_text(encoding="utf-8")
 assert "Step 1: Codebase" in tlc
 assert "Step 2: Project docs" in tlc
 assert "Step 3: Context7 MCP" in tlc
-ok(11, "Context7 remains behind canonical codebase and project documentation")
+ok(13, "Context7 remains behind canonical codebase and project documentation")
 
-print("\n11 teste(s) passaram.")
+print("\n13 teste(s) passaram.")

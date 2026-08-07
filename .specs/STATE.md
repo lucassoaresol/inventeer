@@ -510,20 +510,118 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-02
 - **Status**: active
 
+### AD-037
+- **Decision**: Versionar o GitHub MCP remoto oficial nos dois engines desta raiz, autenticado em
+  runtime exclusivamente por `GITHUB_PAT_TOKEN`, limitado aos toolsets
+  `pull_requests,repos,actions,git` e fechado para escrita por `X-MCP-Readonly: true`; no Codex,
+  preservar também `default_tools_approval_mode = "writes"` como defesa adicional. Usar essa
+  superfície somente como evidência de PR, commits, reviews, checks e histórico pós-merge, mantendo
+  Linear canônico para issues e cada repositório canônico para código e testes.
+- **Reason**: A retrospectiva encontrou 21 PRs revisadas e mostrou que o espelho de diffs do Linear
+  preserva parte das threads, mas não cobre de modo suficiente buscas de commits, checks, reviews e
+  correções posteriores. O `gh` funciona fora do sandbox mediante aprovação explícita, mas não
+  fornece por si só uma superfície MCP reproduzível para os dois engines; APEX expõe apenas
+  operações GitHub pontuais. Um MCP GitHub read-only preenche a lacuna sem conceder escrita.
+- **Trade-off**: Cada máquina precisa fornecer um PAT local de menor privilégio e reiniciar o engine;
+  ausência, expiração ou escopo insuficiente da variável bloqueia consultas privadas. A superfície
+  adiciona ferramentas e dependência do serviço remoto, mas exclui comentários, approvals, merges
+  e outras mutações por desenho.
+- **Alternatives considered**: Reautenticar e depender apenas do `gh`; continuar usando o espelho de
+  diffs do Linear; ampliar o APEX; usar somente o Code Review do Codex Cloud; instalar o servidor
+  local por Docker; habilitar todos os toolsets ou ferramentas de escrita do GitHub MCP.
+- **Scope**: Evidência read-only de GitHub em sessões Codex e Claude iniciadas por esta raiz. Não
+  transfere ownership, não altera GitHub, Linear ou repos de produto e não autoriza persistir tokens
+  em arquivos versionados, transcripts ou chat.
+- **Date**: 2026-08-07
+- **Status**: active
+
+### AD-038
+- **Decision**: Adotar `review-pull-request` como piloto read-only dedicado à revisão e re-revisão de
+  PRs existentes, especialmente trabalho de outro dev, sempre ligado ao base SHA, head SHA, issue/DoD,
+  checks e validações realmente observados. Exigir findings comportamentais no formato
+  evidência-impacto-condição, revalidar o head antes do parecer e classificar outcomes como decididos,
+  indeterminados ou sem escape confirmado. No Linear, ler a issue-alvo uma vez por review e expandir
+  parents, relations ou ancestry somente com uma razão capaz de alterar o parecer, reutilizando o
+  contexto em re-review quando o `updatedAt` não mudar. Aplicar a mesma economia por snapshot em
+  triage e continuidade; manter ancestry completa nas skills de task somente quando elas forem
+  acionadas para preparação formal, não como entrada padrão de PR review. Avaliar 5–10 reviews reais
+  com o novo contrato antes de promovê-lo a regra transversal consolidada.
+- **Reason**: A retrospectiva encontrou 21 PRs e uso inconsistente de metadados, checks e diffs. Uma
+  baseline GitHub de 10 PRs merged (`portal-api` #268–#272, #274, #277 e #280; `portal-web` #224 e
+  #226) encontrou somente 2 PRs com threads persistidas: 7 findings, dos quais 5 tinham severidade
+  explícita. Os patches corretivos, testes/checks finais e aprovação posterior sustentam 7/7 como
+  `accepted-fixed` e 0/7 como falso positivo decidido; nas outras 8 PRs, aprovação sem threads não
+  permite reconstruir findings ausentes. A busca posterior por IDs rastreáveis encontrou 0 escapes
+  confirmados até 2026-08-07, mas as janelas de 0–11 dias e a ausência de vínculo não provam zero
+  defeitos escapados. No recorte de sessões, 24 das 41 reviews estreitas consultaram Linear e fizeram
+  215 leituras de issue — quase 9 por sessão que usou Linear — sem que toda review precisasse de
+  ancestry completa; isso justificou separar contrato mínimo da issue de preparação integral da task.
+- **Trade-off**: A revisão ganha coleta de identidade, contexto e uma revalidação final, e métricas
+  podem permanecer indeterminadas quando o GitHub não preserva a decisão. A expansão progressiva do
+  Linear exige julgamento e pode ainda chegar à ancestry completa; em troca, evita leituras repetidas
+  ou irrelevantes sem sacrificar DoDs herdados. O workflow também deixa de tratar aprovação, thread
+  resolvida, check verde ou ausência de fix posterior como proxies de qualidade. O piloto ainda não
+  demonstra ganho causal e precisa de uso prospectivo antes de ampliar a política.
+- **Alternatives considered**: Embutir review na TLC; ampliar as skills de contexto de produto;
+  considerar `apex-eng-review` executável no Codex; usar `create-review-bundle` em toda PR; medir
+  apenas approvals e threads resolvidas; publicar automaticamente findings no GitHub.
+- **Scope**: Reviews read-only feitas neste workspace. Não implementa correções, não modifica
+  produto, Linear ou GitHub, não substitui validação do executor e não transforma métricas do piloto
+  em fonte canônica de produto.
+- **Date**: 2026-08-07
+- **Status**: active
+
+### AD-039
+- **Decision**: Endurecer o piloto `review-pull-request` revalidando base e head SHA antes do
+  parecer, tornando verdicts bloqueantes determinísticos para findings P0–P2 não resolvidos e
+  persistindo somente metadados de outcome em um ledger JSONL de schema fechado sob
+  `session-context/review-pilot/`. O ledger é local, ignorado, efêmero e não canônico; deve ser
+  produzido e agregado por `scripts/pr-review-pilot.py`, sem prosa, comentários, diffs, código,
+  credenciais, dados de clientes, saída de produção ou transcripts. Consolidar a validação da raiz
+  em `scripts/test-workspace.sh` e exigir snapshots Linear com retrieval time e `updatedAt` para
+  qualquer reutilização entre workflows, refrescando quando um input ou evento relevante mudar.
+- **Reason**: A auditoria posterior à AD-038 encontrou que as métricas prospectivas estavam apenas
+  descritas, sem mecanismo reproduzível de coleta; que mudança da base podia tornar o diff stale sem
+  alterar o head; que os testes protegiam texto, mas não outcomes; e que a validação completa exigia
+  treze comandos manuais. O schema fechado permite medir o piloto sem transformar chat ou conteúdo
+  de review em uma nova fonte de dados.
+- **Trade-off**: Cada review ganha uma escrita local sanitizada e o gate completo fica mais longo;
+  em troca, as 5–10 reviews podem ser agregadas de forma comparável e regressões de contrato passam
+  a ter testes comportamentais. O ledger continua single-machine e não prova outcomes ausentes; a
+  materialização local de heads remotos permanece adiada até o piloto medir sua necessidade real.
+- **Alternatives considered**: Depender do histórico das sessões; versionar resultados do piloto;
+  registrar texto completo dos findings; publicar métricas no Linear ou GitHub; materializar todo
+  head remoto antecipadamente; manter apenas testes estáticos e comandos de gate separados.
+- **Scope**: Workflow e evidência local de review desta raiz. Não modifica GitHub, Linear, repos de
+  produto, branches ou worktrees e não promove AD-038 a regra transversal antes do piloto real.
+- **Date**: 2026-08-07
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Resilient TLC checkpoints
-  (`.specs/features/resilient-tlc-checkpoints/`)
-- **Phase / Task**: standalone validation and evidence closure complete
-- **Completed**: spec `1928db9`; helper and functional tests `56b9c21`; AD-036 and integration
-  contract `c5681a4`; fresh-eyes edge correction `a054ffa`; 16/16 ACs, 106/106 workspace checks,
-  range diff integrity, and 6/6 killed mutants recorded in `validation.md`
+- **Feature**: Evidence-bound pull request review pilot (`review-pull-request`)
+- **Phase / Task**: pilot hardening behaviorally verified; attributable delivery pending
+- **Completed**: official GitHub MCP read-only integration; 10-PR historical baseline; dedicated
+  skill, review/outcome contract, progressive Linear context across review/triage/continuity,
+  explicit full-task-preparation boundary, Claude symlink, AD-038/AD-039, sanitized pilot ledger,
+  behavioral tests, unified workspace gate, documentation, PR #280 dry run, successful read-only
+  GitHub MCP smoke query, 18-suite root gate and standalone 4/4 killed-mutant validation recorded in
+  `.specs/features/pr-review-pilot-hardening/validation.md`
 - **In-progress**: none
-- **Next step**: invoke `scripts/update-tlc-checkpoint.py` after the next successful stable
-  transition of a real Portal + Codex + TLC delivery
-- **Blockers**: none
-- **Uncommitted files**: none after the evidence closure commit; ignored local runtime remains
-  machine-local by design
+- **Next step**: when delivery is authorized, create an attributable commit and rebind validation to
+  its SHA; then use `review-pull-request` prospectively in 5–10 real reviews and aggregate acceptance,
+  false-positive, stale-base/head and confirmed-escape outcomes before considering transversal
+  promotion
+- **Blockers**: no behavioral blocker; the verified working-tree surface remains uncommitted
+- **Uncommitted files**: `.codex/config.toml`, `.mcp.json`, `.specs/STATE.md`, `AGENTS.md`,
+  `.specs/features/pr-review-pilot-hardening/`, `CLAUDE.md`, `README.md`,
+  `.agents/skills/advance-delivery-front/SKILL.md`,
+  `.agents/skills/assistants-task-context/SKILL.md`, `.agents/skills/portal-task-context/SKILL.md`,
+  `.agents/skills/triage-project-cycle/SKILL.md`, `.agents/skills/review-pull-request/`,
+  `.claude/skills/review-pull-request`, `scripts/pr-review-pilot.py`,
+  `scripts/test-mcp-config.py`, `scripts/test-pr-review-pilot.py`,
+  `scripts/test-pr-review-workflow.py`, `scripts/test-workspace-structure.py`,
+  `scripts/test-workspace.sh`
 - **Branch**: main
-- **Validation mode**: standalone fresh-eyes fallback, with no sub-agent, per user request after
-  recurring session falls
+- **Validation mode**: behavioral PASS, pending-delivery; deterministic full root gate plus
+  standalone disposable-copy sensor, with no sub-agent per user request

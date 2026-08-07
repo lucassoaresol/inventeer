@@ -1,6 +1,6 @@
 ---
 name: assistants-task-context
-description: Prepare an Inventeer Assistants Linear issue for understanding, specification, implementation, review, or validation by resolving its ancestry to PROD INV-2228, tracing inherited DoDs, consulting canonical IDS contracts when the work touches governed delivery, inspecting the target repository, and locating relevant code, tests, decisions, artifacts, and existing specs. Use when starting, resuming, reviewing, or clarifying an INV-* issue that belongs to the Assistants product.
+description: Prepare an Inventeer Assistants Linear issue for understanding, specification, implementation, solution/context review, or validation by resolving its ancestry to PROD INV-2228, tracing inherited DoDs, consulting canonical IDS contracts when the work touches governed delivery, inspecting the target repository, and locating relevant code, tests, decisions, artifacts, and existing specs. Use when starting, resuming, reviewing the task contract or implementation context, or clarifying an INV-* issue that belongs to the Assistants product. For review or re-review of an existing GitHub pull request, use review-pull-request first and invoke this skill only when full hierarchy, inherited DoD, IDS, or ownership preparation is materially required.
 ---
 
 # Assistants Task Context
@@ -11,6 +11,10 @@ Prepare evidence-backed development context before proposing or changing impleme
 
 Require one Linear issue identifier in the form `INV-NNNN`. Capture the user's intent when stated:
 understand, specify, design, implement, review, or validate.
+
+Treat `review` here as full task-contract or implementation-context preparation. For an existing
+GitHub PR, defer to `review-pull-request`; if it escalates here, return the full ancestry context it
+requested without re-collecting GitHub diff, reviews, threads, commits, or checks.
 
 ## Workflow
 
@@ -128,5 +132,7 @@ update canonical artifacts in the canonical language. Do not duplicate its workf
 - Do not amend IDS contracts from an Assistants task; surface the governance dependency.
 - Do not invent missing parent relationships, outcomes, or DoDs.
 - Do not create a local spec when Linear already defines a precise, testable contract.
+- Do not use this full-preparation workflow as the default entry point for an existing GitHub PR;
+  preserve `review-pull-request` as the owner of progressive Linear scope and GitHub evidence.
 - Do not treat historical or superseded documents as current without explicit evidence.
 - Flag conflicts between implemented reality and governing contracts instead of silently choosing.

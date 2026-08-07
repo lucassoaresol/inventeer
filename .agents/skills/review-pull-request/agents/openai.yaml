@@ -1,0 +1,12 @@
+interface:
+  display_name: "Review Pull Request"
+  short_description: "Review another developer PR with evidence"
+  default_prompt: "Use $review-pull-request to review this pull request against its exact GitHub head."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "github"
+      description: "Read-only GitHub evidence for pull requests, reviews, commits, and checks"
+      transport: "streamable_http"
+      url: "https://api.githubcopilot.com/mcp/"

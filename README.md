@@ -102,6 +102,7 @@ limpeza somente após merge e issue encerrada.
 | `portal-task-context` | Local | — | Preparar tasks do Portal e determinar ownership entre produto, API e web |
 | `triage-project-cycle` | Local | — | Comparar várias issues, dependências, conflitos e ordem de execução |
 | `advance-delivery-front` | Local | — | Coordenar a próxima task e a maturidade da evidência enquanto PRs aguardam |
+| `review-pull-request` | Local | — | Revisar PRs existentes com findings e evidência ligados ao head exato |
 | `discover-project-context` | Local | — | Descobrir projetos e fluxos sem exigir uma issue Linear |
 | `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência, diffs e lineage opcional |
 | `apex-*` (28) | Gerado | — | Inspecionar workflows APEX no Codex; superfície experimental, não executor |
@@ -144,6 +145,7 @@ Use uma rota de contexto antes da TLC:
 |---|---|---|
 | Comparar ciclo, backlog ou várias issues | `triage-project-cycle` | Skill de task do produto após selecionar uma issue |
 | Continuar o ciclo enquanto uma PR aguarda review ou merge | `advance-delivery-front` | Contrato read-only com uma próxima ação; skill de task do produto para a issue selecionada |
+| Revisar ou re-revisar uma PR existente | `review-pull-request` | Parecer read-only ligado ao base/head SHA; sem corrigir, comentar, aprovar ou fazer merge |
 | Entender projeto ou fluxo sem issue | `discover-project-context` | Criar/clarificar issue antes de implementar |
 | Preparar uma issue Assistants | `assistants-task-context` | Codex: TLC; Claude: APEX se houver `ENV.md`, senão TLC |
 | Preparar uma issue Portal | `portal-task-context` | Codex: TLC; Claude: APEX se houver `ENV.md`, senão TLC |
@@ -154,6 +156,28 @@ dependências, separa maturidade de implementação e validação e planeja a re
 Seu MVP não cria branches, altera PRs ou atualiza o Linear; ele entrega um contrato verificável e
 exatamente uma próxima ação antes do handoff para a skill de task do produto e, quando necessário,
 para `tlc-spec-driven`.
+
+`review-pull-request` é a rota dedicada para avaliar a mudança de outro dev. Ela combina o contrato
+da issue, o diff e histórico do GitHub, contexto do código e validação proporcional; registra base e
+head SHA, revalida ambos antes do parecer e separa findings confirmados de perguntas e limitações.
+O piloto mede outcomes somente quando há evidência: thread resolvida ou ausência de correção
+pós-merge, isoladamente, não prova aceitação, falso positivo nem zero defeitos escapados.
+
+Durante as 5–10 reviews do piloto, grave somente metadados sanitizados no ledger local ignorado em
+`session-context/review-pilot/reviews.jsonl`. Prepare um JSON conforme o schema fechado da skill e
+use `python3 scripts/pr-review-pilot.py record --input <arquivo.json>`; agregue resultados com
+`python3 scripts/pr-review-pilot.py summary`. O helper recusa campos arbitrários e o ledger nunca
+recebe comentários, diffs, texto de findings, credenciais, dados de clientes, saídas de produção ou
+transcripts. Esse material é efêmero, não canônico e elegível para limpeza após a decisão do piloto.
+
+O contexto Linear dessa rota é progressivo: a revisão lê a issue-alvo uma vez e só busca parents,
+relations ou a ancestry completa quando um requisito herdado, dependência, contrato IDS ou boundary
+de ownership puder alterar o parecer. Cada expansão registra identificador e motivo; re-reviews
+reutilizam a ancestry anterior quando o `updatedAt` da issue não mudou. Isso preserva Linear como
+fonte canônica sem repetir preparação completa, e deixa diff, commits, reviews e checks no GitHub.
+`triage-project-cycle` e `advance-delivery-front` aplicam o mesmo princípio por snapshot. As skills
+`portal-task-context` e `assistants-task-context` preservam ancestry completa porque preparam uma
+task formalmente, mas não são mais a entrada padrão para revisar uma PR existente.
 
 No handoff Portal para TLC no Codex, substitua a raiz file-backed padrão da TLC pelo diretório local
 `session-context/portal/<INV-ID>/tlc/`; essa substituição não altera a skill TLC genérica nem cria
@@ -184,7 +208,7 @@ engine enxergava metade do conjunto, e a diferença é coberta por arquivo:
 |---|---|---|
 | Instruções | `AGENTS.md` nativo | `CLAUDE.md`, que importa `AGENTS.md` |
 | Skills | `.agents/skills/` nativo | symlinks em `.claude/skills/` |
-| MCPs versionados | `apex`, `linear`, `context7` em `.codex/config.toml` | `apex`, `context7` em `.mcp.json` |
+| MCPs versionados | `apex`, `linear`, `github`, `context7`, `shadcn` em `.codex/config.toml` | `apex`, `github`, `context7`, `shadcn` em `.mcp.json` |
 | Workflows APEX | wrappers experimentais `apex-*` | comandos nativos do MCP |
 
 Uma skill global de mesmo nome em `~/.claude/skills/` suprime a deste workspace sem aviso, e as
@@ -197,6 +221,43 @@ essa colisão antes de editar arquivos.
 bibliotecas usadas pelos projetos. Ele usa um servidor stdio por `npx` sem credencial versionada. Na
 cadeia de conhecimento da TLC, código e documentação local continuam tendo precedência; o MCP é
 consulta externa posterior, não fonte canônica de produto.
+
+`github` é compartilhado pelos dois engines pelo servidor remoto oficial e exige
+`GITHUB_PAT_TOKEN` no ambiente local. A configuração versionada nunca contém a credencial e limita
+o servidor, em duas camadas, aos toolsets `pull_requests,repos,actions,git`: o header
+`X-MCP-Readonly: true` remove operações mutáveis no servidor e o Codex mantém
+`default_tools_approval_mode = "writes"` como defesa adicional. O MCP serve para evidência de PR,
+commits, reviews, checks e histórico pós-merge; Linear permanece canônico para issues e cada repo
+permanece canônico para código e testes. Comentários, approvals, merges e qualquer outra escrita no
+GitHub continuam fora dessa integração. Análises de review devem registrar base SHA e head SHA e
+revalidar ambos antes do parecer.
+
+Prefira um fine-grained personal access token dedicado, com acesso somente aos repositórios
+necessários e permissões read-only mínimas para contents, pull requests, actions/checks e metadata.
+Exporte-o apenas no ambiente que inicia o engine. Reutilizar a credencial ativa do `gh` é um fallback:
+antes, inspecione seus scopes e confirme que não amplia desnecessariamente o acesso concedido ao MCP.
+Sem colocar o valor no repositório:
+
+```bash
+export GITHUB_PAT_TOKEN="$(gh auth token)"
+```
+
+Esse comando precisa ser executado fora do sandbox quando o `gh` exigir aprovação. Se a variável
+estiver ausente ou inválida, o GitHub MCP ficará indisponível; não copie o token para
+`.codex/config.toml`, `.mcp.json`, arquivos `.env` versionados ou mensagens de chat.
+
+## Validação do workspace
+
+Execute o gate completo da raiz com:
+
+```bash
+bash scripts/test-workspace.sh
+```
+
+O runner executa todos os harnesses mantidos, valida as skills, a paridade de symlinks do Claude,
+links Markdown, sintaxe Python e Shell e finaliza com `git diff --check`. Antes de uma execução em
+host pressionado, rode `./scripts/check-machine-resources.sh`; capacidade limitada altera apenas a
+concorrência, nunca a cobertura.
 
 `shadcn` pertence ao `portal-web` e também está disponível nos dois engines iniciados por esta raiz.
 O servidor shadcn opera com cwd em `repos/portal-web`, onde o `components.json` define registries,

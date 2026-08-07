@@ -42,6 +42,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   e as `description` podem ser idênticas. Suspeite dessa colisão antes de concluir que uma skill
   está desatualizada.
 - O MCP `apex` é declarado por workspace nos dois engines: `.codex/config.toml` e `.mcp.json`.
+- O MCP `github` é declarado nos dois engines em modo remoto read-only e usa somente a variável
+  local `GITHUB_PAT_TOKEN`; nunca grave o token em arquivos versionados ou no chat.
 - Nas sessões Claude iniciadas nesta raiz, mantenha `OMC_STATE_DIR` configurado localmente em
   `.claude/settings.local.json` para `session-context/runtime/omc`. O caminho deve ser absoluto para
   permanecer estável após mudanças de `cwd`; hooks não devem criar `.omc/` na raiz, em `repos/` ou
@@ -58,6 +60,17 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   task para preparação individual.
 - Use `advance-delivery-front` quando uma PR aguardar review ou merge e for necessário selecionar,
   contratar ou reconciliar a próxima task sem interromper o ciclo.
+- Use `review-pull-request` para revisar ou re-revisar uma PR existente, especialmente trabalho de
+  outro dev, com evidência read-only ancorada aos SHAs de base e head. Findings ficam no chat por
+  padrão; a skill não corrige código, comenta, aprova nem faz merge.
+- Durante `review-pull-request`, leia primeiro somente a issue Linear alvo e expanda contexto com
+  justificativa quando DoD herdado, dependência, IDS, hierarquia ou ownership afetar o parecer; não
+  execute automaticamente a preparação completa da skill de produto nem reutilize o espelho de PR
+  do Linear quando a evidência equivalente estiver disponível no GitHub.
+- Durante o piloto definido por AD-038/AD-039, registre somente o schema sanitizado com
+  `scripts/pr-review-pilot.py` em `session-context/review-pilot/`. O ledger é ignorado, efêmero,
+  não canônico e não pode conter prosa de review, comentários, diffs, código, credenciais, dados de
+  clientes, saída de produção ou transcripts; agregue-o antes de avaliar a promoção do workflow.
 - Use `discover-project-context` para entender um projeto ou fluxo quando não houver issue Linear;
   não use discovery para contornar uma issue existente.
 - Use `create-review-bundle` para empacotar evidências e diffs por arquivo sem modificar o repo
@@ -90,7 +103,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   diffs ou conteúdo. Trate processo registrado como contexto e confira sua liveness ao retomar. O
   helper atualiza apenas `## Handoff`; decisões e outras seções permanecem intactas (AD-036).
 - Mantenha a divisão: triage compara issues e ondas; `advance-delivery-front` coordena a topologia de
-  PRs/tasks; a skill de produto prepara uma issue; a TLC executa e verifica essa issue.
+  PRs/tasks; `review-pull-request` revisa a mudança submetida sem mutá-la; a skill de produto prepara
+  uma issue; a TLC executa e verifica essa issue.
 - Não duplique o workflow da TLC em skills específicas de projeto.
 - Trate `tlc-spec-driven` como conteúdo vendorizado e atualize-a em commit isolado.
 - Em retrospectivas de skills e fluxo, consulte os históricos locais das duas engines associados a
@@ -109,6 +123,14 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 
 - Use Context7 somente depois de código e documentação local, para confirmar APIs e padrões atuais
   de bibliotecas.
+- Use o MCP GitHub read-only para evidência de PRs, commits, reviews, checks e histórico pós-merge.
+  Linear continua canônico para issues e execução; cada repo continua canônico para código e testes.
+- Mantenha o MCP GitHub restrito aos toolsets `pull_requests,repos,actions,git` e com
+  `X-MCP-Readonly: true`. Sua disponibilidade não autoriza comentários, approvals, merges ou outras
+  mutações no GitHub; qualquer futura ampliação de escrita exige nova decisão transversal.
+- Ancore conclusões de review ao base SHA e head SHA observados e revalide ambos antes do parecer.
+  Se `GITHUB_PAT_TOKEN` estiver ausente ou inválido, reporte o bloqueio sem expor ou persistir a
+  credencial e use apenas fontes read-only já disponíveis, declarando a limitação.
 - Use o MCP shadcn somente para trabalho em `repos/portal-web`; ele opera com cwd nesse repo e segue
   seu `components.json`, suas instruções locais e seu worktree.
 - Antes de qualquer ferramenta de escrita do shadcn, confirme que `repos/portal-web` está clonado,
@@ -126,6 +148,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   os shards e agregue o resultado antes de chamar o gate de completo.
 - Refaça o snapshot antes de uma etapa pesada posterior quando a sessão for longa ou a carga do host
   tiver mudado. Uma limitação de recurso pode alterar a estratégia, nunca reduzir a cobertura.
+- Use `bash scripts/test-workspace.sh` como gate agregado da raiz; testes focais continuam válidos
+  durante implementação, mas não substituem o gate completo no fechamento.
 
 ## Segurança
 

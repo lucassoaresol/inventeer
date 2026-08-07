@@ -25,9 +25,14 @@ entry point and repository-local instructions to establish inherited branch, mer
    a reassessment into full cycle triage unless the candidate set itself is unresolved.
 2. **Read the policy.** Read [continuity-policy.md](references/continuity-policy.md) completely before
    classifying candidates, creating a contract, evaluating a transition, or planning reconciliation.
-3. **Gather Linear evidence read-only.** Record retrieval time, issue identity, state, owner,
-   cycle/order, ancestry needed for the shared outcome, and formal blockers/relations. If Linear is
-   unavailable, mark the source missing instead of inferring its state.
+3. **Gather Linear evidence read-only.** Read each issue once per timestamped snapshot. Reuse a
+   supplied triage result only when it records retrieval time and issue `updatedAt`, no later event
+   or user request indicates that a bound input changed, and the current decision needs no newer
+   state; otherwise refresh the target issue. Elapsed time alone never proves freshness. Record
+   retrieval time, issue identity, `updatedAt`, state, owner, cycle/order, ancestry
+   needed for the shared outcome, and formal blockers/relations. Expand ancestry or relations only
+   when they can change topology or classification; record every additional issue identifier and
+   reason. If Linear is unavailable, mark the source missing instead of inferring its state.
 4. **Gather GitHub evidence read-only.** Record retrieval time, PR number, open/merged/closed state,
    draft status, base, head branch and SHA, review state, and CI checks. Use only read operations.
 5. **Inspect each local repository.** Read its instructions and worktree status, then run the bundled
@@ -92,6 +97,9 @@ multi-repo work, show the inherited merge order without merging their gates or P
 - Do not create, edit, promote, close, approve, or merge a PR.
 - Do not create, switch, update, rebase, reset, clean, commit, or push a branch or worktree.
 - Do not update Linear issues, relations, states, owners, or comments.
+- Do not repeat an unchanged Linear issue read inside one snapshot or expand full ancestry merely
+  because it is available; refresh when a bound input or decision-relevant event changes, or when
+  the supplied snapshot lacks retrieval time or `updatedAt`.
 - Do not run `scripts/update-repos.sh`, `git fetch`, `git pull`, or another freshness command that
   mutates local refs.
 - Do not edit product files, delete artifacts, or store operational state in this workspace.

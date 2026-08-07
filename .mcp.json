@@ -4,6 +4,15 @@
       "type": "http",
       "url": "https://apex-gw.dev.inventeer.tech/api/v1/mcp"
     },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PAT_TOKEN}",
+        "X-MCP-Toolsets": "pull_requests,repos,actions,git",
+        "X-MCP-Readonly": "true"
+      }
+    },
     "context7": {
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]

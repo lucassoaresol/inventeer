@@ -25,10 +25,11 @@ If the selection spans products, split the report by product and flag cross-prod
 2. Run `./scripts/update-repos.sh`. Continue with an explicit freshness warning for required repos
    that were skipped; stop when a required repo fails to update. Ignore the expected
    `inventeer-hub` skip.
-3. Retrieve the selected issues and their relations from Linear without mutating them. Confirm each
-   issue belongs to the expected product root. Resolve only the ancestry needed to establish shared
-   outcomes, inherited DoDs, or a governance boundary; do not expand every issue into a full context
-   package.
+3. Retrieve each selected issue once per timestamped snapshot, including `updatedAt` and relevant
+   relations, without mutating Linear. Confirm each issue belongs to the expected product root.
+   Resolve only the ancestry needed to establish shared outcomes, inherited DoDs, or a governance
+   boundary; record every expanded identifier and reason, and do not expand every issue into a full
+   context package.
 4. Normalize the comparison set: identity, type, status, priority, estimate, owner, objective,
    parent outcome, formal blockers, blocked issues, and related issues.
 5. Read local instructions and check the worktree for each likely implementation repo. Inspect code,
@@ -50,7 +51,8 @@ If the selection spans products, split the report by product and flag cross-prod
 
 Return a concise report containing:
 
-1. Selection identity, project, freshness evidence, and issues included or excluded.
+1. Selection identity, project, freshness evidence, issues included or excluded, and any Linear
+   ancestry/relation expansion with its reason.
 2. Shared outcome and governing context.
 3. Comparison table with readiness and the primary reason for each verdict.
 4. Formal dependency graph or ordered list.

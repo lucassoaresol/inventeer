@@ -1,6 +1,6 @@
 ---
 name: portal-task-context
-description: Prepare an Inventeer Portal Linear issue for understanding, specification, implementation, review, or validation by resolving its ancestry to PROD INV-254, loading product context from repos/portal, consulting canonical IDS standards when the behavior touches the delivery pipeline, identifying implementation ownership across repos/portal-api and repos/portal-web, and locating relevant code, tests, contracts, decisions, artifacts, and specs. Use when starting, resuming, reviewing, or clarifying an INV-* issue that belongs to the Portal product.
+description: Prepare an Inventeer Portal Linear issue for understanding, specification, implementation, solution/context review, or validation by resolving its ancestry to PROD INV-254, loading product context from repos/portal, consulting canonical IDS standards when the behavior touches the delivery pipeline, identifying implementation ownership across repos/portal-api and repos/portal-web, and locating relevant code, tests, contracts, decisions, artifacts, and specs. Use when starting, resuming, reviewing the task contract or implementation context, or clarifying an INV-* issue that belongs to the Portal product. For review or re-review of an existing GitHub pull request, use review-pull-request first and invoke this skill only when full hierarchy, inherited DoD, IDS, or ownership preparation is materially required.
 ---
 
 # Portal Task Context
@@ -12,6 +12,10 @@ implementation.
 
 Require one Linear issue identifier in the form `INV-NNNN`. Capture the user's intent when stated:
 understand, specify, design, implement, review, or validate.
+
+Treat `review` here as full task-contract or implementation-context preparation. For an existing
+GitHub PR, defer to `review-pull-request`; if it escalates here, return the full ancestry context it
+requested without re-collecting GitHub diff, reviews, threads, commits, or checks.
 
 ## Workflow
 
@@ -153,4 +157,6 @@ source and does not apply to official specifications or APEX artifacts.
 - Do not create a local spec when Linear already defines a precise, testable contract.
 - Do not create or promote `.specs/` in `repos/portal`, `repos/portal-api`, or `repos/portal-web`
   for a Codex + TLC delivery.
+- Do not use this full-preparation workflow as the default entry point for an existing GitHub PR;
+  preserve `review-pull-request` as the owner of progressive Linear scope and GitHub evidence.
 - Flag conflicts between product intent, contracts, code, and governing standards.

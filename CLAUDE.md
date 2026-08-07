@@ -22,3 +22,5 @@ duplique conteúdo aqui; edite `AGENTS.md`.
 O servidor `apex` é declarado por workspace em `.mcp.json`, equivalente ao que
 `.codex/config.toml` faz para o Codex (AD-020). O Linear não é declarado aqui: no Claude Code ele
 já chega pelo connector da claude.ai, e declará-lo de novo duplicaria o conjunto de ferramentas.
+O GitHub também é declarado em `.mcp.json` como servidor HTTP read-only; o header de autenticação
+expande `GITHUB_PAT_TOKEN` em runtime e nunca deve receber um token literal versionado.
