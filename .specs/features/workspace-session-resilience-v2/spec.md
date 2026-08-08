@@ -125,10 +125,10 @@ contain every lifecycle boundary while rejecting UUIDs and transcript-history pa
 
 | Requirement ID | Story | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- | --- |
-| WSR-01 | P1: Secret non-repetition | SAFETY | Approved EDREN comparison | Tasks | Pending |
-| WSR-02 | P1: Secret persistence boundary | SAFETY | Approved EDREN comparison | Tasks | Pending |
-| WSR-03 | P1: Safe local input | SAFETY | Approved EDREN comparison | Tasks | Pending |
-| WSR-04 | P1: Conditional rotation | SAFETY | Approved EDREN comparison | Tasks | Pending |
+| WSR-01 | P1: Secret non-repetition | SAFETY | Approved EDREN comparison | Execute | Implementing |
+| WSR-02 | P1: Secret persistence boundary | SAFETY | Approved EDREN comparison | Execute | Implementing |
+| WSR-03 | P1: Safe local input | SAFETY | Approved EDREN comparison | Execute | Implementing |
+| WSR-04 | P1: Conditional rotation | SAFETY | Approved EDREN comparison | Execute | Implementing |
 | WSR-05 | P1: Closed time window | DECISION | User approved recommendation | Tasks | Pending |
 | WSR-06 | P1: Invalid upper bound | DECISION | User approved recommendation | Tasks | Pending |
 | WSR-07 | P1: Report provenance | DECISION | User approved recommendation | Tasks | Pending |

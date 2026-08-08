@@ -7,7 +7,7 @@ flow and Critical Rules. The skill is the source of truth for per-task gates, at
 independent verification, and the discrimination sensor.
 
 **Design:** inline in the approved specification; no new architecture or dependency is introduced.
-**Status:** Approved
+**Status:** In Progress
 
 ## Test Coverage Matrix
 
@@ -68,10 +68,10 @@ T2 -> T3
 
 **Done when**:
 
-- [ ] `AGENTS.md` requires non-repetition, `[REDACTED]`, safe local input, containment, and
+- [x] `AGENTS.md` requires non-repetition, `[REDACTED]`, safe local input, containment, and
   conditional rotation.
-- [ ] The focused contract test passes five named assertions with no transcript access.
-- [ ] The aggregate workspace gate invokes the focused contract.
+- [x] The focused contract test passes five named assertions with no transcript access.
+- [x] The aggregate workspace gate invokes the focused contract.
 
 **Tests**: contract
 **Gate**: quick

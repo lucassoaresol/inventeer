@@ -154,6 +154,11 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 ## Segurança
 
 - Não armazene credenciais, tokens, dados de clientes ou saídas de produção neste workspace.
+- Se o usuário fornecer uma credencial ou um valor com aparência de segredo no chat, não repita o valor;
+  trate natureza incerta como potencial segredo e use `[REDACTED]` quando precisar referenciá-lo.
+- Não coloque o valor recebido em comandos exibidos, logs, commits, checkpoints ou artifacts versionados;
+  prefira `.env` ignorado ou entrada interativa para fornecimento local.
+- Se houver possibilidade de exposição, oriente a rotação de forma condicional, sem afirmar que a credencial continua ativa.
 - Não copie corpos de contratos DAP, EPP ou DEP.
 - Não altere Linear ou repositórios em `repos/` durante descoberta sem solicitação explícita.
 - Durante `advance-delivery-front`, não altere Linear, GitHub, branches, worktrees ou arquivos de

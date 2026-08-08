@@ -22,6 +22,7 @@ run_suite "Portal TLC session artifacts" bash scripts/test-portal-tlc-session-ar
 run_suite "PR review pilot behavior" python3 scripts/test-pr-review-pilot.py
 run_suite "PR review workflow contract" python3 scripts/test-pr-review-workflow.py
 run_suite "session history audit" python3 scripts/test-session-history-audit.py
+run_suite "session resilience contract" bash scripts/test-session-resilience-contract.sh
 run_suite "APEX command synchronization" bash scripts/test-sync-apex-commands.sh
 run_suite "TLC checkpoint contract" bash scripts/test-tlc-checkpoint-contract.sh
 run_suite "TLC checkpoint behavior" python3 scripts/test-tlc-checkpoint.py
