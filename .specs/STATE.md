@@ -620,13 +620,14 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ## Handoff
 
 - **Feature**: TLC Spec-Driven 3.3.0 upgrade
-- **Phase / Task**: T4 complete; T5 standalone validation pending
+- **Phase / Task**: T5 complete; feature verified
 - **Completed**: T1 contract (`d138034`), T2 upstream merge (`2b6c2d4`), T3 deterministic hardening
   (`d09a693`), README/vendor synchronization, AD-040 prospective adoption policy
 - **In-progress**: none
-- **Next step**: run a fresh standalone spec-anchored validation and disposable mutation sensor over
-  the complete feature range, then record `validation.md`
+- **Next step**: none for this feature; use the TLC 3.3.0 gates prospectively under AD-040
 - **Blockers**: none
-- **Uncommitted files**: none after the T4 commit that records this handoff
+- **Uncommitted files**: none expected after the atomic validation-evidence commit
 - **Branch**: main
-- **Validation mode**: pending standalone fresh-eyes pass, with no sub-agent per user request
+- **Validation mode**: standalone fresh-eyes PASS over functional range `afe790f..2036882`; no
+  sub-agent was used per user request; 5/5 disposable mutants were killed and the real tree remained
+  unchanged

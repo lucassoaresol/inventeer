@@ -1,6 +1,6 @@
 # TLC Spec-Driven 3.3.0 Upgrade Tasks
 
-**Status:** Approved
+**Status:** Complete
 
 ## Test Coverage Matrix
 
@@ -106,7 +106,7 @@ graph LR
 | T2 | Complete | 3.3.0 merged; bilateral review, provenance assertions, skill validation, and `git diff --check` passed |
 | T3 | Complete | 12 focused tests and 19 root suites passed; spec/tasks validators passed without warnings |
 | T4 | Complete | README/manifest/skill synchronized; AD-040 active; 14 focused tests, 19 root suites, and range integrity passed |
-| T5 | Pending | — |
+| T5 | Complete | Functional head `2036882`; 16 focused tests, 19 root suites, and 5/5 disposable mutants passed the standalone validation |
 
 ## Validation Fixes
 

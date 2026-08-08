@@ -1,6 +1,6 @@
 # TLC Spec-Driven 3.3.0 Upgrade Specification
 
-**Status:** Approved
+**Status:** Verified
 **Review language:** Portuguese
 **Canonical language:** English for skill and feature artifacts; Portuguese for workspace decisions
 
@@ -114,7 +114,7 @@ the new validators against representative artifacts, and adopts the gates prospe
 | TLC330-09 | Root workspace gate | Workspace safety requirements and user instruction | Verified |
 | TLC330-10 | Prospective adoption policy | Workspace safety requirements and user instruction | Verified |
 | TLC330-11 | Transition gate policy | Workspace safety requirements and user instruction | Verified |
-| TLC330-12 | Standalone discrimination sensor | Workspace safety requirements and user instruction | Pending |
+| TLC330-12 | Standalone discrimination sensor | Workspace safety requirements and user instruction | Verified |
 
 ## Success Criteria
 
