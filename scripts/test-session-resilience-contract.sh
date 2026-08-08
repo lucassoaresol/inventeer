@@ -62,6 +62,7 @@ ok "retrospectives require versioned closed cohorts"
 
 pilot=.specs/features/workspace-session-resilience-v2/pilot.md
 [[ -f "$pilot" ]] || fail "session resilience pilot is missing"
+pilot_text="$(tr '\n' ' ' < "$pilot" | tr -s '[:space:]' ' ')"
 grep -Fq '**Status:** active' "$pilot" || fail "pilot is not active"
 grep -Fq '**Baseline auditor contract:** 2' "$pilot" || fail "pilot contract is not versioned"
 grep -Fq '**Baseline window:** `[2026-07-10T00:00:00Z, 2026-08-08T05:44:16Z)`' "$pilot" \
@@ -79,6 +80,31 @@ grep -Fq 'Claude primary sessions | 15' "$pilot" || fail "Claude baseline is mis
 grep -Fq 'source drift' "$pilot" || fail "pilot cannot classify closed-window backfill"
 ok "pilot records exact sanitized aggregates and source-drift semantics"
 
+for eligibility_rule in \
+  'is a new primary Codex or Claude session originating from the exact workspace root after the pilot start;' \
+  'performs material planning, implementation, validation, review, or workflow maintenance;' \
+  'is not the retrospective performing the measurement;' \
+  'is not a copy, continuation, sidechain, or subagent;' \
+  'is classified by the sanitized auditor before transcript interpretation.'
+do
+  grep -Fq "$eligibility_rule" <<<"$pilot_text" \
+    || fail "pilot eligibility rule is missing: $eligibility_rule"
+done
+ok "every pilot eligibility rule is exact"
+
+for success_measure in \
+  '| Verified work lost after an interruption | 0 |' \
+  '| Heavy stages started without a resource preflight | 0 |' \
+  '| Heavy stages started from a stale checkpoint | 0 |' \
+  '| Status requests attributable to silent long-running work | 0 |' \
+  '| Resumptions requiring more than one Git, Handoff, and tasks reconciliation | 0 |' \
+  '| Potential secrets repeated or persisted by an agent | 0 |'
+do
+  grep -Fq "$success_measure" <<<"$pilot_text" \
+    || fail "pilot success measure is missing: $success_measure"
+done
+ok "every pilot success measure is exact"
+
 grep -Fq 'ten eligible primary sessions or the next long workspace feature' "$pilot" \
   || fail "pilot closing trigger is missing"
 grep -Fq 'two heavy gates started without a resource preflight' "$pilot" \
@@ -89,7 +115,20 @@ grep -Fq 'one stale checkpoint after an interruption' "$pilot" \
   || fail "checkpoint automation threshold is missing"
 grep -Fq 'recurring manual reconstruction' "$pilot" \
   || fail "manual reconstruction threshold is missing"
-ok "pilot has an explicit closing review and bounded automation thresholds"
+
+for closing_step in \
+  'Run the auditor with an explicit contract, closed time window, and current-session exclusion.' \
+  'Compare primary interruption concentration with the baseline and classify any source drift.' \
+  'Measure lost work, stale checkpoints, silence, and manual reconstruction.' \
+  'Apply the Automation Decision Gate.' \
+  'Record the outcome in the workspace decision log before changing the workflow.'
+do
+  grep -Fq "$closing_step" <<<"$pilot_text" \
+    || fail "pilot closing step is missing: $closing_step"
+done
+grep -Fq 'No additional checkpoint or restricted gate-runner automation may be proposed or implemented before the closing comparison is complete and its outcome is recorded in the workspace decision log.' <<<"$pilot_text" \
+  || fail "pilot permits automation before its closing evidence and decision"
+ok "pilot has an exact closing review and pre-automation decision boundary"
 
 if grep -Eq '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|\.jsonl|~/\.codex|~/\.claude|/root/lucas' "$pilot"; then
   fail "pilot leaks session identity or transcript locations"

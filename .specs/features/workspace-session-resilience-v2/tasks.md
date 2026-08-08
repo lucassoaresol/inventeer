@@ -7,7 +7,7 @@ flow and Critical Rules. The skill is the source of truth for per-task gates, at
 independent verification, and the discrimination sensor.
 
 **Design:** inline in the approved specification; no new architecture or dependency is introduced.
-**Status:** In Progress
+**Status:** Done
 
 ## Test Coverage Matrix
 
@@ -188,9 +188,9 @@ boundary to exact contract assertions.
 
 **Done when**:
 
-- [ ] Every eligibility rule and success measure has an exact assertion.
-- [ ] Every closing-review step and the pre-automation decision-log boundary have exact assertions.
-- [ ] The focused contract and aggregate workspace gates pass.
+- [x] Every eligibility rule and success measure has an exact assertion.
+- [x] Every closing-review step and the pre-automation decision-log boundary have exact assertions.
+- [x] The focused contract and aggregate workspace gates pass.
 
 **Tests**: contract
 **Gate**: build

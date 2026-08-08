@@ -88,6 +88,8 @@ pilot observes at least one of these thresholds:
 - recurring manual reconstruction of a command, gate, shard, or next task.
 
 The pilot does not authorize implementing that automation.
+No additional checkpoint or restricted gate-runner automation may be proposed or implemented before
+the closing comparison is complete and its outcome is recorded in the workspace decision log.
 
 ## Closing Review
 
