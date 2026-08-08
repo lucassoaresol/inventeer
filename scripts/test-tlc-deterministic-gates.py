@@ -205,6 +205,36 @@ class CommitGateTests(unittest.TestCase):
 
 
 class WorkspaceAdoptionTests(unittest.TestCase):
+    def test_local_extensions_are_retained(self) -> None:
+        manifest = json.loads((ROOT / ".agents" / "vendor.json").read_text(encoding="utf-8"))["tlc-spec-driven"]
+        expected_customizations = [
+            "review contract and artifact lifecycle",
+            "orientation before decision questions",
+            "operational enablement discovery",
+            "requirement provenance",
+            "resource-aware execution preflight",
+            "deterministic gate compatibility and prospective adoption",
+        ]
+        self.assertEqual(expected_customizations, manifest["local_customizations"])
+
+        anchors = {
+            ROOT / ".agents" / "skills" / "tlc-spec-driven" / "references" / "specify.md": [
+                "Establish the Review Contract",
+                "Operational enablement",
+                "Preserve Requirement Provenance",
+            ],
+            ROOT / ".agents" / "skills" / "tlc-spec-driven" / "references" / "implement.md": [
+                "Resource preflight before heavy work",
+            ],
+            ROOT / ".agents" / "skills" / "tlc-spec-driven" / "references" / "validate.md": [
+                "Delivery Evidence",
+            ],
+        }
+        for path, expected_anchors in anchors.items():
+            body = path.read_text(encoding="utf-8")
+            for anchor in expected_anchors:
+                self.assertIn(anchor, body, f"missing retained extension {anchor!r} in {path}")
+
     def test_version_metadata_is_synchronized(self) -> None:
         manifest = json.loads((ROOT / ".agents" / "vendor.json").read_text(encoding="utf-8"))["tlc-spec-driven"]
         skill = (ROOT / ".agents" / "skills" / "tlc-spec-driven" / "SKILL.md").read_text(encoding="utf-8")
@@ -225,6 +255,15 @@ class WorkspaceAdoptionTests(unittest.TestCase):
         self.assertIn("não varrer nem revalidar retroativamente", normalized_state)
         self.assertIn("scripts/test-tlc-deterministic-gates.py", root_gate)
         self.assertNotIn("validate_spec.py .specs/features", root_gate)
+
+    def test_transition_gates_are_explicit(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        state = (ROOT / ".specs" / "STATE.md").read_text(encoding="utf-8")
+        normalized_state = " ".join(state.split()).casefold()
+
+        for gate in ("validate_spec.py", "validate_tasks.py", "check_commit.py", "validate_state.py"):
+            self.assertIn(gate, readme)
+        self.assertIn("antes de confirmar spec, aprovar tasks, criar commit ou encerrar validation", normalized_state)
 
 
 if __name__ == "__main__":

@@ -107,3 +107,9 @@ graph LR
 | T3 | Complete | 12 focused tests and 19 root suites passed; spec/tasks validators passed without warnings |
 | T4 | Complete | README/manifest/skill synchronized; AD-040 active; 14 focused tests, 19 root suites, and range integrity passed |
 | T5 | Pending | — |
+
+## Validation Fixes
+
+| Fix | Trigger | Status | Evidence |
+| --- | --- | --- | --- |
+| VF1 | Fresh-eyes review found no persistent assertion for TLC330-02 and incomplete policy assertions for TLC330-11 | Complete | Retained-extension anchors and all four transition gates asserted in the focused harness |
