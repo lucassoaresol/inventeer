@@ -110,8 +110,10 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Em retrospectivas de skills e fluxo, consulte os históricos locais das duas engines associados a
   esta raiz: `~/.codex/sessions/` e o projeto correspondente em `~/.claude/projects/`. Diferencie
   sessões principais, continuations e cópias; não conte a própria retrospectiva como evidência.
-  Use `scripts/audit-session-history.py` como inventário inicial sanitizado, informando o ID da
-  sessão corrente em `--exclude-session`; interprete resultados somente depois dessa deduplicação.
+  Use `scripts/audit-session-history.py` como inventário inicial sanitizado, com `cwd` exato,
+  recorte temporal fechado com `--since` e `--until` e o ID da sessão corrente em
+  `--exclude-session`; registre `contract_version`, limites e quantidade de exclusões antes de
+  interpretar resultados somente depois dessa deduplicação.
   Diferencie `apex_tool_successes` de `apex_tool_failures`, `apex_tool_denials` e
   `apex_tool_unresolved`; esses campos descrevem outcomes de tools, e tentativa ou sucesso de uma
   tool isolada não prova execução de workflow.

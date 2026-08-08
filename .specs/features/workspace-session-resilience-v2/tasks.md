@@ -7,7 +7,7 @@ flow and Critical Rules. The skill is the source of truth for per-task gates, at
 independent verification, and the discrimination sensor.
 
 **Design:** inline in the approved specification; no new architecture or dependency is introduced.
-**Status:** In Progress
+**Status:** Done
 
 ## Test Coverage Matrix
 
@@ -113,6 +113,7 @@ concentration, and availability state without changing existing APEX outcome sem
 and enforce their lifecycle contract.
 **Where**: `.specs/STATE.md`,
 `.specs/features/workspace-session-resilience-v2/pilot.md`,
+`AGENTS.md`,
 `scripts/test-session-resilience-contract.sh`,
 `.specs/features/workspace-session-resilience-v2/spec.md`,
 `.specs/features/workspace-session-resilience-v2/tasks.md`
@@ -127,10 +128,10 @@ and enforce their lifecycle contract.
 
 **Done when**:
 
-- [ ] AD-041 records compatibility, privacy, closed-cohort, and bounded-pilot decisions.
-- [ ] The pilot records a v2 closed-window baseline with no identity or transcript path.
-- [ ] Eligibility, success measures, closing comparison, and automation thresholds are explicit.
-- [ ] The focused contract test and aggregate workspace gate pass.
+- [x] AD-041 records compatibility, privacy, closed-cohort, and bounded-pilot decisions.
+- [x] The pilot records a v2 closed-window baseline with no identity or transcript path.
+- [x] Eligibility, success measures, closing comparison, and automation thresholds are explicit.
+- [x] The focused contract test and aggregate workspace gate pass.
 
 **Tests**: contract
 **Gate**: build

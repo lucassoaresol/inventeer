@@ -137,15 +137,15 @@ contain every lifecycle boundary while rejecting UUIDs and transcript-history pa
 | WSR-10 | P1: APEX compatibility | INHERITED | AD-033 and AGENTS.md retrospective contract | Execute | Implementing |
 | WSR-11 | P1: Availability distinction | DECISION | User approved recommendation | Execute | Implementing |
 | WSR-12 | P1: Sanitized output | INHERITED | AD-027 and AD-033 | Execute | Implementing |
-| WSR-13 | P2: Transversal decision | INHERITED | Workspace AGENTS.md | Tasks | Pending |
-| WSR-14 | P2: Aggregate-only pilot | DECISION | User approved recommendation | Tasks | Pending |
-| WSR-15 | P2: Bounded automation gate | DECISION | User approved recommendation | Tasks | Pending |
+| WSR-13 | P2: Transversal decision | INHERITED | Workspace AGENTS.md | Execute | Implementing |
+| WSR-14 | P2: Aggregate-only pilot | DECISION | User approved recommendation | Execute | Implementing |
+| WSR-15 | P2: Bounded automation gate | DECISION | User approved recommendation | Execute | Implementing |
 
 **Coverage:** 15 total, 15 mapped to tasks, 0 unmapped.
 
 ## Success Criteria
 
-- [ ] Every security rule passes a repository contract test.
-- [ ] Every auditor fixture and prior APEX assertion passes under contract version 2.
-- [ ] The full workspace gate passes without skipped coverage.
+- [x] Every security rule passes a repository contract test.
+- [x] Every auditor fixture and prior APEX assertion passes under contract version 2.
+- [x] The full workspace gate passes without skipped coverage.
 - [ ] Independent validation matches all 15 requirements and kills targeted mutants.

@@ -617,17 +617,36 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-08
 - **Status**: active
 
+### AD-041
+- **Decision**: Evoluir `scripts/audit-session-history.py` para um contrato v2 aditivo, preservar
+  todos os outcomes APEX existentes, medir concentração de abortos e compactações em sessões
+  primárias deduplicadas e fechar cohorts por janela UTC semiaberta `[since, until)`. Persistir
+  somente agregados sanitizados em um piloto que termina após dez sessões primárias elegíveis ou a
+  próxima feature longa, antes de propor nova automação operacional.
+- **Reason**: AD-036 comprovou interrupções e reconstrução de contexto em entregas reais, mas o
+  auditor anterior não separava frequência total de concentração nem congelava um baseline contra
+  sessões futuras. O EDREN validou esses dois controles sem precisar persistir transcripts.
+- **Trade-off**: O relatório ganha campos, versão e limites temporais que exigem manutenção de
+  fixtures, enquanto histories locais ainda podem receber backfill dentro da janela fechada. Em
+  troca, retrospectivas tornam drift da fonte explícito e decisões de automação passam a depender
+  de evidência delimitada sem perder o diagnóstico APEX existente.
+- **Alternatives considered**: Copiar integralmente o auditor do EDREN e perder detalhes APEX;
+  manter cohorts abertos; propor imediatamente um runner; persistir IDs ou paths para facilitar
+  reconciliação manual.
+- **Scope**: Retrospectivas e resiliência de sessão deste workspace. Não altera histories locais,
+  engines, repositórios de produto, Linear, GitHub, APEX nem a rota Portal + Codex + TLC da AD-036.
+- **Date**: 2026-08-08
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: TLC Spec-Driven 3.3.0 upgrade
-- **Phase / Task**: T5 complete; feature verified
-- **Completed**: T1 contract (`d138034`), T2 upstream merge (`2b6c2d4`), T3 deterministic hardening
-  (`d09a693`), README/vendor synchronization, AD-040 prospective adoption policy
+- **Feature**: Workspace Session Resilience v2
+- **Phase / Task**: T3 complete; independent validation pending
+- **Completed**: T1 secret contract (`c0c910c`), T2 session auditor v2 (`cebac21`), T3 decision and
+  bounded pilot
 - **In-progress**: none
-- **Next step**: none for this feature; use the TLC 3.3.0 gates prospectively under AD-040
+- **Next step**: run the aggregate workspace gate and independent Verifier over `152b2de..HEAD`
 - **Blockers**: none
-- **Uncommitted files**: none expected after the atomic validation-evidence commit
+- **Uncommitted files**: none expected after the T3 atomic commit
 - **Branch**: main
-- **Validation mode**: standalone fresh-eyes PASS over functional range `afe790f..2036882`; no
-  sub-agent was used per user request; 5/5 disposable mutants were killed and the real tree remained
-  unchanged
+- **Validation mode**: pending independent Verifier
