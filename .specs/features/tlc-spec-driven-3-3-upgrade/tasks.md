@@ -105,5 +105,5 @@ graph LR
 | T1 | Complete | `d138034` — contract and execution plan committed |
 | T2 | Complete | 3.3.0 merged; bilateral review, provenance assertions, skill validation, and `git diff --check` passed |
 | T3 | Complete | 12 focused tests and 19 root suites passed; spec/tasks validators passed without warnings |
-| T4 | Pending | — |
+| T4 | Complete | README/manifest/skill synchronized; AD-040 active; 14 focused tests, 19 root suites, and range integrity passed |
 | T5 | Pending | — |

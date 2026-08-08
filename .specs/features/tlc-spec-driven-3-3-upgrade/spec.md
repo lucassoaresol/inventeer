@@ -105,15 +105,15 @@ the new validators against representative artifacts, and adopts the gates prospe
 | --- | --- | --- | --- |
 | TLC330-01 | Vendor manifest | Upstream 3.3.0 and AD-016 | Verified |
 | TLC330-02 | Skill tree | Upstream 3.3.0 and AD-016 | Verified |
-| TLC330-03 | README and metadata | Upstream 3.3.0 and AD-016 | Pending |
+| TLC330-03 | README and metadata | Upstream 3.3.0 and AD-016 | Verified |
 | TLC330-04 | Spec validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
 | TLC330-05 | State validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
 | TLC330-06 | State validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
 | TLC330-07 | Task validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
 | TLC330-08 | Commit validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
 | TLC330-09 | Root workspace gate | Workspace safety requirements and user instruction | Verified |
-| TLC330-10 | Prospective adoption policy | Workspace safety requirements and user instruction | Pending |
-| TLC330-11 | Transition gate policy | Workspace safety requirements and user instruction | Pending |
+| TLC330-10 | Prospective adoption policy | Workspace safety requirements and user instruction | Verified |
+| TLC330-11 | Transition gate policy | Workspace safety requirements and user instruction | Verified |
 | TLC330-12 | Standalone discrimination sensor | Workspace safety requirements and user instruction | Pending |
 
 ## Success Criteria

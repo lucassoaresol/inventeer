@@ -12,7 +12,8 @@
       "orientation before decision questions",
       "operational enablement discovery",
       "requirement provenance",
-      "resource-aware execution preflight"
+      "resource-aware execution preflight",
+      "deterministic gate compatibility and prospective adoption"
     ]
   }
 }

@@ -597,24 +597,36 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-07
 - **Status**: active
 
+### AD-040
+- **Decision**: Aplicar os validadores determinísticos da TLC de forma prospectiva a artefatos
+  criados ou materialmente revisados sob a TLC 3.3.0; executar o gate aplicável antes de confirmar
+  spec, aprovar tasks, criar commit ou encerrar validation, e fazer o gate da raiz usar fixtures
+  comportamentais isoladas. Não varrer nem revalidar retroativamente o arquivo histórico de specs.
+- **Reason**: O upstream 3.3.0 introduziu gates reproduzíveis, mas seus parsers originais não
+  reconheciam todos os formatos Markdown já usados neste workspace e não possuíam cobertura
+  comportamental suficiente. O hardening local validou caminhos positivos e negativos sem impor a
+  documentos antigos um contrato inexistente quando foram produzidos.
+- **Trade-off**: Transições novas ganham comandos explícitos e testes adicionais, enquanto o acervo
+  histórico permanece heterogêneo e não recebe certificação retroativa. Em troca, novas regressões
+  falham de forma determinística sem uma migração ampla e arriscada do passado.
+- **Alternatives considered**: Reescrever e validar todo o histórico; importar 3.3.0 sem hardening;
+  manter os novos scripts disponíveis mas opcionais; incorporar um sweep global ao gate da raiz.
+- **Scope**: Artifacts TLC deste workspace criados ou materialmente revisados sob 3.3.0. Não altera
+  fontes canônicas de produto, contratos IDS, o roteamento por engine da AD-026 nem artifacts
+  históricos que não sejam revisados.
+- **Date**: 2026-08-08
+- **Status**: active
+
 ## Handoff
 
-- **Feature**: Evidence-bound pull request review pilot (`review-pull-request`)
-- **Phase / Task**: pilot hardening delivered and behaviorally verified
-- **Completed**: official GitHub MCP read-only integration; 10-PR historical baseline; dedicated
-  skill, review/outcome contract, progressive Linear context across review/triage/continuity,
-  explicit full-task-preparation boundary, Claude symlink, AD-038/AD-039, sanitized pilot ledger,
-  behavioral tests, unified workspace gate, documentation, PR #280 dry run, successful read-only
-  GitHub MCP smoke query, 18-suite root gate and standalone 4/4 killed-mutant validation recorded in
-  `.specs/features/pr-review-pilot-hardening/validation.md`; attributable functional commit
-  `46ebfd9` validated again from its clean tree
+- **Feature**: TLC Spec-Driven 3.3.0 upgrade
+- **Phase / Task**: T4 complete; T5 standalone validation pending
+- **Completed**: T1 contract (`d138034`), T2 upstream merge (`2b6c2d4`), T3 deterministic hardening
+  (`d09a693`), README/vendor synchronization, AD-040 prospective adoption policy
 - **In-progress**: none
-- **Next step**: use `review-pull-request` prospectively as real reviews arise; after 5–10 reviews,
-  aggregate acceptance, false-positive, stale-base/head and confirmed-escape outcomes before
-  considering transversal promotion
+- **Next step**: run a fresh standalone spec-anchored validation and disposable mutation sensor over
+  the complete feature range, then record `validation.md`
 - **Blockers**: none
-- **Uncommitted files**: none after the evidence commit that records this handoff
+- **Uncommitted files**: none after the T4 commit that records this handoff
 - **Branch**: main
-- **Validation mode**: delivered behavioral PASS bound to functional commit `46ebfd9`;
-  deterministic full root gate plus standalone disposable-copy sensor, with no sub-agent per user
-  request
+- **Validation mode**: pending standalone fresh-eyes pass, with no sub-agent per user request

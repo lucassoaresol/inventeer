@@ -97,7 +97,7 @@ limpeza somente após merge e issue encerrada.
 
 | Skill | Origem | Versão | Uso |
 |---|---|---:|---|
-| `tlc-spec-driven` | Tech Lead's Club | 3.2.0 | Especificar, projetar, implementar e verificar mudanças |
+| `tlc-spec-driven` | Tech Lead's Club | 3.3.0 | Especificar, projetar, implementar e verificar mudanças |
 | `assistants-task-context` | Local | — | Preparar tasks do produto Assistants para desenvolvimento |
 | `portal-task-context` | Local | — | Preparar tasks do Portal e determinar ownership entre produto, API e web |
 | `triage-project-cycle` | Local | — | Comparar várias issues, dependências, conflitos e ordem de execução |
@@ -112,6 +112,12 @@ global. A `tlc-spec-driven` é um fork local vendorizado e deve ser atualizada s
 skills locais. Sua origem, base upstream e personalizações conhecidas ficam em
 `.agents/vendor.json`. As políticas específicas de produto continuam nas skills de contexto; as
 melhorias genéricas do workflow podem permanecer no fork local da TLC.
+
+A TLC 3.3.0 adota seus gates determinísticos de forma prospectiva. Execute `validate_spec.py` antes
+de aprovar uma spec nova ou materialmente revisada, `validate_tasks.py` antes de aprovar tasks,
+`check_commit.py` antes de cada commit e `validate_state.py` no fechamento da validação. Os scripts
+ficam em `.agents/skills/tlc-spec-driven/scripts/`. O gate da raiz usa fixtures comportamentais
+isoladas; ele não percorre nem rejeita retroativamente os artifacts históricos em `.specs/features/`.
 
 Para verificar se há diferença em relação à branch oficial, sem alterar arquivos:
 

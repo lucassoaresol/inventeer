@@ -60,4 +60,3 @@ all old specs.
 If the merge has unresolved markers, manifest acceptance is blocked. If any compatibility test or
 root gate fails, the new base is not delivered. Each semantic increment is committed separately so
 the vendor import, local hardening, and policy/evidence can be inspected or reverted independently.
-

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import subprocess
 import sys
 import tempfile
@@ -201,6 +202,29 @@ class CommitGateTests(unittest.TestCase):
         result = run_tool("check_commit.py", "--message", "Added validators.")
         self.assertEqual(1, result.returncode, result.stdout + result.stderr)
         self.assertIn("header does not match", result.stdout)
+
+
+class WorkspaceAdoptionTests(unittest.TestCase):
+    def test_version_metadata_is_synchronized(self) -> None:
+        manifest = json.loads((ROOT / ".agents" / "vendor.json").read_text(encoding="utf-8"))["tlc-spec-driven"]
+        skill = (ROOT / ".agents" / "skills" / "tlc-spec-driven" / "SKILL.md").read_text(encoding="utf-8")
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+        self.assertEqual("3.3.0", manifest["upstream_version"])
+        self.assertEqual("fe318be656b315d5b6f45cf7ea23946b2d0241b0", manifest["base_ref"])
+        self.assertIn("  version: 3.3.0", skill)
+        self.assertIn("| `tlc-spec-driven` | Tech Lead's Club | 3.3.0 |", readme)
+
+    def test_adoption_is_prospective_and_root_gate_uses_fixtures(self) -> None:
+        state = (ROOT / ".specs" / "STATE.md").read_text(encoding="utf-8")
+        root_gate = (ROOT / "scripts" / "test-workspace.sh").read_text(encoding="utf-8")
+        normalized_state = " ".join(state.split()).casefold()
+
+        self.assertIn("### AD-040", state)
+        self.assertIn("artefatos criados ou materialmente revisados sob a tlc 3.3.0", normalized_state)
+        self.assertIn("não varrer nem revalidar retroativamente", normalized_state)
+        self.assertIn("scripts/test-tlc-deterministic-gates.py", root_gate)
+        self.assertNotIn("validate_spec.py .specs/features", root_gate)
 
 
 if __name__ == "__main__":
