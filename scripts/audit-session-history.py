@@ -186,26 +186,17 @@ def scan_codex(
         session_id = item["session_id"]
         if session_id in by_session:
             copies += 1
-        aggregate = by_session.setdefault(
-            session_id,
-            {
-                "subagent": False,
-                "continuation": False,
-                "compactions": 0,
-                "aborted_turns": 0,
-                "apex_successes": collections.Counter(),
-                "apex_failures": collections.Counter(),
-            },
-        )
-        aggregate["subagent"] = aggregate["subagent"] or item["subagent"]
-        aggregate["continuation"] = aggregate["continuation"] or item["continuation"]
-        aggregate["compactions"] = max(aggregate["compactions"], item["compactions"])
-        aggregate["aborted_turns"] = max(
-            aggregate["aborted_turns"], item["aborted_turns"]
-        )
-        for key in ("apex_successes", "apex_failures"):
-            for tool, count in item[key].items():
-                aggregate[key][tool] = max(aggregate[key][tool], count)
+            continue
+        # Sorted path traversal makes the first observation canonical; later files
+        # are counted as copies but contribute no session evidence.
+        by_session[session_id] = {
+            "subagent": item["subagent"],
+            "continuation": item["continuation"],
+            "compactions": item["compactions"],
+            "aborted_turns": item["aborted_turns"],
+            "apex_successes": item["apex_successes"].copy(),
+            "apex_failures": item["apex_failures"].copy(),
+        }
 
     primary = [item for item in by_session.values() if not item["subagent"]]
     primary_sessions = len(primary)
@@ -379,20 +370,14 @@ def scan_claude(
         session_id = item["session_id"]
         if session_id in by_session:
             copies += 1
-        aggregate = by_session.setdefault(
-            session_id,
-            {
-                "sidechain": False,
-                "successes": collections.Counter(),
-                "failures": collections.Counter(),
-                "denials": collections.Counter(),
-                "unresolved": collections.Counter(),
-            },
-        )
-        aggregate["sidechain"] = aggregate["sidechain"] or item["sidechain"]
-        for key in ("successes", "failures", "denials", "unresolved"):
-            for tool, count in item[key].items():
-                aggregate[key][tool] = max(aggregate[key][tool], count)
+            continue
+        by_session[session_id] = {
+            "sidechain": item["sidechain"],
+            "successes": item["successes"].copy(),
+            "failures": item["failures"].copy(),
+            "denials": item["denials"].copy(),
+            "unresolved": item["unresolved"].copy(),
+        }
 
     apex_totals: collections.Counter[str] = collections.Counter()
     failure_totals: collections.Counter[str] = collections.Counter()

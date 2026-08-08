@@ -193,9 +193,9 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         codex_root,
         PRIMARY,
         user_text=f"{SECRET} copied primary",
-        apex_tool="apex_framework_index",
-        aborted_turns=2,
-        compactions=1,
+        apex_tool="apex_git_push",
+        aborted_turns=9,
+        compactions=9,
         filename=f"rollout-copy-{PRIMARY}.jsonl",
     )
     codex_session(
@@ -281,7 +281,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
     claude_session(
         claude_root,
         "77777777-7777-4777-8777-777777777777",
-        apex_tool="apex_fetch_task",
+        apex_tool="apex_open_pr",
         filename="copy-primary.jsonl",
     )
     claude_session(
@@ -397,10 +397,21 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         text=True,
     )
     missing_report = json.loads(missing_output.stdout)
+    zero_interruption_metrics = {
+        "aborted_turns": 0,
+        "compactions": 0,
+        "max_aborts_per_session": 0,
+        "max_compactions_per_session": 0,
+        "sessions_with_aborts": 0,
+        "sessions_with_aborts_percent": 0.0,
+        "sessions_with_compactions": 0,
+        "sessions_with_compactions_percent": 0.0,
+    }
     assert missing_report["codex"]["history_root_available"] is False
     assert missing_report["codex"]["matching_history_found"] is False
-    assert missing_report["codex"]["max_aborts_per_session"] == 0
-    assert missing_report["codex"]["sessions_with_aborts_percent"] == 0.0
+    assert {
+        key: missing_report["codex"][key] for key in zero_interruption_metrics
+    } == zero_interruption_metrics
     assert missing_report["claude"]["history_root_available"] is False
     assert missing_report["claude"]["matching_history_found"] is False
 
@@ -427,6 +438,9 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
     empty_report = json.loads(empty_output.stdout)
     assert empty_report["codex"]["history_root_available"] is True
     assert empty_report["codex"]["matching_history_found"] is False
+    assert {
+        key: empty_report["codex"][key] for key in zero_interruption_metrics
+    } == zero_interruption_metrics
     assert empty_report["claude"]["history_root_available"] is True
     assert empty_report["claude"]["matching_history_found"] is False
 

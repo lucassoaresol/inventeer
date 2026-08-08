@@ -7,7 +7,7 @@ flow and Critical Rules. The skill is the source of truth for per-task gates, at
 independent verification, and the discrimination sensor.
 
 **Design:** inline in the approved specification; no new architecture or dependency is introduced.
-**Status:** Done
+**Status:** In Progress
 
 ## Test Coverage Matrix
 
@@ -47,6 +47,12 @@ T1 -> T2
 
 ```text
 T2 -> T3
+```
+
+### Phase 4: Verifier Corrections
+
+```text
+T3 -> T4 -> T5
 ```
 
 ## Task Breakdown
@@ -137,12 +143,65 @@ and enforce their lifecycle contract.
 **Gate**: build
 **Commit**: `docs(sessions): adopt bounded resilience pilot`
 
+### T4: Exclude Duplicate-File Evidence
+
+**What**: Make the first deterministic observation of each session ID canonical and prove every
+missing-history interruption metric is zero.
+**Where**: `scripts/audit-session-history.py`, `scripts/test-session-history-audit.py`,
+`.specs/features/workspace-session-resilience-v2/tasks.md`
+**Depends on**: T3
+**Reuses**: Existing sorted history traversal and exact whole-report assertions
+**Requirement**: WSR-09, WSR-11
+
+**Tools**:
+
+- MCP: NONE
+- Skill: `tlc-spec-driven`
+
+**Done when**:
+
+- [x] Events and APEX outcomes present only in a later duplicate file do not alter canonical
+  session aggregates.
+- [x] Missing and empty roots assert every interruption total, count, maximum, and percentage as
+  exact zero.
+- [x] The auditor contract gate passes 14 named checks.
+
+**Tests**: unit/contract
+**Gate**: quick
+**Commit**: `fix(sessions): exclude duplicate-file evidence`
+
+### T5: Enforce the Complete Pilot Lifecycle
+
+**What**: Bind every eligibility rule, success measure, closing comparison, and pre-automation
+boundary to exact contract assertions.
+**Where**: `.specs/features/workspace-session-resilience-v2/pilot.md`,
+`scripts/test-session-resilience-contract.sh`,
+`.specs/features/workspace-session-resilience-v2/tasks.md`, `.specs/STATE.md`
+**Depends on**: T4
+**Reuses**: Existing aggregate-only pilot test and AD-041 boundary
+**Requirement**: WSR-14, WSR-15
+
+**Tools**:
+
+- MCP: NONE
+- Skill: `tlc-spec-driven`
+
+**Done when**:
+
+- [ ] Every eligibility rule and success measure has an exact assertion.
+- [ ] Every closing-review step and the pre-automation decision-log boundary have exact assertions.
+- [ ] The focused contract and aggregate workspace gates pass.
+
+**Tests**: contract
+**Gate**: build
+**Commit**: `test(sessions): enforce pilot lifecycle boundaries`
+
 ## Phase Execution Map
 
 ```text
-Phase 1 -> Phase 2 -> Phase 3
+Phase 1 -> Phase 2 -> Phase 3 -> Phase 4
 
-T1 -> T2 -> T3
+T1 -> T2 -> T3 -> T4 -> T5
 ```
 
 ## Task Granularity Check
@@ -152,6 +211,8 @@ T1 -> T2 -> T3
 | T1 | One security handling invariant | Contract phrases and one revert | Granular |
 | T2 | One report-contract evolution | Auditor fixtures and one revert | Granular |
 | T3 | One transversal adoption decision | Decision, pilot, and lifecycle contract | Granular |
+| T4 | One duplicate-evidence invariant | Auditor fixtures and one revert | Granular |
+| T5 | One pilot lifecycle contract | Pilot assertions and one revert | Granular |
 
 ## Diagram-Definition Cross-Check
 
@@ -160,6 +221,8 @@ T1 -> T2 -> T3
 | T1 | None | First task | Match |
 | T2 | T1 | T1 -> T2 | Match |
 | T3 | T2 | T2 -> T3 | Match |
+| T4 | T3 | T3 -> T4 | Match |
+| T5 | T4 | T4 -> T5 | Match |
 
 ## Test Co-location Validation
 
@@ -168,3 +231,5 @@ T1 -> T2 -> T3
 | T1 | Agent security contract | contract | contract | OK |
 | T2 | Session auditor | unit/contract | unit/contract | OK |
 | T3 | Decision and pilot | contract | contract | OK |
+| T4 | Session auditor | unit/contract | unit/contract | OK |
+| T5 | Decision and pilot | contract | contract | OK |
