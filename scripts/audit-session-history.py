@@ -17,13 +17,16 @@ UUID_RE = re.compile(
     r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b",
     re.IGNORECASE,
 )
+CONTRACT_VERSION = 2
 
 
 def parse_timestamp(value: str | None) -> dt.datetime | None:
     if not value:
         return None
-    normalized = value.replace("Z", "+00:00")
-    parsed = dt.datetime.fromisoformat(normalized)
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=dt.timezone.utc)
     return parsed.astimezone(dt.timezone.utc)
@@ -65,13 +68,32 @@ def continuation_parent(text: str) -> str | None:
     return match.group(0).lower() if match else None
 
 
-def empty_codex() -> dict[str, Any]:
+def codex_subagent(metadata: dict[str, Any]) -> bool:
+    if metadata.get("thread_source") == "subagent":
+        return True
+    source = metadata.get("source")
+    return isinstance(source, dict) and "subagent" in source
+
+
+def empty_codex(*, root_available: bool = False) -> dict[str, Any]:
     return {
+        "history_root_available": root_available,
+        "matching_history_found": False,
         "files": 0,
         "main_sessions": 0,
+        "primary_sessions": 0,
         "continuations": 0,
         "subagents": 0,
+        "copies": 0,
         "logical_work_streams": 0,
+        "compactions": 0,
+        "aborted_turns": 0,
+        "sessions_with_aborts": 0,
+        "sessions_with_compactions": 0,
+        "max_aborts_per_session": 0,
+        "max_compactions_per_session": 0,
+        "sessions_with_aborts_percent": 0.0,
+        "sessions_with_compactions_percent": 0.0,
         "apex_tool_success_sessions": 0,
         "apex_tool_attempt_sessions": 0,
         "apex_tool_successes": {},
@@ -85,19 +107,21 @@ def scan_codex(
     root: pathlib.Path,
     cwd: str,
     since: dt.datetime,
+    until: dt.datetime | None,
     excluded: set[str],
 ) -> dict[str, Any]:
     if not root.is_dir():
         return empty_codex()
 
-    accepted = []
-    apex_totals: collections.Counter[str] = collections.Counter()
-    apex_failures: collections.Counter[str] = collections.Counter()
+    accepted: list[dict[str, Any]] = []
     for path in sorted(root.rglob("*.jsonl")):
         metadata = None
         parent = None
         apex_calls: collections.Counter[str] = collections.Counter()
         failed_calls: collections.Counter[str] = collections.Counter()
+        compacted_records = 0
+        context_compactions = 0
+        aborted_turns = 0
         for record in json_lines(path):
             payload = record.get("payload", {})
             if not isinstance(payload, dict):
@@ -112,49 +136,123 @@ def scan_codex(
             ):
                 parent = parent or continuation_parent(message_text(payload))
                 continue
-            if record.get("type") == "event_msg" and payload.get("type") == "mcp_tool_call_end":
-                invocation = payload.get("invocation", {})
-                if isinstance(invocation, dict) and invocation.get("server") == "apex":
-                    tool = invocation.get("tool")
-                    if isinstance(tool, str) and tool:
-                        result = payload.get("result", {})
-                        if isinstance(result, dict) and "Ok" in result:
-                            apex_calls[tool] += 1
-                        else:
-                            failed_calls[tool] += 1
+            if record.get("type") == "compacted":
+                compacted_records += 1
+            if record.get("type") == "event_msg":
+                event_type = payload.get("type")
+                if event_type == "context_compacted":
+                    context_compactions += 1
+                elif event_type == "turn_aborted":
+                    aborted_turns += 1
+                elif event_type == "mcp_tool_call_end":
+                    invocation = payload.get("invocation", {})
+                    if isinstance(invocation, dict) and invocation.get("server") == "apex":
+                        tool = invocation.get("tool")
+                        if isinstance(tool, str) and tool:
+                            result = payload.get("result", {})
+                            if isinstance(result, dict) and "Ok" in result:
+                                apex_calls[tool] += 1
+                            else:
+                                failed_calls[tool] += 1
 
         if not metadata or metadata.get("cwd") != cwd:
             continue
-        session_id = metadata.get("id")
+        session_id = metadata.get("id") or metadata.get("session_id")
         timestamp = parse_timestamp(metadata.get("timestamp"))
-        if not isinstance(session_id, str) or session_id in excluded:
+        if not isinstance(session_id, str):
+            continue
+        session_id = session_id.lower()
+        if session_id in excluded:
             continue
         if timestamp is None or timestamp < since:
             continue
-        source = metadata.get("source")
-        is_subagent = isinstance(source, dict) and "subagent" in source
+        if until is not None and timestamp >= until:
+            continue
         accepted.append(
-            (
-                is_subagent,
-                bool(parent) and not is_subagent,
-                bool(apex_calls),
-                bool(apex_calls or failed_calls),
-            )
+            {
+                "session_id": session_id,
+                "subagent": codex_subagent(metadata),
+                "continuation": bool(parent),
+                "compactions": max(compacted_records, context_compactions),
+                "aborted_turns": aborted_turns,
+                "apex_successes": apex_calls,
+                "apex_failures": failed_calls,
+            }
         )
-        apex_totals.update(apex_calls)
-        apex_failures.update(failed_calls)
 
-    subagents = sum(is_subagent for is_subagent, _, _, _ in accepted)
-    continuations = sum(is_continuation for _, is_continuation, _, _ in accepted)
-    main_sessions = len(accepted) - subagents
+    by_session: dict[str, dict[str, Any]] = {}
+    copies = 0
+    for item in accepted:
+        session_id = item["session_id"]
+        if session_id in by_session:
+            copies += 1
+        aggregate = by_session.setdefault(
+            session_id,
+            {
+                "subagent": False,
+                "continuation": False,
+                "compactions": 0,
+                "aborted_turns": 0,
+                "apex_successes": collections.Counter(),
+                "apex_failures": collections.Counter(),
+            },
+        )
+        aggregate["subagent"] = aggregate["subagent"] or item["subagent"]
+        aggregate["continuation"] = aggregate["continuation"] or item["continuation"]
+        aggregate["compactions"] = max(aggregate["compactions"], item["compactions"])
+        aggregate["aborted_turns"] = max(
+            aggregate["aborted_turns"], item["aborted_turns"]
+        )
+        for key in ("apex_successes", "apex_failures"):
+            for tool, count in item[key].items():
+                aggregate[key][tool] = max(aggregate[key][tool], count)
+
+    primary = [item for item in by_session.values() if not item["subagent"]]
+    primary_sessions = len(primary)
+    continuations = sum(item["continuation"] for item in primary)
+    sessions_with_aborts = sum(item["aborted_turns"] > 0 for item in primary)
+    sessions_with_compactions = sum(item["compactions"] > 0 for item in primary)
+
+    def primary_percent(count: int) -> float:
+        if primary_sessions == 0:
+            return 0.0
+        return round(count * 100 / primary_sessions, 2)
+
+    apex_totals: collections.Counter[str] = collections.Counter()
+    apex_failures: collections.Counter[str] = collections.Counter()
+    for item in by_session.values():
+        apex_totals.update(item["apex_successes"])
+        apex_failures.update(item["apex_failures"])
+
     return {
+        "history_root_available": True,
+        "matching_history_found": bool(accepted),
         "files": len(accepted),
-        "main_sessions": main_sessions,
+        "main_sessions": primary_sessions,
+        "primary_sessions": primary_sessions,
         "continuations": continuations,
-        "subagents": subagents,
-        "logical_work_streams": main_sessions - continuations,
-        "apex_tool_success_sessions": sum(has_success for _, _, has_success, _ in accepted),
-        "apex_tool_attempt_sessions": sum(has_attempt for _, _, _, has_attempt in accepted),
+        "subagents": sum(item["subagent"] for item in by_session.values()),
+        "copies": copies,
+        "logical_work_streams": primary_sessions - continuations,
+        "compactions": sum(item["compactions"] for item in by_session.values()),
+        "aborted_turns": sum(item["aborted_turns"] for item in by_session.values()),
+        "sessions_with_aborts": sessions_with_aborts,
+        "sessions_with_compactions": sessions_with_compactions,
+        "max_aborts_per_session": max(
+            (item["aborted_turns"] for item in primary), default=0
+        ),
+        "max_compactions_per_session": max(
+            (item["compactions"] for item in primary), default=0
+        ),
+        "sessions_with_aborts_percent": primary_percent(sessions_with_aborts),
+        "sessions_with_compactions_percent": primary_percent(sessions_with_compactions),
+        "apex_tool_success_sessions": sum(
+            bool(item["apex_successes"]) for item in by_session.values()
+        ),
+        "apex_tool_attempt_sessions": sum(
+            bool(item["apex_successes"] or item["apex_failures"])
+            for item in by_session.values()
+        ),
         "apex_tool_successes": dict(sorted(apex_totals.items())),
         "apex_tool_failures": dict(sorted(apex_failures.items())),
         "apex_tool_denials": {},
@@ -162,10 +260,14 @@ def scan_codex(
     }
 
 
-def empty_claude() -> dict[str, Any]:
+def empty_claude(*, root_available: bool = False) -> dict[str, Any]:
     return {
+        "history_root_available": root_available,
+        "matching_history_found": False,
         "files": 0,
+        "primary_sessions": 0,
         "sidechains": 0,
+        "copies": 0,
         "logical_sessions": 0,
         "apex_tool_success_sessions": 0,
         "apex_tool_attempt_sessions": 0,
@@ -180,16 +282,13 @@ def scan_claude(
     project: pathlib.Path,
     cwd: str,
     since: dt.datetime,
+    until: dt.datetime | None,
     excluded: set[str],
 ) -> dict[str, Any]:
     if not project.is_dir():
         return empty_claude()
 
-    accepted = []
-    apex_totals: collections.Counter[str] = collections.Counter()
-    failure_totals: collections.Counter[str] = collections.Counter()
-    denial_totals: collections.Counter[str] = collections.Counter()
-    unresolved_totals: collections.Counter[str] = collections.Counter()
+    accepted: list[dict[str, Any]] = []
     for path in sorted(project.glob("*.jsonl")):
         session_id = None
         session_origin_cwd = None
@@ -198,8 +297,8 @@ def scan_claude(
         apex_attempts: dict[str, str] = {}
         apex_outcomes: dict[str, str] = {}
         for record in json_lines(path):
-            if isinstance(record.get("sessionId"), str):
-                session_id = record["sessionId"]
+            if session_id is None and isinstance(record.get("sessionId"), str):
+                session_id = record["sessionId"].lower()
             record_cwd = record.get("cwd")
             if session_origin_cwd is None and isinstance(record_cwd, str) and record_cwd:
                 session_origin_cwd = record_cwd
@@ -245,7 +344,10 @@ def scan_claude(
 
         if session_origin_cwd != cwd or not session_id or session_id in excluded:
             continue
-        if not timestamps or min(timestamps) < since:
+        if not timestamps:
+            continue
+        origin = min(timestamps)
+        if origin < since or (until is not None and origin >= until):
             continue
         session_successes: collections.Counter[str] = collections.Counter()
         session_failures: collections.Counter[str] = collections.Counter()
@@ -260,19 +362,70 @@ def scan_claude(
                 "unresolved": session_unresolved,
             }[outcome][tool] += 1
 
-        accepted.append((is_sidechain, bool(session_successes), bool(apex_attempts)))
-        apex_totals.update(session_successes)
-        failure_totals.update(session_failures)
-        denial_totals.update(session_denials)
-        unresolved_totals.update(session_unresolved)
+        accepted.append(
+            {
+                "session_id": session_id,
+                "sidechain": is_sidechain,
+                "successes": session_successes,
+                "failures": session_failures,
+                "denials": session_denials,
+                "unresolved": session_unresolved,
+            }
+        )
 
-    sidechains = sum(is_sidechain for is_sidechain, _, _ in accepted)
+    by_session: dict[str, dict[str, Any]] = {}
+    copies = 0
+    for item in accepted:
+        session_id = item["session_id"]
+        if session_id in by_session:
+            copies += 1
+        aggregate = by_session.setdefault(
+            session_id,
+            {
+                "sidechain": False,
+                "successes": collections.Counter(),
+                "failures": collections.Counter(),
+                "denials": collections.Counter(),
+                "unresolved": collections.Counter(),
+            },
+        )
+        aggregate["sidechain"] = aggregate["sidechain"] or item["sidechain"]
+        for key in ("successes", "failures", "denials", "unresolved"):
+            for tool, count in item[key].items():
+                aggregate[key][tool] = max(aggregate[key][tool], count)
+
+    apex_totals: collections.Counter[str] = collections.Counter()
+    failure_totals: collections.Counter[str] = collections.Counter()
+    denial_totals: collections.Counter[str] = collections.Counter()
+    unresolved_totals: collections.Counter[str] = collections.Counter()
+    for item in by_session.values():
+        apex_totals.update(item["successes"])
+        failure_totals.update(item["failures"])
+        denial_totals.update(item["denials"])
+        unresolved_totals.update(item["unresolved"])
+
+    sidechains = sum(item["sidechain"] for item in by_session.values())
+    primary_sessions = len(by_session) - sidechains
     return {
+        "history_root_available": True,
+        "matching_history_found": bool(accepted),
         "files": len(accepted),
+        "primary_sessions": primary_sessions,
         "sidechains": sidechains,
-        "logical_sessions": len(accepted) - sidechains,
-        "apex_tool_success_sessions": sum(has_success for _, has_success, _ in accepted),
-        "apex_tool_attempt_sessions": sum(has_attempt for _, _, has_attempt in accepted),
+        "copies": copies,
+        "logical_sessions": primary_sessions,
+        "apex_tool_success_sessions": sum(
+            bool(item["successes"]) for item in by_session.values()
+        ),
+        "apex_tool_attempt_sessions": sum(
+            bool(
+                item["successes"]
+                or item["failures"]
+                or item["denials"]
+                or item["unresolved"]
+            )
+            for item in by_session.values()
+        ),
         "apex_tool_successes": dict(sorted(apex_totals.items())),
         "apex_tool_failures": dict(sorted(failure_totals.items())),
         "apex_tool_denials": dict(sorted(denial_totals.items())),
@@ -282,18 +435,32 @@ def scan_claude(
 
 def render_text(report: dict[str, Any]) -> str:
     lines = [
-        f"Cutoff (UTC): {report['since']}",
+        f"Contract version: {report['contract_version']}",
+        f"Since (inclusive, UTC): {report['since']}",
+        f"Until (exclusive, UTC): {report['until'] or 'unbounded'}",
         f"Excluded sessions: {report['excluded_sessions']}",
         "",
         "Codex",
     ]
     codex = report["codex"]
     for key in (
+        "history_root_available",
+        "matching_history_found",
         "files",
         "main_sessions",
+        "primary_sessions",
         "continuations",
         "subagents",
+        "copies",
         "logical_work_streams",
+        "compactions",
+        "aborted_turns",
+        "sessions_with_aborts",
+        "sessions_with_compactions",
+        "max_aborts_per_session",
+        "max_compactions_per_session",
+        "sessions_with_aborts_percent",
+        "sessions_with_compactions_percent",
         "apex_tool_success_sessions",
         "apex_tool_attempt_sessions",
     ):
@@ -309,8 +476,12 @@ def render_text(report: dict[str, Any]) -> str:
     lines.extend(("", "Claude"))
     claude = report["claude"]
     for key in (
+        "history_root_available",
+        "matching_history_found",
         "files",
+        "primary_sessions",
         "sidechains",
+        "copies",
         "logical_sessions",
         "apex_tool_success_sessions",
         "apex_tool_attempt_sessions",
@@ -330,8 +501,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Aggregate session metadata without emitting transcript content."
     )
-    parser.add_argument("--cwd", required=True, help="Exact workspace cwd to include")
+    parser.add_argument("--cwd", required=True, help="Exact workspace origin cwd to include")
     parser.add_argument("--since", default="1970-01-01", help="UTC ISO date or timestamp")
+    parser.add_argument("--until", help="exclusive UTC ISO date or timestamp")
     parser.add_argument("--codex-root", type=pathlib.Path)
     parser.add_argument("--claude-project", type=pathlib.Path)
     parser.add_argument("--exclude-session", action="append", default=[])
@@ -344,17 +516,24 @@ def main() -> int:
     since = parse_timestamp(args.since)
     if since is None:
         raise SystemExit("--since must be an ISO date or timestamp")
+    until = parse_timestamp(args.until)
+    if args.until is not None and until is None:
+        raise SystemExit("--until must be an ISO date or timestamp")
+    if until is not None and until <= since:
+        raise SystemExit("--until must be later than --since")
 
     codex_root = args.codex_root or pathlib.Path.home() / ".codex/sessions"
     claude_project = args.claude_project or (
         pathlib.Path.home() / ".claude/projects" / args.cwd.replace("/", "-")
     )
-    excluded = set(args.exclude_session)
+    excluded = {session_id.lower() for session_id in args.exclude_session}
     report = {
+        "contract_version": CONTRACT_VERSION,
         "since": since.isoformat().replace("+00:00", "Z"),
+        "until": until.isoformat().replace("+00:00", "Z") if until else None,
         "excluded_sessions": len(excluded),
-        "codex": scan_codex(codex_root, args.cwd, since, excluded),
-        "claude": scan_claude(claude_project, args.cwd, since, excluded),
+        "codex": scan_codex(codex_root, args.cwd, since, until, excluded),
+        "claude": scan_claude(claude_project, args.cwd, since, until, excluded),
     }
     if args.format == "json":
         print(json.dumps(report, indent=2, sort_keys=True))

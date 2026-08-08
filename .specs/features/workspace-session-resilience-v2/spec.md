@@ -129,14 +129,14 @@ contain every lifecycle boundary while rejecting UUIDs and transcript-history pa
 | WSR-02 | P1: Secret persistence boundary | SAFETY | Approved EDREN comparison | Execute | Implementing |
 | WSR-03 | P1: Safe local input | SAFETY | Approved EDREN comparison | Execute | Implementing |
 | WSR-04 | P1: Conditional rotation | SAFETY | Approved EDREN comparison | Execute | Implementing |
-| WSR-05 | P1: Closed time window | DECISION | User approved recommendation | Tasks | Pending |
-| WSR-06 | P1: Invalid upper bound | DECISION | User approved recommendation | Tasks | Pending |
-| WSR-07 | P1: Report provenance | DECISION | User approved recommendation | Tasks | Pending |
-| WSR-08 | P1: Interruption concentration | INHERITED | AD-027, AD-033, AD-036 | Tasks | Pending |
-| WSR-09 | P1: Derived-history exclusion | INHERITED | AD-027 and confirmed lesson L-008 | Tasks | Pending |
-| WSR-10 | P1: APEX compatibility | INHERITED | AD-033 and AGENTS.md retrospective contract | Tasks | Pending |
-| WSR-11 | P1: Availability distinction | DECISION | User approved recommendation | Tasks | Pending |
-| WSR-12 | P1: Sanitized output | INHERITED | AD-027 and AD-033 | Tasks | Pending |
+| WSR-05 | P1: Closed time window | DECISION | User approved recommendation | Execute | Implementing |
+| WSR-06 | P1: Invalid upper bound | DECISION | User approved recommendation | Execute | Implementing |
+| WSR-07 | P1: Report provenance | DECISION | User approved recommendation | Execute | Implementing |
+| WSR-08 | P1: Interruption concentration | INHERITED | AD-027, AD-033, AD-036 | Execute | Implementing |
+| WSR-09 | P1: Derived-history exclusion | INHERITED | AD-027 and confirmed lesson L-008 | Execute | Implementing |
+| WSR-10 | P1: APEX compatibility | INHERITED | AD-033 and AGENTS.md retrospective contract | Execute | Implementing |
+| WSR-11 | P1: Availability distinction | DECISION | User approved recommendation | Execute | Implementing |
+| WSR-12 | P1: Sanitized output | INHERITED | AD-027 and AD-033 | Execute | Implementing |
 | WSR-13 | P2: Transversal decision | INHERITED | Workspace AGENTS.md | Tasks | Pending |
 | WSR-14 | P2: Aggregate-only pilot | DECISION | User approved recommendation | Tasks | Pending |
 | WSR-15 | P2: Bounded automation gate | DECISION | User approved recommendation | Tasks | Pending |

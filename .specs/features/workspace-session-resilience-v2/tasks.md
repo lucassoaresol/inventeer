@@ -95,12 +95,12 @@ concentration, and availability state without changing existing APEX outcome sem
 
 **Done when**:
 
-- [ ] `--until` applies an exclusive upper bound to both engines and rejects invalid windows with
+- [x] `--until` applies an exclusive upper bound to both engines and rejects invalid windows with
   exact diagnostics.
-- [ ] Contract version, normalized window, exclusions, availability, copies, aborts, compactations,
+- [x] Contract version, normalized window, exclusions, availability, copies, aborts, compactations,
   affected-primary counts, percentages, and maxima match exact fixture assertions.
-- [ ] All prior APEX success, failure, denial, and unresolved assertions remain exact.
-- [ ] Missing roots, duplicate IDs, subagent-only events, malformed timestamps, and sensitive
+- [x] All prior APEX success, failure, denial, and unresolved assertions remain exact.
+- [x] Missing roots, duplicate IDs, subagent-only events, malformed timestamps, and sensitive
   sentinels satisfy the spec.
 
 **Tests**: unit/contract
