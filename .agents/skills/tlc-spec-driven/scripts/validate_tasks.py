@@ -90,19 +90,20 @@ def parse_tasks(lines):
         if current is None:
             continue
         stripped = ln.strip()
-        dm = re.match(r"^\*{0,2}Depends on\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
+        field_prefix = r"^(?:-\s+)?\*{0,2}"
+        dm = re.match(field_prefix + r"Depends on\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if dm:
             body = dm.group(1)
             if "none" not in body.lower():
                 for e in EDGE_RE.findall(body.upper()):
                     tasks[current]["deps"].add(e)
-        wm = re.match(r"^\*{0,2}Where\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
+        wm = re.match(field_prefix + r"Where\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if wm:
             tasks[current]["where"] = wm.group(1)
-        tm = re.match(r"^\*{0,2}Tests\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
+        tm = re.match(field_prefix + r"Tests\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if tm:
             tasks[current]["tests"] = tm.group(1).strip()
-        gm = re.match(r"^\*{0,2}Gate\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
+        gm = re.match(field_prefix + r"Gate\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if gm:
             tasks[current]["gate"] = gm.group(1).strip()
     return tasks

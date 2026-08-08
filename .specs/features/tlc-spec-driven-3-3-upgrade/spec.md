@@ -43,7 +43,11 @@ the new validators against representative artifacts, and adopts the gates prospe
 | Verification independence | Use a standalone fresh-eyes pass and disposable mutation sensor | The user explicitly prohibited subagents. | Yes |
 | Remaining open questions | None | Scope and compatibility policy are explicit. | Yes |
 
-## P1: Reproducible Vendor Upgrade
+**Open questions:** none
+
+## User Stories
+
+### P1: Reproducible Vendor Upgrade
 
 **Acceptance Criteria**:
 
@@ -54,7 +58,7 @@ the new validators against representative artifacts, and adopts the gates prospe
 3. **TLC330-03** — WHEN the vendored version is displayed THEN README and manifest metadata SHALL
    agree with the skill metadata.
 
-## P1: Deterministic Gate Compatibility
+### P1: Deterministic Gate Compatibility
 
 **Acceptance Criteria**:
 
@@ -70,7 +74,7 @@ the new validators against representative artifacts, and adopts the gates prospe
 8. **TLC330-08** — WHEN a commit message violates or satisfies the supported Conventional Commit
    contract THEN `check_commit.py` SHALL return the corresponding deterministic result.
 
-## P1: Prospective Adoption and Regression Protection
+### P1: Prospective Adoption and Regression Protection
 
 **Acceptance Criteria**:
 
@@ -97,11 +101,20 @@ the new validators against representative artifacts, and adopts the gates prospe
 
 ## Requirement Traceability
 
-| Requirements | Component | Provenance | Status |
+| Requirement ID | Component | Provenance | Status |
 | --- | --- | --- | --- |
-| TLC330-01..03 | Skill tree, vendor manifest, README | Upstream 3.3.0 and AD-016 | Approved |
-| TLC330-04..08 | Deterministic validator scripts and fixtures | Upstream 3.3.0 plus local compatibility review | Approved |
-| TLC330-09..12 | Root gate, adoption policy, standalone sensor | Workspace safety requirements and user instruction | Approved |
+| TLC330-01 | Vendor manifest | Upstream 3.3.0 and AD-016 | Verified |
+| TLC330-02 | Skill tree | Upstream 3.3.0 and AD-016 | Verified |
+| TLC330-03 | README and metadata | Upstream 3.3.0 and AD-016 | Pending |
+| TLC330-04 | Spec validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
+| TLC330-05 | State validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
+| TLC330-06 | State validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
+| TLC330-07 | Task validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
+| TLC330-08 | Commit validator and fixtures | Upstream 3.3.0 plus local compatibility review | Verified |
+| TLC330-09 | Root workspace gate | Workspace safety requirements and user instruction | Verified |
+| TLC330-10 | Prospective adoption policy | Workspace safety requirements and user instruction | Pending |
+| TLC330-11 | Transition gate policy | Workspace safety requirements and user instruction | Pending |
+| TLC330-12 | Standalone discrimination sensor | Workspace safety requirements and user instruction | Pending |
 
 ## Success Criteria
 
@@ -109,4 +122,3 @@ the new validators against representative artifacts, and adopts the gates prospe
 - Representative valid artifacts pass and malformed or misleading artifacts fail.
 - The complete root gate passes from the delivered commit.
 - A disposable mutation sensor proves that the new regression tests discriminate key failures.
-

@@ -142,6 +142,12 @@ def classify_ears(text):
     return (True, "warn: SHALL present but no EARS lead keyword")
 
 
+def is_acceptance_heading(text):
+    """Recognize the canonical heading with a colon inside or outside emphasis."""
+    normalized = re.sub(r"[*_`]", "", text).strip()
+    return normalized.rstrip(":").strip().lower() == "acceptance criteria"
+
+
 def check(spec_path):
     with open(spec_path, "r", encoding="utf-8") as f:
         text = f.read()
@@ -155,24 +161,48 @@ def check(spec_path):
 
     # 2. Acceptance criteria are EARS-shaped (have a SHALL).
     in_ac = False
+    current_ac = None
+
+    def validate_ac(item):
+        if item is None:
+            return
+        line_number, body = item
+        if PLACEHOLDER_RE.match(body):
+            return
+        ok, note = classify_ears(body)
+        if not ok:
+            errors.append(f"L{line_number}: acceptance criterion has no SHALL (not testable): {body[:70]}")
+        elif note.startswith("warn"):
+            warnings.append(
+                f"L{line_number}: AC has SHALL but no EARS keyword "
+                f"(WHEN/WHILE/WHERE/IF or ubiquitous 'The … shall'): {body[:60]}"
+            )
+
     for i, ln in enumerate(lines, start=1):
         stripped = ln.strip()
-        if re.match(r"^\*{0,2}Acceptance Criteria\*{0,2}\s*:?\s*$", stripped):
+        if is_acceptance_heading(stripped):
+            validate_ac(current_ac)
+            current_ac = None
             in_ac = True
             continue
         if in_ac:
             m = re.match(r"^\s*\d+\.\s+(.*)$", ln)
             if m:
-                item = m.group(1).strip()
-                if PLACEHOLDER_RE.match(item):
-                    continue  # untouched template row
-                ok, note = classify_ears(item)
-                if not ok:
-                    errors.append(f"L{i}: acceptance criterion has no SHALL (not testable): {item[:70]}")
-                elif note.startswith("warn"):
-                    warnings.append(f"L{i}: AC has SHALL but no EARS keyword (WHEN/WHILE/WHERE/IF or ubiquitous 'The … shall'): {item[:60]}")
-            elif stripped == "" or re.match(r"^#{1,3}\s", ln) or stripped.startswith("**"):
+                validate_ac(current_ac)
+                current_ac = (i, m.group(1).strip())
+            elif stripped == "":
+                continue
+            elif current_ac is not None and ln[:1].isspace():
+                current_ac = (current_ac[0], current_ac[1] + " " + stripped)
+            elif re.match(r"^#{1,3}\s", ln) or stripped.startswith("**"):
+                validate_ac(current_ac)
+                current_ac = None
                 in_ac = False
+            else:
+                validate_ac(current_ac)
+                current_ac = None
+                in_ac = False
+    validate_ac(current_ac)
 
     # 3. Assumptions table cells filled.
     b = section_bounds(lines, "Assumptions & Open Questions")

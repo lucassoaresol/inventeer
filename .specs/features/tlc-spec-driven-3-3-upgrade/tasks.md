@@ -31,7 +31,11 @@ graph LR
   T4 --> T5
 ```
 
-### T1 — Record the approved upgrade contract
+## Task Breakdown
+
+### Phase 1
+
+#### T1: Record the approved upgrade contract
 
 - **Depends on:** none
 - **Deliverable:** Approved specification, design, task graph, and prospective compatibility policy.
@@ -40,7 +44,7 @@ graph LR
 - **Gate:** `git diff --check`
 - **Commit:** `docs(spec): plan TLC 3.3.0 upgrade`
 
-### T2 — Merge the pinned upstream release
+#### T2: Merge the pinned upstream release
 
 - **Depends on:** T1
 - **Deliverable:** Upstream 3.3.0 content with all intentional local extensions retained.
@@ -49,7 +53,7 @@ graph LR
 - **Gate:** Skill gate and `git diff --check`
 - **Commit:** `chore(tlc): merge upstream 3.3.0`
 
-### T3 — Harden and test deterministic gates
+#### T3: Harden and test deterministic gates
 
 - **Depends on:** T2
 - **Deliverable:** Compatible spec/state parsing and behavioral coverage for all four validators.
@@ -58,7 +62,7 @@ graph LR
 - **Gate:** Quick and Full gates.
 - **Commit:** `test(tlc): harden deterministic gates`
 
-### T4 — Record adoption and vendor evidence
+#### T4: Record adoption and vendor evidence
 
 - **Depends on:** T3
 - **Deliverable:** Version documentation, AD-040 prospective policy, and updated handoff.
@@ -67,7 +71,7 @@ graph LR
 - **Gate:** Full and Integrity gates.
 - **Commit:** `docs(workspace): adopt TLC 3.3.0 gates`
 
-### T5 — Verify the delivered range
+#### T5: Verify the delivered range
 
 - **Depends on:** T4
 - **Deliverable:** Fresh standalone validation report and killed-mutant evidence.
@@ -100,6 +104,6 @@ graph LR
 | --- | --- | --- |
 | T1 | Complete | `d138034` — contract and execution plan committed |
 | T2 | Complete | 3.3.0 merged; bilateral review, provenance assertions, skill validation, and `git diff --check` passed |
-| T3 | Pending | — |
+| T3 | Complete | 12 focused tests and 19 root suites passed; spec/tasks validators passed without warnings |
 | T4 | Pending | — |
 | T5 | Pending | — |

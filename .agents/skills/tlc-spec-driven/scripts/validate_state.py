@@ -51,16 +51,41 @@ def _feature_dirs(root):
 
 def _verdict(text):
     """Return 'pass', 'fail', 'unfilled', or None from a validation report."""
-    # Look at the '## Validation' heading first, then a '**Result**' line.
     lines = text.splitlines()
-    candidates = [
-        ln for ln in lines
-        if re.search(r"^#{1,4}\s*validation\b", ln.strip(), re.IGNORECASE)
-        or re.search(r"\*{0,2}result\*{0,2}\s*:", ln.strip(), re.IGNORECASE)
-    ]
-    hay = " ".join(candidates) if candidates else text
-    has_pass = re.search(r"\bPASS\b", hay) is not None
-    has_fail = re.search(r"\bFAIL\b", hay) is not None
+
+    def outcome(candidates):
+        hay = " ".join(candidates)
+        has_pass = re.search(r"\bPASS\b", hay, re.IGNORECASE) is not None
+        has_fail = re.search(r"\bFAIL\b", hay, re.IGNORECASE) is not None
+        if has_pass and has_fail:
+            return "unfilled"
+        if has_pass:
+            return "pass"
+        if has_fail:
+            return "fail"
+        return None
+
+    explicit = []
+    fallback = []
+    for line in lines:
+        stripped = line.strip()
+        plain = re.sub(r"[*_`]", "", stripped)
+        if re.search(r"^#{1,4}\s*validation\b", plain, re.IGNORECASE):
+            if outcome([plain]) is not None:
+                explicit.append(plain)
+            continue
+        if re.search(r"^(?:overall|verdict|validation status)\s*:", plain, re.IGNORECASE):
+            explicit.append(plain)
+            continue
+        if re.search(r"^result\s*:", plain, re.IGNORECASE):
+            fallback.append(plain)
+
+    selected = explicit if explicit else fallback
+    if selected:
+        return outcome(selected)
+
+    has_pass = re.search(r"\bPASS\b", text, re.IGNORECASE) is not None
+    has_fail = re.search(r"\bFAIL\b", text, re.IGNORECASE) is not None
     if has_pass and has_fail:
         # Both present on the verdict line = unfilled template "[PASS | FAIL]".
         return "unfilled"

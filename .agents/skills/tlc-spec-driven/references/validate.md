@@ -85,7 +85,7 @@ The sensor provides the empirical guarantee that the tests can actually detect r
 
 **How it works:**
 
-1. **Prepare an isolated scratch.** Never mutate the real worktree. Choose one:
+1. **Prepare an isolated disposable scratch.** Never mutate the real worktree. Choose one:
    - Preferred: a temporary git worktree (`git worktree add <scratch-path> HEAD`), mutate and run tests there, then `git worktree remove --force <scratch-path>`.
    - Fallback (no git / worktree unavailable): copy only the affected file(s) to a temp directory, mutate the copies, point the test runner at those copies (or restore originals from the copies' backups), then delete the temp directory.
    - **Forbidden:** `git stash` / `git stash pop`. A stash records state *before* the mutation; popping it does not reverse a mutation applied afterward, and on a clean tree `git stash` creates no entry at all - so the fault is left in the real worktree.

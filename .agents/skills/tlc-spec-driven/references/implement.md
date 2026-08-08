@@ -342,7 +342,7 @@ Dispatch a fresh sub-agent following the **Verifier** role described in [sub-age
 - The test files in scope
 - `validate.md` as its operating checklist
 
-**What the Verifier does** (full procedure in [sub-agents.md](sub-agents.md); operating checklist in [validate.md](validate.md)): a spec-anchored coverage check (evidence-or-zero, each asserted value matched to the spec outcome) plus a discrimination sensor (behavior-level mutations run in a scratch state and then discarded), after which it writes `.specs/features/[feature]/validation.md` (PASS/FAIL, per-AC evidence, sensor result, diff range) and returns a compact verdict + ranked gaps in chat. It runs read-only over the real tree and does NOT fix.
+**What the Verifier does** (full procedure in [sub-agents.md](sub-agents.md); operating checklist in [validate.md](validate.md)): a spec-anchored coverage check (evidence-or-zero, each asserted value matched to the spec outcome) plus a discrimination sensor (behavior-level mutations run in a disposable scratch worktree or file copy and then discarded), after which it writes `.specs/features/[feature]/validation.md` (PASS/FAIL, per-AC evidence, sensor result, diff range) and returns a compact verdict + ranked gaps in chat. It runs read-only over the real tree and does NOT fix.
 
 If the Verifier returns FAIL, the orchestrator routes the ranked gaps back to an implementer as fix tasks, then re-dispatches the Verifier - bounded to **3 fix→re-verify iterations** before escalating to the user.
 
