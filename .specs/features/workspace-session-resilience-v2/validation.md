@@ -1,55 +1,59 @@
 # Validação de Workspace Session Resilience v2
 
-**Verdict:** FAIL
+**Verdict:** PASS
 **Data:** 2026-08-08
 **Spec:** `.specs/features/workspace-session-resilience-v2/spec.md`
-**Range do diff:** `152b2de9d8948320152f0f972ec07da8771edfe5..923b7861ed5e07b6f0e11d5e47199a773ae1563d`
-**Verifier:** subagente independente (autor != verifier)
+**Range funcional:** `152b2de9d8948320152f0f972ec07da8771edfe5..46edd31c6646e988564ec1470826ac14cfbe810f`
+**Verifier:** subagente independente final (autor != verifier)
 
 ## Evidência de Entrega
 
-- **Estado da validação:** `fail`
-- **Vínculo da evidência:** base `152b2de9d8948320152f0f972ec07da8771edfe5`, head/work SHA `923b7861ed5e07b6f0e11d5e47199a773ae1563d`
+- **Estado da validação:** `pending-delivery`
+- **Vínculo da evidência:** base `152b2de9d8948320152f0f972ec07da8771edfe5`, head/work SHA `46edd31c6646e988564ec1470826ac14cfbe810f`
 - **Contrato de requisitos:** `.specs/features/workspace-session-resilience-v2/spec.md` no head da evidência
-- **Estado dos gates:** verde. Testes focais passaram 25/25; build passou 20/20 suites; integridade do diff no range passou.
-- **Condições pendentes:** corrigir WSR-09 e adicionar assertions exatas para WSR-11, WSR-14 e WSR-15; depois repetir a validação independente.
-- **Paths de alto risco:** `scripts/audit-session-history.py`, `scripts/test-session-history-audit.py`, `scripts/test-session-resilience-contract.sh`
+- **Estado dos gates:** verde. Validators estruturais passaram; build passou 20/20 suites; integridade do diff no range passou; sensor matou 3/3 mutantes.
+- **Condição pendente de entrega:** este relatório final é a única mudança não commitada. O PASS comportamental não fica promotion-ready até o relatório ser incluído em um commit posterior.
+- **Paths de alto risco:** `scripts/audit-session-history.py`, `scripts/test-session-history-audit.py`, `scripts/test-session-resilience-contract.sh`, `.specs/features/workspace-session-resilience-v2/pilot.md`
+
+O HEAD foi confirmado antes da validação e permaneceu em `46edd31c6646e988564ec1470826ac14cfbe810f`. O source worktree iniciou limpo.
 
 ## Conclusão das Tasks
 
 | Task | Status | Evidência |
 | --- | --- | --- |
-| T1 | Concluída | `c0c910c`; contrato focal de segredo passou 11/11 |
-| T2 | Concluída | `cebac21`; teste focal do auditor passou 14/14 |
-| T3 | Concluída | `923b786`; build gate passou 20/20 suites |
+| T1 | Concluída | `c0c910c`; contrato de segurança em `scripts/test-session-resilience-contract.sh:21`-`43` |
+| T2 | Concluída | `cebac21`; auditor v2 e assertions em `scripts/test-session-history-audit.py:294`-`381` |
+| T3 | Concluída | `923b786`; AD-041 e piloto em `.specs/STATE.md:620`-`639` e `.specs/features/workspace-session-resilience-v2/pilot.md:1`-`102` |
+| T4 | Concluída | `26b9c77`; primeira observação canônica em `scripts/audit-session-history.py:183`-`199` e métricas zero em `scripts/test-session-history-audit.py:400`-`445` |
+| T5 | Concluída | `46edd31`; lifecycle exato em `scripts/test-session-resilience-contract.sh:83`-`131` |
 
 ## Requisitos Ancorados na Spec
 
-Evidence-or-zero foi aplicado aos 15 requisitos. Uma assertion parcial não aprova o requisito.
+Evidence-or-zero foi aplicado aos 15 requisitos. Cada PASS cita uma assertion de valor ou estado compatível com o outcome definido pela spec.
 
 | Requisito | Outcome definido pela spec | Evidência de assertion exata | Resultado |
 | --- | --- | --- | --- |
-| WSR-01 | Um valor com aparência de segredo fornecido no chat não é repetido; referências necessárias usam `[REDACTED]`. | `scripts/test-session-resilience-contract.sh:21` - `grep -Fq 'não repita o valor'`; `scripts/test-session-resilience-contract.sh:23` - `grep -Fq 'use \`[REDACTED]\`'` | PASS |
-| WSR-02 | O valor é proibido em comandos exibidos, logs, commits, checkpoints e artifacts versionados. | `scripts/test-session-resilience-contract.sh:31` - `grep -Fq` exato sobre as cinco superfícies | PASS |
-| WSR-03 | O uso local prefere `.env` ignorado ou entrada interativa. | `scripts/test-session-resilience-contract.sh:35` - `grep -Fq '\`.env\` ignorado ou entrada interativa'` | PASS |
-| WSR-04 | A orientação de rotação é condicional e não afirma que a credencial continua ativa. | `scripts/test-session-resilience-contract.sh:39` e `scripts/test-session-resilience-contract.sh:41` exigem as duas frases exatas | PASS |
-| WSR-05 | Origens Codex e Claude são selecionadas no intervalo normalizado `[since, until)`. | `scripts/test-session-history-audit.py:242` e `scripts/test-session-history-audit.py:290` colocam os dois engines exatamente em `until`; `scripts/test-session-history-audit.py:328` e `scripts/test-session-history-audit.py:353` afirmam relatórios completos que os excluem | PASS |
-| WSR-06 | `until` inválido e janelas não crescentes falham com código não zero e os dois diagnósticos exatos. | `scripts/test-session-history-audit.py:473`-`474` e `scripts/test-session-history-audit.py:489`-`490` afirmam código não zero e stderr exato | PASS |
-| WSR-07 | O relatório emite contract version inteiro 2, limites normalizados e quantidade de exclusões. | `scripts/test-session-history-audit.py:316`-`327` afirma schema e valores top-level exatos | PASS |
-| WSR-08 | Totais de interrupção são deduplicados; counts afetados, percentuais com duas casas e máximos por primary são exatos. | `scripts/test-session-history-audit.py:328`-`345` afirma o relatório Codex completo, inclusive totais `8/8`, counts `2/2`, máximos `2/2` e percentuais `66.67/66.67` | PASS |
-| WSR-09 | Eventos de cópias e subagentes não afetam counts, percentuais ou máximos das primárias. | A exclusão de subagentes é exata em `scripts/test-session-history-audit.py:457`-`466`. A exclusão copy-only não tem assertion discriminante. `scripts/audit-session-history.py:187`-`208` agrega interrupções de arquivos duplicados com `max`; um probe do verifier com arquivo canônico sem eventos e cópia interrompida retornou counts e máximos iguais a 1. | FAIL |
-| WSR-10 | Successes, failures, denials e unresolved APEX existentes mantêm significados separados. | Valores Codex exatos: `scripts/test-session-history-audit.py:348`-`351`. Valores Claude exatos: `scripts/test-session-history-audit.py:363`-`366`. Os quatro outcomes são afirmados separadamente. | PASS |
-| WSR-11 | Roots ausentes e roots disponíveis sem matches são distinguíveis e retornam todas as métricas de interrupção em zero. | Disponibilidade é exata em `scripts/test-session-history-audit.py:400`-`405` e `scripts/test-session-history-audit.py:428`-`431`. Somente `max_aborts_per_session` e `sessions_with_aborts_percent` são afirmados como zero; os demais totais, counts, máximos e percentual não têm assertion exata. | GAP |
-| WSR-12 | JSON e texto omitem conteúdo, IDs, paths de history/workspace e valores sentinela semelhantes a credenciais. | `scripts/test-session-history-audit.py:312`-`313` e `scripts/test-session-history-audit.py:379`-`381` rejeitam o sentinela, IDs representativos, workspace path exato e scratch history path nos dois formatos | PASS |
-| WSR-13 | AD-041 registra compatibilidade, privacidade, cohort fechado e piloto limitado. | `scripts/test-session-resilience-contract.sh:45`-`55` seleciona AD-041 e exige cada frase da decisão | PASS |
-| WSR-14 | O piloto ativo contém somente metadados de contrato, agregados sanitizados, regras de elegibilidade, medidas de sucesso e thresholds explícitos. | `scripts/test-session-resilience-contract.sh:63`-`80` afirma metadados e agregados; `scripts/test-session-resilience-contract.sh:94`-`97` rejeita padrões de UUID/history path. Nenhuma assertion exige regras de elegibilidade ou medidas de sucesso presentes em `.specs/features/workspace-session-resilience-v2/pilot.md:52` e `.specs/features/workspace-session-resilience-v2/pilot.md:66`. | GAP |
-| WSR-15 | Após dez primárias elegíveis ou a próxima feature longa, uma comparação final é obrigatória antes de propor runner. | `scripts/test-session-resilience-contract.sh:82`-`92` afirma o gatilho e os thresholds. Nenhuma assertion exige os passos de comparação ou o limite pré-automação em `.specs/features/workspace-session-resilience-v2/pilot.md:90`-`100`. | GAP |
+| WSR-01 | Valor com aparência de segredo recebido no chat não é repetido e uma referência necessária usa `[REDACTED]`. | `scripts/test-session-resilience-contract.sh:21`-`25` exige as duas frases canônicas com `grep -Fq`. | PASS |
+| WSR-02 | O valor é proibido em comandos exibidos, logs, commits, checkpoints e artifacts versionados. | `scripts/test-session-resilience-contract.sh:31`-`33` exige a lista completa de superfícies. | PASS |
+| WSR-03 | Uso local prefere `.env` ignorado ou entrada interativa. | `scripts/test-session-resilience-contract.sh:35`-`37` exige os dois canais locais exatos. | PASS |
+| WSR-04 | Rotação é recomendada de forma condicional sem afirmar que a credencial continua ativa. | `scripts/test-session-resilience-contract.sh:39`-`43` exige simultaneamente a condição e o limite epistêmico. | PASS |
+| WSR-05 | Codex e Claude incluem origens em `[since, until)` e excluem origem igual ao limite superior. | Fixtures no limite em `scripts/test-session-history-audit.py:239`-`250` e `scripts/test-session-history-audit.py:287`-`292`; relatórios exatos em `scripts/test-session-history-audit.py:328`-`367`. | PASS |
+| WSR-06 | `--until` inválido e janela não crescente saem não zero com os dois diagnósticos exatos. | `scripts/test-session-history-audit.py:482`-`504` afirma `returncode != 0` e cada stderr exato. | PASS |
+| WSR-07 | O relatório contém `contract_version` inteiro 2, limites normalizados e contagem de exclusões. | `scripts/test-session-history-audit.py:316`-`327` afirma schema top-level e valores exatos. | PASS |
+| WSR-08 | Interrupções têm totais deduplicados, counts de primárias afetadas, percentuais com duas casas e máximos por primária. | `scripts/test-session-history-audit.py:328`-`351` compara o relatório Codex inteiro, inclusive totais, counts, percentuais e máximos. | PASS |
+| WSR-09 | Evidência de cópias ou subagentes não contamina counts, percentuais, máximos, totais deduplicados ou outcomes APEX canônicos. | A cópia contém valores divergentes em `scripts/test-session-history-audit.py:192`-`200`; a primeira observação vence em `scripts/audit-session-history.py:183`-`199`; o relatório inteiro é afirmado em `scripts/test-session-history-audit.py:328`-`351`; subagentes são isolados em `scripts/test-session-history-audit.py:447`-`480`. | PASS |
+| WSR-10 | `apex_tool_successes`, `apex_tool_failures`, `apex_tool_denials` e `apex_tool_unresolved` mantêm campos e significados separados. | Codex afirma os quatro mapas em `scripts/test-session-history-audit.py:348`-`351`; Claude afirma os quatro mapas em `scripts/test-session-history-audit.py:363`-`366`. | PASS |
+| WSR-11 | Root ausente e root disponível sem matches são distinguíveis e retornam todas as métricas de interrupção em zero. | O mapa completo de oito métricas zero é definido em `scripts/test-session-history-audit.py:400`-`409` e comparado para root ausente em `scripts/test-session-history-audit.py:410`-`416` e vazio em `scripts/test-session-history-audit.py:438`-`445`. | PASS |
+| WSR-12 | JSON e texto omitem conteúdo, IDs, paths de history/workspace e valores sentinela. | `scripts/test-session-history-audit.py:311`-`313` e `scripts/test-session-history-audit.py:371`-`381` rejeitam sentinelas, identificadores e paths nos dois formatos. | PASS |
+| WSR-13 | AD-041 registra compatibilidade, privacidade, cohort fechado e piloto limitado. | `scripts/test-session-resilience-contract.sh:45`-`55` recorta AD-041 e exige as quatro decisões; a decisão está em `.specs/STATE.md:620`-`639`. | PASS |
+| WSR-14 | O piloto contém somente metadados de contrato, agregados sanitizados, regras de elegibilidade, medidas de sucesso e thresholds explícitos. | Proveniência e agregados são afirmados em `scripts/test-session-resilience-contract.sh:63`-`81`; todas as regras e medidas são enumeradas em `scripts/test-session-resilience-contract.sh:83`-`106`; padrões proibidos são rejeitados em `scripts/test-session-resilience-contract.sh:133`-`136`. | PASS |
+| WSR-15 | O limite encerra após dez primárias elegíveis ou a próxima feature longa e exige comparação mais decision log antes de propor ou implementar automação. | Trigger e thresholds em `scripts/test-session-resilience-contract.sh:108`-`117`; cinco passos da comparação e proibição pré-automação em `scripts/test-session-resilience-contract.sh:119`-`131`. | PASS |
 
-**Estado spec-anchored:** 11/15 requisitos passam; 1 falha comportamental; 3 gaps de evidência; 0 gaps de precisão da spec.
+**Estado spec-anchored:** 15/15 requisitos passam; 0 gaps comportamentais; 0 gaps de evidência; 0 gaps de precisão da spec.
 
 ## Compatibilidade APEX
 
-Os quatro outcomes permanecem requisitos explícitos com assertions exatas:
+Todos os outcomes exigidos foram verificados. Nenhum foi inferido a partir de tentativa ou sucesso de outro outcome.
 
 | Outcome | Assertion Codex | Assertion Claude | Resultado |
 | --- | --- | --- | --- |
@@ -62,62 +66,57 @@ Os quatro outcomes permanecem requisitos explícitos com assertions exatas:
 
 | Edge case | Evidência de assertion exata | Resultado |
 | --- | --- | --- |
-| Origem igual a `until` é excluída. | Fixtures de limite em `scripts/test-session-history-audit.py:242` e `scripts/test-session-history-audit.py:290`; relatórios exatos em `scripts/test-session-history-audit.py:328` e `scripts/test-session-history-audit.py:353` | PASS |
-| Timestamp malformado é ignorado sem vazar conteúdo. | Fixture malformada em `scripts/test-session-history-audit.py:245`-`250`; exclusão do sentinela em `scripts/test-session-history-audit.py:312`-`313`; relatório exato em `scripts/test-session-history-audit.py:328` | PASS |
-| ID primário duplicado conta concentração de interrupção e APEX uma vez. | Fixture Codex duplicada em `scripts/test-session-history-audit.py:192`-`200`, fixture Claude duplicada em `scripts/test-session-history-audit.py:281`-`286` e counts exatos em `scripts/test-session-history-audit.py:328`-`366` | PASS |
-| Nenhuma primária Codex correspondente produz counts, percentuais e máximos afetados iguais a zero. | `scripts/test-session-history-audit.py:457`-`466` afirma cada métrica affected-primary como zero | PASS |
-| Omissão de `until` preserva o comportamento não limitado após `since`. | `scripts/test-session-history-audit.py:492`-`499` afirma `until is None` e inclusão do arquivo Codex adicional | PASS |
+| Origem igual a `until` é excluída. | Fixtures em `scripts/test-session-history-audit.py:239`-`250` e `scripts/test-session-history-audit.py:287`-`292`; relatórios completos em `scripts/test-session-history-audit.py:328`-`367`. | PASS |
+| Timestamp malformado é ignorado sem vazamento. | Fixture em `scripts/test-session-history-audit.py:245`-`250`; ausência de sentinelas em `scripts/test-session-history-audit.py:311`-`313`; relatório exato em `scripts/test-session-history-audit.py:328`-`351`. | PASS |
+| ID primário duplicado conta interrupção e APEX uma vez. | Duplicata divergente em `scripts/test-session-history-audit.py:192`-`200`; exclusão canônica em `scripts/audit-session-history.py:183`-`199`; assertions em `scripts/test-session-history-audit.py:328`-`351`. | PASS |
+| Nenhuma primária Codex correspondente produz counts, percentuais e máximos afetados zero. | `scripts/test-session-history-audit.py:447`-`480` afirma população zero e todas as métricas afetadas como zero. | PASS |
+| Omissão de `until` preserva chamadas não limitadas após `since`. | `scripts/test-session-history-audit.py:506`-`513` afirma `until is None` e a inclusão adicional esperada. | PASS |
 
 ## Gate Check
 
-- **Comandos focais:** `python3 scripts/test-session-history-audit.py`; `bash scripts/test-session-resilience-contract.sh`
-- **Resultado focal:** 14/14 testes do auditor e 11/11 testes de contrato passaram; 0 falhas; 0 skips.
-- **Comando de build:** `bash scripts/test-workspace.sh`
-- **Resultado do build:** 20/20 suites passaram; 0 falhas; 0 skips.
-- **Comando de integridade:** `git diff --check 152b2de9d8948320152f0f972ec07da8771edfe5..923b7861ed5e07b6f0e11d5e47199a773ae1563d`
-- **Resultado de integridade:** limpo.
-- **Gate estrutural da TLC:** `validate_state.py workspace-session-resilience-v2` saiu 1 e recusou corretamente o veredito FAIL; a feature não está concluída.
-- **Testes focais antes da feature:** 9 testes do auditor; contrato de session resilience ausente.
-- **Testes focais depois da feature:** 25 testes.
-- **Delta:** +16 testes. As statements `assert` do auditor aumentaram de 15 para 45.
-- **Integridade dos testes:** assertions removidas do sentinela foram fortalecidas em loops com múltiplos valores. Duas assertions antigas `files == 0` foram substituídas pelas de disponibilidade; isso não enfraquece um outcome preciso de interrupção v2, mas WSR-11 ainda carece das assertions completas de métricas zero descritas acima.
+- **Preflight:** `./scripts/check-machine-resources.sh` passou antes do build. Snapshot: 2 CPUs online, carga de 1 minuto 0,77, 2.016.243.712 bytes de memória disponíveis, sem swap e 46.460.510.208 bytes livres. Decisão: execução sequencial, sem reduzir cobertura.
+- **Validator da spec:** `python3 .agents/skills/tlc-spec-driven/scripts/validate_spec.py .specs/features/workspace-session-resilience-v2/spec.md` passou com 0 erros e 0 warnings.
+- **Validator das tasks:** `python3 .agents/skills/tlc-spec-driven/scripts/validate_tasks.py .specs/features/workspace-session-resilience-v2/tasks.md` passou com 0 erros e 3 warnings não bloqueantes de granularidade.
+- **Build:** `bash scripts/test-workspace.sh` passou 20/20 suites, 0 falhas e nenhum skip reportado.
+- **Cobertura focal dentro do build:** auditor 14/14 checks; contrato de resiliência 13/13 checks.
+- **Integridade:** `git diff --check 152b2de9d8948320152f0f972ec07da8771edfe5..46edd31c6646e988564ec1470826ac14cfbe810f` saiu 0.
+- **Contagem antes da feature:** 19 suites no gate da raiz; 9 checks focais do auditor; contrato de resiliência ausente.
+- **Contagem depois da feature:** 20 suites no gate da raiz; 27 checks focais combinados.
+- **Delta:** +1 suite no gate da raiz e +18 checks focais. Nenhum teste foi removido ou enfraquecido no range observado.
 
 ## Discrimination Sensor
 
-Todas as mutações rodaram somente em uma cópia `mktemp` sob `/tmp`; o scratch foi removido. Nenhum stash foi usado.
+As mutações rodaram em três cópias independentes do archive exato de `46edd31`, sob área temporária descartável fora do source worktree. Nenhum stash foi usado. A área temporária foi removida após os testes.
 
-| Mutação | Alvo | Falha comportamental | Resultado |
+| Mutação | Alvo | Falha injetada | Resultado |
 | --- | --- | --- | --- |
-| 1 | `scripts/audit-session-history.py:169` | Alterou o limite Codex de `timestamp >= until` para `timestamp > until` | KILLED: `scripts/test-session-history-audit.py:328` falhou |
-| 2 | `scripts/audit-session-history.py:210` | Incluiu subagentes na população de concentração primária | KILLED: `scripts/test-session-history-audit.py:328` falhou |
-| 3 | `AGENTS.md:160` | Substituiu o marcador canônico `[REDACTED]` por `[MASKED]` | KILLED: `scripts/test-session-resilience-contract.sh:23` falhou |
+| M1 | `scripts/audit-session-history.py:187`-`199` | Removeu o corte que ignora arquivo duplicado posterior, permitindo que evidência presente somente na duplicata sobrescrevesse abortos, compactações e mapas APEX canônicos. | KILLED: `python3 scripts/test-session-history-audit.py` saiu 1 na comparação do relatório inteiro em `scripts/test-session-history-audit.py:328`. |
+| M2 | `.specs/features/workspace-session-resilience-v2/pilot.md:60` | Removeu a regra que exclui copy, continuation, sidechain e subagent da elegibilidade. | KILLED: `bash scripts/test-session-resilience-contract.sh` saiu 1 no loop de regras em `scripts/test-session-resilience-contract.sh:83`-`93`. |
+| M3 | `.specs/features/workspace-session-resilience-v2/pilot.md:91`-`92` | Removeu a proibição de propor ou implementar automação antes da comparação final e do registro no decision log. | KILLED: `bash scripts/test-session-resilience-contract.sh` saiu 1 na assertion em `scripts/test-session-resilience-contract.sh:129`-`131`. |
 
-**Profundidade:** lightweight, 3 mutações comportamentais.
-**Resultado:** 3/3 mortas.
-**Isolamento:** `git status --porcelain` da árvore real estava vazio antes; permaneceu vazio após o cleanup; a igualdade exata passou.
+**Profundidade:** lightweight reforçada, 3 mutações independentes dirigidas aos riscos antes ausentes.
+**Resultado:** 3/3 mutantes mortos.
+**Isolamento:** `git status --porcelain=v1` estava vazio antes do sensor e permaneceu vazio depois do descarte. A única mudança posterior é este `validation.md` exigido pelo Verifier.
 
 ## Qualidade de Código
 
 | Princípio | Status | Evidência |
 | --- | --- | --- |
-| Código mínimo; sem abstrações alheias | PASS | Nove arquivos alterados correspondem ao escopo T1-T3; `git diff --name-status` não contém repo de produto nem workflow alheio. |
-| Mudanças cirúrgicas; estilo existente | PASS | O range contém os três commits atômicos planejados e o commit da spec aprovada. |
-| Sem scope creep | PASS | Todos os paths alterados são nomeados pelas tasks ou são artifacts aprovados de spec/tasks. |
-| Quantidade de testes não caiu | PASS | Testes focais passaram de 9 para 25; assertions do auditor passaram de 15 para 45. |
-| Outcome check ancorado na spec | FAIL | O comportamento WSR-09 falha; WSR-11, WSR-14 e WSR-15 não têm assertions exatas completas. |
-| Expectativa de cobertura por camada | FAIL | A exclusão de cópias no auditor e os contratos de lifecycle documental estão incompletos. |
-| Todo teste em escopo está reivindicado | PASS | Assertions do auditor e shell mapeiam a requisito, edge case ou done-when de task. |
-| Diretrizes de qualidade do workspace | PASS | O build gate exigido por `AGENTS.md:153` passou; a validação seguiu evidence-or-zero e sensor descartável da TLC vendorizada. |
+| Código mínimo; sem abstrações alheias | PASS | A correção T4 troca agregação de duplicatas por seleção canônica direta em `scripts/audit-session-history.py:183`-`199`. |
+| Mudanças cirúrgicas; estilo existente | PASS | O range funcional altera somente os dez paths vinculados à spec, tasks, decisão, implementação, testes e validação. |
+| Sem scope creep | PASS | Nenhum repositório de produto, integração externa ou estado remoto participa do diff. |
+| Quantidade e força dos testes não caíram | PASS | Gate raiz 19→20 suites; checks focais 9→27; relatórios inteiros e listas completas substituem assertions parciais. |
+| Outcome check ancorado na spec | PASS | 15/15 requisitos têm assertion de valor ou estado neste relatório. |
+| Expectativa de cobertura por camada | PASS | Contrato de segurança, auditor, decisão e piloto têm checks focais e participam do build agregado. |
+| Todo teste em escopo está reivindicado | PASS | Cada grupo mapeia a requisito, edge case ou Done-when em `.specs/features/workspace-session-resilience-v2/tasks.md:10`-`21` e `.specs/features/workspace-session-resilience-v2/tasks.md:67`-`188`. |
+| Diretrizes documentadas seguidas | PASS | Preflight e gate agregado exigidos por `AGENTS.md:144`-`154`; validação evidence-or-zero e sensor descartável da TLC. |
 
-UAT interativo não se aplica a este auditor read-only de metadados e contrato de instruções do repositório.
+UAT interativo não se aplica ao auditor local read-only e aos contratos documentais do workspace.
 
-## Gaps Ranqueados e Planos de Correção
+## Gaps e Lessons
 
-1. **Major: vazamento copy-only em WSR-09.** `scripts/audit-session-history.py:187`-`208` agrega interrupções de arquivos duplicados com `max`; uma cópia derivada pode tornar uma primária afetada e elevar seus máximos. Preserve uma observação primária canônica determinística para concentração, exclua eventos de arquivos duplicados dessas métricas e adicione fixture em que somente a cópia tem aborts/compactions.
-2. **Major: contrato incompleto de métricas zero em WSR-11.** Estenda `scripts/test-session-history-audit.py` para afirmar todos os totais, counts afetados, percentuais e máximos como zero para roots ausentes e roots disponíveis sem matches.
-3. **Major: eligibility e success measures de WSR-14 não são enforced.** Estenda `scripts/test-session-resilience-contract.sh` com assertions exatas para cada limite de elegibilidade e medida de sucesso, mantendo a rejeição de UUID/history path.
-4. **Major: closing comparison de WSR-15 não é enforced.** Afirme os passos da comparação final e a regra de que nenhum runner é proposto ou implementado antes da comparação e do outcome no decision log.
+Nenhum gap, mutante sobrevivente, desvio de spec, falha de gate ou finding externo foi confirmado. Uma validação limpa não grava lesson.
 
 ## Resumo
 
-**Overall:** FAIL. Os gates estão verdes e os três mutantes foram mortos, mas a implementação viola WSR-09 para interrupções copy-only. Outros três requisitos não têm assertions evidence-or-zero completas. Os status dos requisitos permanecem inalterados porque esta validação não modifica spec, tasks, STATE ou implementação.
+**Overall:** PASS. Os 15 requisitos correspondem ao outcome da spec, os 20 gates agregados passaram, todos os outcomes APEX permanecem separados e as três mutações obrigatórias foram mortas. O relatório é `pending-delivery` somente porque esta execução não foi autorizada a criar commit.
