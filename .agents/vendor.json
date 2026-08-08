@@ -4,9 +4,9 @@
     "source_path": "packages/skills-catalog/skills/(development)/tlc-spec-driven",
     "target_path": ".agents/skills/tlc-spec-driven",
     "strategy": "three-way-merge",
-    "base_ref": "6663279cd659b60cecb3e8d2dcc13162c88a8b7a",
-    "upstream_version": "3.2.0",
-    "merged_at": "2026-07-10",
+    "base_ref": "fe318be656b315d5b6f45cf7ea23946b2d0241b0",
+    "upstream_version": "3.3.0",
+    "merged_at": "2026-08-08",
     "local_customizations": [
       "review contract and artifact lifecycle",
       "orientation before decision questions",

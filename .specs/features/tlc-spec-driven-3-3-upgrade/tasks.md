@@ -98,8 +98,8 @@ graph LR
 
 | Task | Status | Commit / evidence |
 | --- | --- | --- |
-| T1 | In progress | Contract written; pending commit |
-| T2 | Pending | — |
+| T1 | Complete | `d138034` — contract and execution plan committed |
+| T2 | Complete | 3.3.0 merged; bilateral review, provenance assertions, skill validation, and `git diff --check` passed |
 | T3 | Pending | — |
 | T4 | Pending | — |
 | T5 | Pending | — |
