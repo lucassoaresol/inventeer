@@ -113,5 +113,41 @@ for forbidden_root in "$portal_docs_root" 'repos/portal-api' 'repos/portal-web';
 done
 ok "Portal TLC boundary covers documentation and both code repositories"
 
+active_surfaces=(
+  AGENTS.md
+  README.md
+  projects/README.md
+  projects/inventeer-ops.md
+  projects/ids.md
+  projects/portal.md
+  projects/assistants.md
+  .agents/skills/assistants-task-context/SKILL.md
+  .agents/skills/assistants-task-context/references/ids-context.md
+  .agents/skills/portal-task-context/SKILL.md
+  .agents/skills/portal-task-context/references/ids-context.md
+  .agents/skills/portal-task-context/references/repository-topology.md
+  .agents/skills/portal-task-context/references/specification-policy.md
+)
+if rg -q 'repos/(ids|portal)([/`[:space:]]|$)' "${active_surfaces[@]}"; then
+  fail "an active workspace surface still references a retired documentation repository"
+fi
+ok "all active instructions, pointers, and context skills reject retired roots"
+
+historical_spec='.specs/features/portal-tlc-session-artifacts/spec.md'
+if ! rg -q 'repos/portal([/`[:space:]]|$)' "$historical_spec"; then
+  fail "historical Portal TLC evidence was rewritten instead of preserved"
+fi
+ok "historical feature evidence preserves its original topology"
+
+for skill in \
+  .agents/skills/assistants-task-context/SKILL.md \
+  .agents/skills/portal-task-context/SKILL.md; do
+  flattened="$(tr '\n' ' ' < "$skill")"
+  grep -Eq 'If a required repo is absent, report.{0,100}stop;[[:space:]]+never clone automatically' \
+    <<<"$flattened" \
+    || fail "$skill does not fail closed when inventeer-ops is absent"
+done
+ok "task-context skills fail closed when a required clone is absent"
+
 echo
 echo "$passed teste(s) passaram."

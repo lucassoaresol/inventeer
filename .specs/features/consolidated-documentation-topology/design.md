@@ -81,4 +81,3 @@ the ambiguity INV-3770 is intended to remove.
 | Project representation | Keep IDS and Portal logical pointers | Projects and repos remain separate concepts under AD-006/AD-008 |
 | Regression protection | Focused shell contract included in the aggregate gate | Matches existing workspace tests and confirmed lesson L-008 |
 | Historical references | Preserve feature history; supersede active path decisions through AD-042 | Maintains the decision audit trail required by the workspace |
-

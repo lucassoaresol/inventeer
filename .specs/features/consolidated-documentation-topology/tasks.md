@@ -41,7 +41,7 @@ T1
 ### Phase 2: Product Context Routing
 
 ```text
-T1 -> T2 -> T3
+T1 -> T2 -> T3 -> T4
 ```
 
 ## Task Breakdown
@@ -117,13 +117,37 @@ T1 -> T2 -> T3
 **Gate**: build
 **Commit**: `docs(portal): repoint product context to operations`
 
+### T4: Close Independent Verification Gaps
+
+**What**: Expand deterministic evidence to every active surface, prove historical preservation and missing-clone failure, and fix range whitespace integrity.
+**Where**: `scripts/test-consolidated-documentation-topology.sh`, `.specs/features/consolidated-documentation-topology/design.md`, `.specs/features/consolidated-documentation-topology/spec.md`, `.specs/features/consolidated-documentation-topology/tasks.md`
+**Depends on**: T3
+**Reuses**: Verifier findings and the existing focused topology contract
+**Requirement**: CDT-04, CDT-05, CDT-07, CDT-08
+
+**Tools**:
+
+- MCP: NONE
+- Skill: `tlc-spec-driven`
+
+**Done when**:
+
+- [x] One deterministic scan covers every active instruction, project pointer, and applicable task-context surface.
+- [x] A contract assertion proves historical Portal TLC evidence retains its original standalone-root text.
+- [x] Both task-context skills assert fail-closed behavior when a required clone is absent.
+- [x] The complete feature range passes `git diff --check` and the aggregate workspace gate remains green.
+
+**Tests**: contract
+**Gate**: build
+**Commit**: `test(workspace): close consolidated topology evidence gaps`
+
 ## Phase Execution Map
 
 ```text
 Phase 1 -> Phase 2
 
 Phase 1: T1
-Phase 2: T1 -> T2 -> T3
+Phase 2: T1 -> T2 -> T3 -> T4
 ```
 
 ## Task Granularity Check
@@ -133,6 +157,7 @@ Phase 2: T1 -> T2 -> T3
 | T1 | One workspace topology invariant | Registry contract and one revert | Granular |
 | T2 | One Assistants dependency route | Assistants contract and one revert | Granular |
 | T3 | One Portal dependency topology | Portal contracts and one revert | Granular |
+| T4 | One verification-gap closure | Topology evidence contract and one revert | Granular |
 
 ## Diagram-Definition Cross-Check
 
@@ -141,6 +166,7 @@ Phase 2: T1 -> T2 -> T3
 | T1 | None | Entry point | Match |
 | T2 | T1 | T1 -> T2 | Match |
 | T3 | T2 | T2 -> T3 | Match |
+| T4 | T3 | T3 -> T4 | Match |
 
 ## Test Co-location Validation
 
@@ -149,3 +175,4 @@ Phase 2: T1 -> T2 -> T3
 | T1 | Workspace authority and registry | contract | contract | OK |
 | T2 | Assistants context routing | contract | contract | OK |
 | T3 | Portal context routing | contract | contract | OK |
+| T4 | Workspace authority and both context routes | contract | contract | OK |
