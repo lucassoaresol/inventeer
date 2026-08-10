@@ -93,7 +93,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Alternatives considered**: Generalizar imediatamente uma única skill para todos os produtos; usar a skill de Assistants com parâmetros; depender apenas da TLC e dos AGENTS.md dos repos.
 - **Scope**: Issues descendentes de `INV-254` e trabalho nos três repos do Portal.
 - **Date**: 2026-07-10
-- **Status**: active
+- **Status**: superseded by AD-042
 
 ### AD-011
 - **Decision**: Tornar `repos/ids` uma dependência contextual condicional da skill `portal-task-context` para comportamentos governados pelo pipeline IDS.
@@ -102,7 +102,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Alternatives considered**: Carregar IDS em toda task de Portal; confiar apenas nos artifacts de Portal; copiar standards IDS para Portal; consultar IDS informalmente sem regra na skill.
 - **Scope**: Preparação, especificação, implementação e validação de issues descendentes de `INV-254` com dimensão IDS.
 - **Date**: 2026-07-10
-- **Status**: active
+- **Status**: superseded by AD-042
 
 ### AD-012
 - **Decision**: Tornar `repos/ids` uma dependência contextual condicional da skill `assistants-task-context` para trabalho governado por DAP, EPP, DEP ou Gates.
@@ -111,7 +111,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Alternatives considered**: Carregar IDS em toda task; confiar somente nos artifacts do repo Assistants; copiar contratos para perto do código; consultar IDS informalmente sem regra na skill.
 - **Scope**: Issues descendentes de `INV-2228` com impacto em contratos, Gates, rigor ou evidências de entrega.
 - **Date**: 2026-07-10
-- **Status**: active
+- **Status**: superseded by AD-042
 
 ### AD-013
 - **Decision**: Centralizar a atualização segura dos clones locais em `scripts/update-repos.sh` e executá-la como primeira etapa das skills `portal-task-context` e `assistants-task-context`.
@@ -636,6 +636,26 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Scope**: Retrospectivas e resiliência de sessão deste workspace. Não altera histories locais,
   engines, repositórios de produto, Linear, GitHub, APEX nem a rota Portal + Codex + TLC da AD-036.
 - **Date**: 2026-08-08
+- **Status**: active
+
+### AD-042
+- **Decision**: Tratar `repos/inventeer-ops` como o único repo documental compartilhado do tenant,
+  preservar IDS e Portal como projetos lógicos e resolver seus contextos respectivamente em
+  `artifacts/products/ids/` e `artifacts/products/portal/`; manter `portal-api` e `portal-web` como
+  repos canônicos de implementação e preservar os plugins movidos dentro de suas subárvores.
+- **Reason**: INV-3713 arquivou os spokes documentais e consolidou seus conteúdos no repo de
+  operações. Paths literais para `repos/ids` e `repos/portal` agora apontam para clones congelados e
+  podem bloquear preparação ou carregar contratos obsoletos.
+- **Trade-off**: Contexto de produtos diferentes compartilha um worktree e exige paths mais longos,
+  leitura do contexto raiz e escopo de escrita explícito. Em troca, Git roots, autoridade documental
+  e ownership de implementação permanecem inequívocos sem aliases de compatibilidade.
+- **Alternatives considered**: Manter clones arquivados; criar symlinks `repos/ids` e `repos/portal`;
+  copiar os artifacts necessários para skills ou repos de código; remover os projetos lógicos do
+  registry.
+- **Scope**: Registry, setup local, discovery, preparação de tasks Assistants e Portal e consumo
+  read-only de IDS neste workspace. Não autoriza alterar `inventeer-ops`, contratos IDS ou repos de
+  produto sem escopo próprio.
+- **Date**: 2026-08-10
 - **Status**: active
 
 ## Handoff

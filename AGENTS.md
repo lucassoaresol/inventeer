@@ -13,7 +13,10 @@ Este é o workspace pessoal de engenharia de Lucas Oliveira para projetos da Inv
 
 - Linear é canônico para hierarquia, estado, owner e execução das issues.
 - `repos/inventeer-hub` é referência read-only para standards e Playbook compartilhados.
-- O repositório `ids` é canônico para contratos DAP, EPP e DEP.
+- `repos/inventeer-ops/artifacts/products/ids` é canônico para contratos DAP, EPP e DEP.
+- `repos/inventeer-ops/artifacts/products/portal` é canônico para intenção, artifacts e
+  documentação de produto do Portal; `portal-api` e `portal-web` permanecem canônicos para código,
+  testes e decisões técnicas locais.
 - Cada repositório de produto é canônico para seu código, testes, artifacts e specs locais.
 - Os arquivos em `projects/` são ponteiros; não substituem nem copiam fontes canônicas.
 - `.specs/STATE.md` registra decisões e handoff deste workspace, não specs dos produtos.
@@ -31,6 +34,9 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Não modifique mais de um projeto sem autorização explícita.
 - Não clone repositórios automaticamente sem solicitação.
 - Trate `inventeer-hub` como referência read-only, salvo quando o escopo for manutenção do Playbook.
+- Trate `inventeer-ops` como repositório compartilhado de documentação do tenant. Leia seu contexto
+  raiz e o README da subárvore aplicável; não amplie uma task de produto para alterar esse repo sem
+  escopo documental explícito.
 
 ## Engines
 

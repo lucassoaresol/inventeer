@@ -18,6 +18,7 @@ run_suite() {
 run_suite "engine routing" bash scripts/test-engine-routing.sh
 run_suite "machine resource preflight" bash scripts/test-machine-resource-preflight.sh
 run_suite "MCP configuration" python3 scripts/test-mcp-config.py
+run_suite "consolidated documentation topology" bash scripts/test-consolidated-documentation-topology.sh
 run_suite "Portal TLC session artifacts" bash scripts/test-portal-tlc-session-artifacts.sh
 run_suite "PR review pilot behavior" python3 scripts/test-pr-review-pilot.py
 run_suite "PR review workflow contract" python3 scripts/test-pr-review-workflow.py

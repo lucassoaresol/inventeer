@@ -367,9 +367,8 @@ Clone os projetos dentro de `repos/`, preservando o nome do repositório remoto:
 
 ```bash
 git clone <assistants-url> repos/assistants
-git clone <ids-url> repos/ids
 git clone <inv-cortex-url> repos/inv-cortex
-git clone <portal-url> repos/portal
+git clone <inventeer-ops-url> repos/inventeer-ops
 git clone <portal-api-url> repos/portal-api
 git clone <portal-web-url> repos/portal-web
 ```
@@ -402,6 +401,8 @@ repos necessários pulados geram um aviso explícito de possível defasagem.
 ## Limites
 
 - Linear permanece canônico para estado operacional das issues.
-- O IDS permanece canônico para contratos DAP, EPP e DEP.
+- `repos/inventeer-ops/artifacts/products/ids/` permanece canônico para contratos DAP, EPP e DEP.
+- `repos/inventeer-ops/artifacts/products/portal/` permanece canônico para intenção e documentação
+  de produto do Portal; `portal-api` e `portal-web` permanecem canônicos para implementação.
 - Cada repositório de produto permanece canônico para código e specs locais.
 - Este workspace não deve armazenar credenciais, dados de clientes ou saídas de produção.
