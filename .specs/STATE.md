@@ -661,12 +661,13 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ## Handoff
 
 - **Feature**: Consolidated Documentation Topology
-- **Phase / Task**: Execute complete; independent verification pending
+- **Phase / Task**: Validate complete
 - **Completed**: T1 workspace topology (`fabcdd1`), T2 Assistants IDS routing (`59cb43c`), T3 Portal
-  routing implementation and 21-suite workspace gate
+  routing (`63ddcca`), T4 evidence-gap closure (`dc4cb5f`), 21-suite workspace gate, and independent
+  verification PASS
 - **In-progress**: none
-- **Next step**: run an independent Verifier over `f0583de..HEAD`
+- **Next step**: review the local commits; push only on explicit request
 - **Blockers**: none
-- **Uncommitted files**: none expected after the T3 atomic commit
+- **Uncommitted files**: none expected after the validation commit
 - **Branch**: main
-- **Validation mode**: pending independent Verifier
+- **Validation mode**: PASS at functional head `dc4cb5f` over base `f0583de`
