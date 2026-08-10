@@ -12,9 +12,9 @@ requires stale cross-repository references to resolve under the consolidated top
 
 ## Goals
 
-- [ ] Route every active IDS and Portal documentation lookup through `repos/inventeer-ops`.
-- [ ] Preserve logical project boundaries and the independent Portal implementation repositories.
-- [ ] Enforce the topology through a deterministic workspace contract test.
+- [x] Route every active IDS and Portal documentation lookup through `repos/inventeer-ops`.
+- [x] Preserve logical project boundaries and the independent Portal implementation repositories.
+- [x] Enforce the topology through a deterministic workspace contract test.
 
 ## Out of Scope
 
@@ -104,8 +104,8 @@ contract exits non-zero.
 | CDT-02 | Logical projects | INHERITED | AD-006 and AD-008 | Execute | Implementing |
 | CDT-03 | Portal implementation boundary | INHERITED | AD-010 and current Portal code ownership | Execute | Implementing |
 | CDT-04 | Assistants IDS routing | ISSUE | INV-3770 AC3/AC5 | Execute | Implementing |
-| CDT-05 | Portal context routing | ISSUE | INV-3770 AC3/AC5 | Design | In Design |
-| CDT-06 | TLC artifact boundary | INHERITED | AD-031 and AD-036 | Design | In Design |
+| CDT-05 | Portal context routing | ISSUE | INV-3770 AC3/AC5 | Execute | Implementing |
+| CDT-06 | TLC artifact boundary | INHERITED | AD-031 and AD-036 | Execute | Implementing |
 | CDT-07 | Regression contract | INHERITED | L-008 and root aggregate-gate policy | Execute | Implementing |
 | CDT-08 | Historical evidence preservation | INHERITED | AD-040 | Execute | Implementing |
 
@@ -113,6 +113,6 @@ contract exits non-zero.
 
 ## Success Criteria
 
-- [ ] Active workspace sources contain zero standalone `repos/ids` or `repos/portal` references.
-- [ ] Focused topology and Portal TLC contracts pass.
-- [ ] The complete workspace gate passes with the new contract included.
+- [x] Active workspace sources contain zero standalone `repos/ids` or `repos/portal` references.
+- [x] Focused topology and Portal TLC contracts pass.
+- [x] The complete workspace gate passes with the new contract included.

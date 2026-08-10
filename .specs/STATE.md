@@ -660,14 +660,13 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Workspace Session Resilience v2
-- **Phase / Task**: T5 complete; independent re-validation pending
-- **Completed**: T1 secret contract (`c0c910c`), T2 session auditor v2 (`cebac21`), T3 decision and
-  bounded pilot (`923b786`), T4 duplicate-file exclusion (`26b9c77`), and T5 exact pilot lifecycle
-  contracts
+- **Feature**: Consolidated Documentation Topology
+- **Phase / Task**: Execute complete; independent verification pending
+- **Completed**: T1 workspace topology (`fabcdd1`), T2 Assistants IDS routing (`59cb43c`), T3 Portal
+  routing implementation and 21-suite workspace gate
 - **In-progress**: none
-- **Next step**: run an independent Verifier over `152b2de..HEAD`; stop after its verdict
+- **Next step**: run an independent Verifier over `f0583de..HEAD`
 - **Blockers**: none
-- **Uncommitted files**: none expected after the T5 atomic commit
+- **Uncommitted files**: none expected after the T3 atomic commit
 - **Branch**: main
 - **Validation mode**: pending independent Verifier

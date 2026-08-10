@@ -46,9 +46,13 @@ grep -q 'Linear e a PR preservam o resumo oficial' README.md \
 ok "o lifecycle local nao concorre com evidencia oficial"
 
 # shellcheck disable=SC2016 # Backticks are literal Markdown in the searched text.
-grep -q 'Do not create or promote `.specs/` in `repos/portal`' \
-  .agents/skills/portal-task-context/SKILL.md \
-  || fail "portal-task-context does not forbid product-repo TLC specs"
+for forbidden_root in \
+  'repos/inventeer-ops/artifacts/products/portal' \
+  'repos/portal-api' \
+  'repos/portal-web'; do
+  grep -Fq "\`$forbidden_root\`" .agents/skills/portal-task-context/SKILL.md \
+    || fail "portal-task-context does not forbid TLC specs in $forbidden_root"
+done
 grep -q 'Working TLC artifacts are not product specifications' \
   .agents/skills/portal-task-context/references/specification-policy.md \
   || fail "specification policy conflates TLC working state with product specs"

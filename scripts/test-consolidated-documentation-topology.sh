@@ -85,5 +85,33 @@ grep -Fq "$ids_root/clients/Inventeer-Internal/Inventeer-Assistants/" projects/a
   || fail "Assistants project pointer does not resolve its governed IDS workspace"
 ok "Assistants context resolves IDS through inventeer-ops without retired fallback"
 
+portal_surfaces=(
+  projects/portal.md
+  .agents/skills/portal-task-context/SKILL.md
+  .agents/skills/portal-task-context/references/ids-context.md
+  .agents/skills/portal-task-context/references/repository-topology.md
+  .agents/skills/portal-task-context/references/specification-policy.md
+)
+for file in "${portal_surfaces[@]}"; do
+  grep -Fq "$ops_root" "$file" \
+    || fail "$file does not resolve the shared operations repository"
+done
+if rg -q 'repos/(ids|portal)([/`[:space:]]|$)' "${portal_surfaces[@]}"; then
+  fail "an active Portal surface still references a retired documentation repository"
+fi
+for required in "$portal_docs_root" "$ids_root" 'repos/portal-api' 'repos/portal-web'; do
+  rg -Fq "$required" \
+    .agents/skills/portal-task-context/SKILL.md \
+    .agents/skills/portal-task-context/references/*.md \
+    || fail "Portal context does not declare $required"
+done
+ok "Portal context separates shared documentation from API and Web implementation"
+
+for forbidden_root in "$portal_docs_root" 'repos/portal-api' 'repos/portal-web'; do
+  grep -Fq "$forbidden_root" .agents/skills/portal-task-context/SKILL.md \
+    || fail "Portal TLC boundary does not cover $forbidden_root"
+done
+ok "Portal TLC boundary covers documentation and both code repositories"
+
 echo
 echo "$passed teste(s) passaram."

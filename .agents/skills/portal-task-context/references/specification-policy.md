@@ -38,7 +38,7 @@ Portal does not accept TLC `.specs/` artifacts as official product artifacts. Wh
 a file-backed working specification, store it under
 `session-context/portal/<INV-ID>/tlc/` and keep it explicitly local, ephemeral, non-canonical, and
 non-durable. Working TLC artifacts are not product specifications and must not be promoted into
-`repos/portal`, `repos/portal-api`, or `repos/portal-web`.
+`repos/inventeer-ops/artifacts/products/portal`, `repos/portal-api`, or `repos/portal-web`.
 
 If the task requires a durable official specification rather than a working TLC contract, follow
 the APEX artifact lifecycle. Until that route is available in the active engine, surface the durable
@@ -60,8 +60,8 @@ implementation, or validation. Pass it:
 
 - the target Linear issue and full ancestry;
 - inherited outcomes and declared coverage;
-- product constraints from `portal`;
-- applicable canonical constraints from `ids`;
+- product constraints from `repos/inventeer-ops/artifacts/products/portal`;
+- applicable canonical constraints from `repos/inventeer-ops/artifacts/products/ids`;
 - repository ownership and worktrees in scope;
 - relevant code, tests, contracts, decisions, and specs;
 - unresolved questions and readiness verdict.

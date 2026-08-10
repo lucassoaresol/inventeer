@@ -7,7 +7,7 @@ flow and Critical Rules. The skill is the source of truth for per-task gates, at
 independent verification, and the discrimination sensor.
 
 **Design**: `.specs/features/consolidated-documentation-topology/design.md`
-**Status**: In Progress
+**Status**: Done
 
 ## Test Coverage Matrix
 
@@ -108,10 +108,10 @@ T1 -> T2 -> T3
 
 **Done when**:
 
-- [ ] Portal product meaning resolves from `artifacts/products/portal/` and conditional IDS context resolves from `artifacts/products/ids/` in the same shared repo.
-- [ ] Repository ownership still assigns runtime implementation only to `portal-api`, `portal-web`, or an explicit combination.
-- [ ] TLC working artifacts remain under `session-context/portal/<INV-ID>/` and are forbidden from both code repos and the Portal documentation subtree.
-- [ ] Focused and aggregate workspace gates pass with zero active standalone retired-root references.
+- [x] Portal product meaning resolves from `artifacts/products/portal/` and conditional IDS context resolves from `artifacts/products/ids/` in the same shared repo.
+- [x] Repository ownership still assigns runtime implementation only to `portal-api`, `portal-web`, or an explicit combination.
+- [x] TLC working artifacts remain under `session-context/portal/<INV-ID>/` and are forbidden from both code repos and the Portal documentation subtree.
+- [x] Focused and aggregate workspace gates pass with zero active standalone retired-root references.
 
 **Tests**: contract
 **Gate**: build

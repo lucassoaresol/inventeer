@@ -1,6 +1,6 @@
 ---
 name: portal-task-context
-description: Prepare an Inventeer Portal Linear issue for understanding, specification, implementation, solution/context review, or validation by resolving its ancestry to PROD INV-254, loading product context from repos/portal, consulting canonical IDS standards when the behavior touches the delivery pipeline, identifying implementation ownership across repos/portal-api and repos/portal-web, and locating relevant code, tests, contracts, decisions, artifacts, and specs. Use when starting, resuming, reviewing the task contract or implementation context, or clarifying an INV-* issue that belongs to the Portal product. For review or re-review of an existing GitHub pull request, use review-pull-request first and invoke this skill only when full hierarchy, inherited DoD, IDS, or ownership preparation is materially required.
+description: Prepare an Inventeer Portal Linear issue for understanding, specification, implementation, solution/context review, or validation by resolving its ancestry to PROD INV-254, loading product context from repos/inventeer-ops/artifacts/products/portal, consulting canonical IDS standards from repos/inventeer-ops/artifacts/products/ids when the behavior touches governed delivery, identifying implementation ownership across repos/portal-api and repos/portal-web, and locating relevant code, tests, contracts, decisions, artifacts, and specs. Use when starting, resuming, reviewing the task contract or implementation context, or clarifying an INV-* issue that belongs to the Portal product. For review or re-review of an existing GitHub pull request, use review-pull-request first and invoke this skill only when full hierarchy, inherited DoD, IDS, or ownership preparation is materially required.
 ---
 
 # Portal Task Context
@@ -20,19 +20,23 @@ requested without re-collecting GitHub diff, reviews, threads, commits, or check
 ## Workflow
 
 1. From the workspace root, run `./scripts/update-repos.sh` before retrieving context. Inspect its
-   output: stop and report when `portal`, `portal-api`, `portal-web`, or a required `ids` repo fails
-   to update; continue with an explicit freshness warning when a required repo is skipped. Ignore
-   the expected `inventeer-hub` skip.
+   output: stop and report when `inventeer-ops`, `portal-api`, or `portal-web` fails to update;
+   continue with an explicit freshness warning when a required repo is skipped. Ignore the expected
+   `inventeer-hub` skip.
 2. Retrieve the issue from Linear without mutating it.
 3. Resolve its complete parent chain until reaching `INV-254`.
 4. Read [linear-context.md](references/linear-context.md) and validate hierarchy and inherited DoD
    coverage.
-5. Resolve `repos/portal`, `repos/portal-api`, `repos/portal-web`, and, when required by the domain,
-   `repos/ids`. If a required repo is absent, report it and stop; never clone automatically.
+5. Resolve `repos/inventeer-ops`, `repos/portal-api`, and `repos/portal-web`. Product context lives at
+   `repos/inventeer-ops/artifacts/products/portal`; conditional IDS context lives at
+   `repos/inventeer-ops/artifacts/products/ids`. If a required repo is absent, report it and stop;
+   never clone automatically.
 6. Read [repository-topology.md](references/repository-topology.md).
-7. Load product meaning and constraints from `repos/portal` before deciding implementation ownership.
+7. Read `repos/inventeer-ops/CLAUDE.md`, then load product meaning and constraints from
+   `repos/inventeer-ops/artifacts/products/portal` before deciding implementation ownership.
 8. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
-   and load only the relevant canonical standards from `repos/ids` when it does.
+   and load only the relevant canonical standards from
+   `repos/inventeer-ops/artifacts/products/ids` when it does.
 9. Classify the target behavior as product/docs, API/backend, web/frontend, or cross-repo.
 10. For every repo in scope, read its local agent instructions and check its Git worktree before any
    proposed mutation.
@@ -57,7 +61,8 @@ requested without re-collecting GitHub diff, reviews, threads, commits, or check
     `session-context/portal/<INV-ID>/tlc/` from the workspace root and review bundles to
     `session-context/portal/<INV-ID>/review/`. These files support local execution, recovery, and
     review; they must not be presented as canonical, durable, or official APEX evidence. Do not
-    create or promote `.specs/` in `repos/portal`, `repos/portal-api`, or `repos/portal-web` for TLC.
+    create or promote `.specs/` in `repos/inventeer-ops/artifacts/products/portal`,
+    `repos/portal-api`, or `repos/portal-web` for TLC.
     Keep Claude/APEX and non-Portal routes unchanged. Mark the local task directory eligible for
     cleanup only after merge and issue closure, and retire this substitution when Codex supports an
     end-to-end APEX execution.
@@ -101,9 +106,11 @@ Return a concise report containing:
 1. Issue identity, type, status, owner, and stated objective.
 2. Full ancestry from `INV-254` to the target issue.
 3. Inherited INIT, PROJ, and MILE outcomes and declared DoD coverage.
-4. Product behavior and constraints found in `repos/portal`.
+4. Product behavior and constraints found in
+   `repos/inventeer-ops/artifacts/products/portal`.
 5. IDS standards consulted and constraints inherited, or `IDS context: not applicable` with reason.
-6. Repository ownership verdict: portal, portal-api, portal-web, or an explicit combination.
+6. Repository ownership verdict: documentation in `inventeer-ops`, implementation in `portal-api`
+   or `portal-web`, or an explicit combination.
 7. Relevant implementation files, contracts, and observed patterns.
 8. Relevant tests and currently asserted behaviors.
 9. Applicable decisions, artifacts, ADRs, and specs.
@@ -147,16 +154,17 @@ source and does not apply to official specifications or APEX artifacts.
 
 - Do not modify Linear during discovery.
 - Do not modify any repo unless the user requested a change or implementation.
-- Do not assume that one Portal task requires changes in all three repos.
+- Do not assume that one Portal task requires changes in all three involved repos.
 - Do not move backend business rules or governance enforcement into `portal-web`.
 - Do not redefine API-owned shared contracts locally in `portal-web`.
-- Do not treat product artifacts in `portal` as substitutes for implementation and tests.
+- Do not treat product artifacts under `repos/inventeer-ops/artifacts/products/portal` as
+  substitutes for implementation and tests.
 - Do not restate or copy IDS standards into Portal; reference canonical files and applicable sections.
 - Do not infer IDS rules from Portal code when a canonical IDS standard exists.
 - Do not invent missing parent relationships, outcomes, DoDs, or ownership.
 - Do not create a local spec when Linear already defines a precise, testable contract.
-- Do not create or promote `.specs/` in `repos/portal`, `repos/portal-api`, or `repos/portal-web`
-  for a Codex + TLC delivery.
+- Do not create or promote `.specs/` in `repos/inventeer-ops/artifacts/products/portal`,
+  `repos/portal-api`, or `repos/portal-web` for a Codex + TLC delivery.
 - Do not use this full-preparation workflow as the default entry point for an existing GitHub PR;
   preserve `review-pull-request` as the owner of progressive Linear scope and GitHub evidence.
 - Flag conflicts between product intent, contracts, code, and governing standards.
