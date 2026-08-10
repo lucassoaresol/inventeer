@@ -103,7 +103,7 @@ contract exits non-zero.
 | CDT-01 | Canonical ownership | ISSUE | INV-3770 AC2/AC5; INV-3713 MD2/MD3 | Execute | Implementing |
 | CDT-02 | Logical projects | INHERITED | AD-006 and AD-008 | Execute | Implementing |
 | CDT-03 | Portal implementation boundary | INHERITED | AD-010 and current Portal code ownership | Execute | Implementing |
-| CDT-04 | Assistants IDS routing | ISSUE | INV-3770 AC3/AC5 | Design | In Design |
+| CDT-04 | Assistants IDS routing | ISSUE | INV-3770 AC3/AC5 | Execute | Implementing |
 | CDT-05 | Portal context routing | ISSUE | INV-3770 AC3/AC5 | Design | In Design |
 | CDT-06 | TLC artifact boundary | INHERITED | AD-031 and AD-036 | Design | In Design |
 | CDT-07 | Regression contract | INHERITED | L-008 and root aggregate-gate policy | Execute | Implementing |

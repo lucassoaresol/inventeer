@@ -19,19 +19,21 @@ requested without re-collecting GitHub diff, reviews, threads, commits, or check
 ## Workflow
 
 1. From the workspace root, run `./scripts/update-repos.sh` before retrieving context. Inspect its
-   output: stop and report when `assistants` or a required `ids` repo fails to update; continue with
-   an explicit freshness warning when a required repo is skipped. Ignore the expected
+   output: stop and report when `assistants` or a required `inventeer-ops` repo fails to update;
+   continue with an explicit freshness warning when a required repo is skipped. Ignore the expected
    `inventeer-hub` skip.
 2. Retrieve the issue from Linear without mutating it.
 3. Resolve its complete parent chain until reaching `INV-2228`.
 4. Read [linear-context.md](references/linear-context.md) and validate the hierarchy and inherited
    DoD coverage.
-5. Resolve `repos/assistants` and, when required by the domain, `repos/ids`. If a required repo is
-   absent, report the missing clone and stop; never clone automatically.
+5. Resolve `repos/assistants` and, when required by the domain, `repos/inventeer-ops`. The canonical
+   IDS root is `repos/inventeer-ops/artifacts/products/ids`. If a required repo is absent, report the
+   missing clone and stop; never clone automatically.
 6. Read the target repository's local agent instructions and check its Git worktree before any
    proposed mutation.
 7. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
-   and load only the relevant canonical contracts or standards from `repos/ids` when it does.
+   read `repos/inventeer-ops/CLAUDE.md`, and load only the relevant canonical contracts or standards
+   from `repos/inventeer-ops/artifacts/products/ids` when it does.
 8. Follow the code-first verification chain:
    - existing implementation and neighboring patterns;
    - relevant tests;

@@ -67,5 +67,23 @@ grep -Fq 'test-consolidated-documentation-topology.sh' scripts/test-workspace.sh
   || fail "aggregate workspace gate does not run the topology contract"
 ok "aggregate workspace gate includes the topology contract"
 
+assistants_surfaces=(
+  projects/assistants.md
+  .agents/skills/assistants-task-context/SKILL.md
+  .agents/skills/assistants-task-context/references/ids-context.md
+)
+for file in "${assistants_surfaces[@]}"; do
+  grep -Fq "$ops_root" "$file" \
+    || fail "$file does not resolve the shared operations repository"
+  grep -Fq 'artifacts/products/ids' "$file" \
+    || fail "$file does not resolve the IDS subtree"
+done
+if rg -q 'repos/ids([/`[:space:]]|$)' "${assistants_surfaces[@]}"; then
+  fail "an active Assistants surface still references the retired IDS repository"
+fi
+grep -Fq "$ids_root/clients/Inventeer-Internal/Inventeer-Assistants/" projects/assistants.md \
+  || fail "Assistants project pointer does not resolve its governed IDS workspace"
+ok "Assistants context resolves IDS through inventeer-ops without retired fallback"
+
 echo
 echo "$passed teste(s) passaram."

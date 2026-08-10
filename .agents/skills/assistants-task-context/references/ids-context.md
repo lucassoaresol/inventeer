@@ -5,12 +5,14 @@ Read this reference for every Assistants task, then load IDS material only when 
 ## Relationship
 
 Assistants is a governed Inventeer product. Its DAP, EPP, DEP and Gate state live canonically under
-the Assistants workspace in `repos/ids`; `repos/assistants/artifacts` consumes and refines those
-contracts but cannot contradict or duplicate them.
+the Assistants workspace in
+`repos/inventeer-ops/artifacts/products/ids/clients/Inventeer-Internal/Inventeer-Assistants/`;
+`repos/assistants/artifacts` consumes and refines those contracts but cannot contradict or duplicate
+them.
 
 ## Mandatory IDS triggers
 
-Consult `repos/ids` when the task touches:
+Consult `repos/inventeer-ops/artifacts/products/ids` when the task touches:
 
 - product scope, requirements, DoDs, non-goals, or acceptance governed by DAP;
 - architecture, runtime, infrastructure, security, persistence, provider, or delivery constraints
@@ -26,25 +28,26 @@ impact, record `IDS context: not applicable` and the reason instead of loading I
 
 ## Loading procedure
 
-1. Read `repos/ids/CLAUDE.md` before using IDS material.
-2. Locate the Assistants workspace under
-   `repos/ids/clients/Inventeer-Internal/Inventeer-Assistants/`.
-3. Load only the applicable canonical DAP, EPP, DEP, or IDS standard.
-4. Record the exact file and section constraining the task.
-5. Compare the local Assistants artifact and implementation against that source.
-6. Report contradictions and uncertain contract status; do not silently choose the codebase version.
+1. Read `repos/inventeer-ops/CLAUDE.md` before using IDS material.
+2. Read `repos/inventeer-ops/artifacts/products/ids/README.md` for the IDS subtree map.
+3. Locate the Assistants workspace under
+   `repos/inventeer-ops/artifacts/products/ids/clients/Inventeer-Internal/Inventeer-Assistants/`.
+4. Load only the applicable canonical DAP, EPP, DEP, or IDS standard.
+5. Record the exact file and section constraining the task.
+6. Compare the local Assistants artifact and implementation against that source.
+7. Report contradictions and uncertain contract status; do not silently choose the codebase version.
 
 Common entry points:
 
 | Concern | IDS entry point |
 |---|---|
-| DAP / product contract | `clients/Inventeer-Internal/Inventeer-Assistants/01-DAP/` |
-| EPP / engineering contract | `clients/Inventeer-Internal/Inventeer-Assistants/02-EPP/` |
-| DEP / delivery evidence | `clients/Inventeer-Internal/Inventeer-Assistants/03-DEP/` |
-| Inputs and superseded material | `clients/Inventeer-Internal/Inventeer-Assistants/04-Inputs/`, `99-Archive/` when present |
-| Pipeline and source-of-truth rules | `artifacts/IDS_Operating_System_Overview.md` |
-| Approval behavior | `artifacts/IDS_Approval_Rules_Standard.md` |
-| Rigor | `artifacts/IDS_Rigor_Classification_Standard.md` |
+| DAP / product contract | `repos/inventeer-ops/artifacts/products/ids/clients/Inventeer-Internal/Inventeer-Assistants/01-DAP/` |
+| EPP / engineering contract | `repos/inventeer-ops/artifacts/products/ids/clients/Inventeer-Internal/Inventeer-Assistants/02-EPP/` |
+| DEP / delivery evidence | `repos/inventeer-ops/artifacts/products/ids/clients/Inventeer-Internal/Inventeer-Assistants/03-DEP/` |
+| Inputs and superseded material | `repos/inventeer-ops/artifacts/products/ids/clients/Inventeer-Internal/Inventeer-Assistants/04-Inputs/`, `99-Archive/` when present |
+| Pipeline and source-of-truth rules | `repos/inventeer-ops/artifacts/products/ids/artifacts/IDS_Operating_System_Overview.md` |
+| Approval behavior | `repos/inventeer-ops/artifacts/products/ids/artifacts/IDS_Approval_Rules_Standard.md` |
+| Rigor | `repos/inventeer-ops/artifacts/products/ids/artifacts/IDS_Rigor_Classification_Standard.md` |
 
 ## Boundaries
 

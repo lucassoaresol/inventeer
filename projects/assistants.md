@@ -6,13 +6,14 @@
 - Issue raiz: `INV-2228`
 - Domínio: `AST`
 - Repositório local esperado: `repos/assistants`
-- Dependência contextual: `repos/ids` — contratos DAP/EPP/DEP e standards, carregados sob demanda.
+- Dependência contextual: `repos/inventeer-ops/artifacts/products/ids` — contratos DAP/EPP/DEP e
+  standards, carregados sob demanda a partir do repo compartilhado de operações.
 - Hierarquia Linear: `PROD → INIT → PROJ → MILE → TASK → SUBTASK`
 
 ## Fontes canônicas
 
 - Linear: hierarquia e estado operacional das issues.
-- `repos/ids`: contratos DAP, EPP e DEP.
+- `repos/inventeer-ops/artifacts/products/ids`: contratos DAP, EPP e DEP.
 - `repos/assistants`: runtime, testes, configuração, infraestrutura, artifacts derivados e specs.
 - `repos/inventeer-hub`: padrões organizacionais referenciados pelo produto.
 
@@ -35,7 +36,8 @@ Leia em `repos/assistants`, apenas conforme a necessidade:
 
 ## Dependência IDS
 
-- Consulte `repos/ids/clients/Inventeer-Internal/Inventeer-Assistants/` quando a task tocar escopo,
+- Consulte `repos/inventeer-ops/artifacts/products/ids/clients/Inventeer-Internal/Inventeer-Assistants/`
+  quando a task tocar escopo,
   DoDs, arquitetura ou constraints de EPP, Gates, rigor, go-live ou evidências DEP.
 - Para mudanças internas sem impacto de contrato, registre IDS como não aplicável com o motivo.
 - Contratos no IDS são read-only durante tasks de Assistants e não devem ser copiados para este repo.

@@ -85,9 +85,9 @@ T1 -> T2 -> T3
 
 **Done when**:
 
-- [ ] The skill requires `repos/inventeer-ops` only when IDS context is applicable and reads the root repo instructions before the IDS subtree.
-- [ ] The Assistants project pointer resolves all client and standard paths under `artifacts/products/ids/`.
-- [ ] The focused contract rejects standalone `repos/ids` references in every active Assistants surface.
+- [x] The skill requires `repos/inventeer-ops` only when IDS context is applicable and reads the root repo instructions before the IDS subtree.
+- [x] The Assistants project pointer resolves all client and standard paths under `artifacts/products/ids/`.
+- [x] The focused contract rejects standalone `repos/ids` references in every active Assistants surface.
 
 **Tests**: contract
 **Gate**: quick
