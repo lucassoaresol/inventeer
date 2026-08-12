@@ -125,10 +125,10 @@ T3 -> T4 -> T5
 
 **Done when:**
 
-- [ ] Safe staged text passes without index or worktree mutation.
-- [ ] Every forbidden path, content, binary, size, Git failure, and unsafe-name fixture fails closed with path-only diagnostics.
-- [ ] Explicit installation changes only `core.hooksPath` and is idempotent.
-- [ ] The focused integration gate passes and the root gate includes it.
+- [x] Safe staged text passes without index or worktree mutation.
+- [x] Every forbidden path, content, binary, size, Git failure, and unsafe-name fixture fails closed with path-only diagnostics.
+- [x] Explicit installation changes only `core.hooksPath` and is idempotent.
+- [x] The focused integration gate passes and the root gate includes it.
 
 **Tests:** integration
 **Gate:** quick

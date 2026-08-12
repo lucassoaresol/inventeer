@@ -398,6 +398,22 @@ As skills `assistants-task-context` e `portal-task-context` executam esse script
 antes de carregar o contexto de uma issue. Falhas em repos necessários interrompem a preparação;
 repos necessários pulados geram um aviso explícito de possível defasagem.
 
+## Guardrail staged local
+
+O workspace fornece um hook opt-in que verifica somente o conteúdo staged. Ele rejeita paths de
+credencial, chaves privadas, tokens de alta confiança, dumps, binários inesperados e blobs acima de
+5 MiB. Os diagnósticos exibem somente o path e o código do motivo.
+
+Instale o hook explicitamente em cada clone:
+
+```bash
+bash scripts/install-git-hooks.sh
+```
+
+O instalador altera somente `core.hooksPath=.githooks` na configuração local e é idempotente. A
+suíte completa permanece em `bash scripts/test-workspace.sh`; o hook executa apenas o guardrail
+staged e `git diff --cached --check`.
+
 ## Limites
 
 - Linear permanece canônico para estado operacional das issues.

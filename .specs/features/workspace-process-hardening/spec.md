@@ -16,7 +16,7 @@ dual-engine, multi-repository, and ownership boundaries.
 
 - [x] Close the resilience pilot with a reproducible aggregate comparison and an explicit decision.
 - [x] Route each common workflow through a deterministic, reference-only context package.
-- [ ] Prevent likely sensitive or unsuitable staged content through an opt-in local Git hook.
+- [x] Prevent likely sensitive or unsuitable staged content through an opt-in local Git hook.
 - [ ] Require a fresh Portal TLC checkpoint before a heavy stage.
 - [ ] Preserve a sanitized, state-bound receipt for the root workspace gate.
 
@@ -129,10 +129,10 @@ closed output schema.
 | WPH-05 | Bounded context | DECISION | User-approved EDREN adaptation | Execute | Verified |
 | WPH-06 | Bounded context | DECISION | User-approved EDREN adaptation | Execute | Verified |
 | WPH-07 | Bounded context | DECISION | User-approved EDREN adaptation | Execute | Verified |
-| WPH-08 | Staged guard | SAFETY | Workspace security contract and user approval | Tasks | Pending |
-| WPH-09 | Staged guard | SAFETY | Workspace security contract and user approval | Tasks | Pending |
-| WPH-10 | Staged guard | SAFETY | Workspace security contract and user approval | Tasks | Pending |
-| WPH-11 | Staged guard | SAFETY | Workspace security contract and user approval | Tasks | Pending |
+| WPH-08 | Staged guard | SAFETY | Workspace security contract and user approval | Execute | Verified |
+| WPH-09 | Staged guard | SAFETY | Workspace security contract and user approval | Execute | Verified |
+| WPH-10 | Staged guard | SAFETY | Workspace security contract and user approval | Execute | Verified |
+| WPH-11 | Staged guard | SAFETY | Workspace security contract and user approval | Execute | Verified |
 | WPH-12 | Pre-heavy checkpoint | DECISION | User-approved EDREN adaptation and AD-036 | Tasks | Pending |
 | WPH-13 | Pre-heavy checkpoint | DECISION | User-approved EDREN adaptation and AD-036 | Tasks | Pending |
 | WPH-14 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
@@ -150,7 +150,7 @@ closed output schema.
 
 - [x] The AD-041 pilot is closed with a reproducible aggregate comparison and explicit limitations.
 - [x] Five supported workflow routes produce deterministic reference-only context plans.
-- [ ] Staged sensitive and unsuitable fixtures fail while safe staged text passes unchanged.
+- [x] Staged sensitive and unsuitable fixtures fail while safe staged text passes unchanged.
 - [ ] Portal checkpoints support `pre-heavy` without weakening existing validation.
 - [ ] A passed root gate is reusable only for the identical workspace state and gate contract.
 - [ ] `bash scripts/test-workspace.sh` and independent validation pass.

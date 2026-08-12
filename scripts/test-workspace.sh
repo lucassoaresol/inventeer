@@ -28,6 +28,7 @@ run_suite "APEX command synchronization" bash scripts/test-sync-apex-commands.sh
 run_suite "TLC checkpoint contract" bash scripts/test-tlc-checkpoint-contract.sh
 run_suite "TLC checkpoint behavior" python3 scripts/test-tlc-checkpoint.py
 run_suite "workspace context routing" python3 scripts/test-workspace-context.py
+run_suite "staged content guard" python3 scripts/test-staged-content-guard.py
 run_suite "delivery-front inspector" bash .agents/skills/advance-delivery-front/scripts/test-inspect-git-front.sh
 run_suite "review bundle" bash .agents/skills/create-review-bundle/scripts/test-create-review-bundle.sh
 run_suite "TLC lessons" python3 .agents/skills/tlc-spec-driven/scripts/test-lessons.py

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace_root="$(git rev-parse --show-toplevel)"
+python3 "$workspace_root/scripts/check-staged-content.py" --repo "$workspace_root"
+git -C "$workspace_root" diff --cached --check
