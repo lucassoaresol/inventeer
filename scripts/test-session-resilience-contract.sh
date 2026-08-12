@@ -54,6 +54,18 @@ grep -Fq 'dez sessões primárias elegíveis ou a próxima feature longa' <<<"$s
   || fail "AD-041 does not bound the pilot"
 ok "AD-041 binds compatibility, privacy, reproducibility, and pilot duration"
 
+closing_decision="$(sed -n '/^### AD-044$/,/^## Handoff$/p' .specs/STATE.md | tr '\n' ' ' | tr -s '[:space:]' ' ')"
+[[ -n "$closing_decision" ]] || fail "AD-044 is missing"
+grep -Fq 'Encerrar o piloto delimitado da AD-041' <<<"$closing_decision" \
+  || fail "AD-044 does not close the bounded pilot"
+grep -Fq 'roteamento de contexto, guardrail staged, checkpoint `pre-heavy`' <<<"$closing_decision" \
+  || fail "AD-044 does not name the authorized automation"
+grep -Fq 'somente ao workspace raiz e à rota Portal + Codex + TLC já delimitada' <<<"$closing_decision" \
+  || fail "AD-044 widens the automation authority"
+grep -Fq 'não autoriza automação nos repositórios de produto' <<<"$closing_decision" \
+  || fail "AD-044 does not preserve product-repository ownership"
+ok "AD-044 closes the pilot and bounds the authorized automation"
+
 grep -Fq 'recorte temporal fechado com `--since` e `--until`' AGENTS.md \
   || fail "retrospectives do not require a closed cohort"
 grep -Fq '`contract_version`' AGENTS.md \
@@ -63,14 +75,20 @@ ok "retrospectives require versioned closed cohorts"
 pilot=.specs/features/workspace-session-resilience-v2/pilot.md
 [[ -f "$pilot" ]] || fail "session resilience pilot is missing"
 pilot_text="$(tr '\n' ' ' < "$pilot" | tr -s '[:space:]' ' ')"
-grep -Fq '**Status:** active' "$pilot" || fail "pilot is not active"
+grep -Fq '**Status:** closed' "$pilot" || fail "pilot is not closed"
+grep -Fq '**Closed at (UTC):** 2026-08-12T12:02:51.057Z' "$pilot" \
+  || fail "pilot closing boundary is missing"
 grep -Fq '**Baseline auditor contract:** 2' "$pilot" || fail "pilot contract is not versioned"
 grep -Fq '**Baseline window:** `[2026-07-10T00:00:00Z, 2026-08-08T05:44:16Z)`' "$pilot" \
   || fail "pilot baseline window is not closed"
 grep -Fq '**Excluded sessions:** 1' "$pilot" || fail "pilot exclusion count is missing"
-grep -Fq '**Progress:** 0/10 eligible primary sessions' "$pilot" \
-  || fail "pilot observation bound is missing"
-ok "pilot provenance is exact and reproducible"
+grep -Fq '**Closing window:** `[2026-08-08T05:44:16Z, 2026-08-12T12:02:51.057Z)`' "$pilot" \
+  || fail "pilot closing window is not exact"
+grep -Fq '**Closing excluded sessions:** 1' "$pilot" \
+  || fail "pilot closing exclusion count is missing"
+grep -Fq '**Closing trigger:** long workspace feature completed' "$pilot" \
+  || fail "pilot closing trigger is missing"
+ok "pilot closing provenance is exact and reproducible"
 
 grep -Fq 'Primary sessions | 107' "$pilot" || fail "primary baseline is missing"
 grep -Fq 'Sessions with aborts | 67 (62.62%)' "$pilot" || fail "abort baseline is missing"
@@ -79,6 +97,42 @@ grep -Fq 'Sessions with compactions | 38 (35.51%)' "$pilot" \
 grep -Fq 'Claude primary sessions | 15' "$pilot" || fail "Claude baseline is missing"
 grep -Fq 'source drift' "$pilot" || fail "pilot cannot classify closed-window backfill"
 ok "pilot records exact sanitized aggregates and source-drift semantics"
+
+for closing_aggregate in \
+  '| Codex primary sessions | 107 | 34 |' \
+  '| Codex continuations | 37 | 13 |' \
+  '| Codex sessions with aborts | 67 (62.62%) | 15 (44.12%) |' \
+  '| Maximum aborts in one Codex primary session | 6 | 4 |' \
+  '| Codex sessions with compactions | 38 (35.51%) | 10 (29.41%) |' \
+  '| Maximum compactions in one Codex primary session | 4 | 2 |' \
+  '| Claude primary sessions | 15 | 4 |' \
+  '| Claude sidechains | 0 | 0 |'
+do
+  grep -Fq "$closing_aggregate" <<<"$pilot_text" \
+    || fail "pilot closing aggregate is missing: $closing_aggregate"
+done
+ok "pilot records the exact baseline and closing comparison"
+
+for limitation in \
+  'Verified work lost after an interruption' \
+  'Heavy stages started without a resource preflight' \
+  'Heavy stages started from a stale checkpoint' \
+  'Status requests attributable to silent long-running work' \
+  'Resumptions requiring more than one Git, Handoff, and tasks reconciliation' \
+  'Potential secrets repeated or persisted by an agent'
+do
+  grep -Fq "| $limitation | Not prospectively measured |" <<<"$pilot_text" \
+    || fail "pilot limitation is missing: $limitation"
+done
+grep -Fq 'The sanitized auditor cannot reconstruct these measures from history alone.' <<<"$pilot_text" \
+  || fail "pilot overclaims its retrospective measurements"
+ok "pilot states every unmeasured success dimension"
+
+grep -Fq 'The recurring manual reconstruction threshold was satisfied.' <<<"$pilot_text" \
+  || fail "pilot does not apply the automation decision gate"
+grep -Fq 'The pilot authorizes only the scoped root-workspace and Portal checkpoint changes recorded in AD-044.' <<<"$pilot_text" \
+  || fail "pilot closing outcome does not preserve the authority boundary"
+ok "pilot records the closing trigger and scoped automation outcome"
 
 for eligibility_rule in \
   'is a new primary Codex or Claude session originating from the exact workspace root after the pilot start;' \
@@ -116,19 +170,15 @@ grep -Fq 'one stale checkpoint after an interruption' "$pilot" \
 grep -Fq 'recurring manual reconstruction' "$pilot" \
   || fail "manual reconstruction threshold is missing"
 
-for closing_step in \
-  'Run the auditor with an explicit contract, closed time window, and current-session exclusion.' \
-  'Compare primary interruption concentration with the baseline and classify any source drift.' \
-  'Measure lost work, stale checkpoints, silence, and manual reconstruction.' \
-  'Apply the Automation Decision Gate.' \
-  'Record the outcome in the workspace decision log before changing the workflow.'
-do
-  grep -Fq "$closing_step" <<<"$pilot_text" \
-    || fail "pilot closing step is missing: $closing_step"
-done
-grep -Fq 'No additional checkpoint or restricted gate-runner automation may be proposed or implemented before the closing comparison is complete and its outcome is recorded in the workspace decision log.' <<<"$pilot_text" \
-  || fail "pilot permits automation before its closing evidence and decision"
-ok "pilot has an exact closing review and pre-automation decision boundary"
+grep -Fq 'contract version 2, the exact closing window above, and one excluded current session' <<<"$pilot_text" \
+  || fail "pilot does not record the completed auditor boundary"
+grep -Fq 'No closed-window source drift was observed in the frozen comparison.' <<<"$pilot_text" \
+  || fail "pilot does not classify source drift"
+grep -Fq 'The comparison therefore does not claim that any zero target was met.' <<<"$pilot_text" \
+  || fail "pilot does not bound unmeasured outcomes"
+grep -Fq 'recorded in AD-044' <<<"$pilot_text" \
+  || fail "pilot changed workflow without a recorded decision"
+ok "pilot has a completed closing review and decision boundary"
 
 if grep -Eq '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|\.jsonl|~/\.codex|~/\.claude|/root/lucas' "$pilot"; then
   fail "pilot leaks session identity or transcript locations"

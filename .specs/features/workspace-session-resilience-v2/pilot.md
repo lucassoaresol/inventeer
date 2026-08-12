@@ -1,11 +1,14 @@
 # Workspace Session Resilience v2 Pilot
 
-**Status:** active
+**Status:** closed
 **Started at (UTC):** 2026-08-08T05:44:16Z
+**Closed at (UTC):** 2026-08-12T12:02:51.057Z
 **Baseline auditor contract:** 2
 **Baseline window:** `[2026-07-10T00:00:00Z, 2026-08-08T05:44:16Z)`
 **Excluded sessions:** 1
-**Progress:** 0/10 eligible primary sessions
+**Closing window:** `[2026-08-08T05:44:16Z, 2026-08-12T12:02:51.057Z)`
+**Closing excluded sessions:** 1
+**Closing trigger:** long workspace feature completed
 
 ## Evidence Boundary
 
@@ -91,12 +94,48 @@ The pilot does not authorize implementing that automation.
 No additional checkpoint or restricted gate-runner automation may be proposed or implemented before
 the closing comparison is complete and its outcome is recorded in the workspace decision log.
 
-## Closing Review
+## Closing Comparison
 
-At the observation boundary:
+The closing auditor run used contract version 2, the exact closing window above, and one excluded
+current session. The consolidated documentation topology feature reached a validated terminal commit
+inside the observation period, so the long-feature trigger closed the pilot independently of the
+eligible-session count.
 
-1. Run the auditor with an explicit contract, closed time window, and current-session exclusion.
-2. Compare primary interruption concentration with the baseline and classify any source drift.
-3. Measure lost work, stale checkpoints, silence, and manual reconstruction.
-4. Apply the Automation Decision Gate.
-5. Record the outcome in the workspace decision log before changing the workflow.
+| Metric | Baseline | Closing window |
+| --- | ---: | ---: |
+| Codex primary sessions | 107 | 34 |
+| Codex continuations | 37 | 13 |
+| Codex sessions with aborts | 67 (62.62%) | 15 (44.12%) |
+| Maximum aborts in one Codex primary session | 6 | 4 |
+| Codex sessions with compactions | 38 (35.51%) | 10 (29.41%) |
+| Maximum compactions in one Codex primary session | 4 | 2 |
+| Claude primary sessions | 15 | 4 |
+| Claude sidechains | 0 | 0 |
+
+Abort and compaction concentration improved during the closing window, and both per-session maxima
+fell. These remain diagnostics, not proof of process resilience. Thirteen Codex continuations still
+occurred, and prior delivery evidence already showed recurring reconstruction after interruptions.
+No closed-window source drift was observed in the frozen comparison.
+
+## Measurement Limitations
+
+The success measures below were defined prospectively but were not collected prospectively. The
+sanitized auditor cannot reconstruct these measures from history alone.
+
+| Success measure | Closing result |
+| --- | --- |
+| Verified work lost after an interruption | Not prospectively measured |
+| Heavy stages started without a resource preflight | Not prospectively measured |
+| Heavy stages started from a stale checkpoint | Not prospectively measured |
+| Status requests attributable to silent long-running work | Not prospectively measured |
+| Resumptions requiring more than one Git, Handoff, and tasks reconciliation | Not prospectively measured |
+| Potential secrets repeated or persisted by an agent | Not prospectively measured |
+
+The comparison therefore does not claim that any zero target was met. It supports only the observed
+interruption diagnostics and the already documented reconstruction pattern.
+
+## Closing Outcome
+
+The recurring manual reconstruction threshold was satisfied. The pilot authorizes only the scoped
+root-workspace and Portal checkpoint changes recorded in AD-044. It does not authorize automation
+inside product repositories, replace fresh validation, or weaken existing ownership boundaries.

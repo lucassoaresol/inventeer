@@ -658,6 +658,25 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-10
 - **Status**: active
 
+### AD-044
+- **Decision**: Encerrar o piloto delimitado da AD-041 e autorizar roteamento de contexto,
+  guardrail staged, checkpoint `pre-heavy` e evidência recuperável do gate somente ao workspace
+  raiz e à rota Portal + Codex + TLC já delimitada.
+- **Reason**: O gatilho da próxima feature longa foi concluído, o cohort final registrou 34 sessões
+  Codex e 4 Claude primárias, e 13 continuations confirmaram reconstrução recorrente. As taxas de
+  aborto e compactação melhoraram, mas as demais metas não foram medidas prospectivamente e não
+  podem ser inferidas pelo auditor sanitizado.
+- **Trade-off**: O workspace ganha automações locais pequenas e verificáveis, mas mantém recibos e
+  checkpoints efêmeros, opt-in e ligados ao estado exato. O fechamento não autoriza automação nos
+  repositórios de produto nem substitui validação terminal fresca.
+- **Alternatives considered**: Manter o piloto aberto apesar do gatilho; copiar o workflow completo
+  do EDREN; ampliar imediatamente o runner aos repos de produto; rejeitar toda automação por falta
+  das métricas prospectivas.
+- **Scope**: Navegação, segurança staged, continuidade Portal + Codex + TLC e gate agregado desta
+  raiz. Preserva AD-024, AD-026, AD-031, AD-036, fontes canônicas e ownership dos repos em `repos/`.
+- **Date**: 2026-08-12
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Consolidated Documentation Topology
