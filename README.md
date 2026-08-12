@@ -416,6 +416,25 @@ O instalador altera somente `core.hooksPath=.githooks` na configuração local e
 suíte completa permanece em `bash scripts/test-workspace.sh`; o hook executa apenas o guardrail
 staged e `git diff --cached --check`.
 
+## Evidência recuperável do gate
+
+Execute o gate agregado da raiz pelo profile allowlisted:
+
+```bash
+python3 scripts/workspace-gate-evidence.py run --profile workspace
+```
+
+Depois de uma interrupção, consulte o último resultado local sem repetir o gate por engano:
+
+```bash
+python3 scripts/workspace-gate-evidence.py status --profile workspace
+```
+
+O estado `reusable` vale somente no mesmo clone, com estado e contrato idênticos. Qualquer falha,
+interrupção, corrupção, permissão insegura ou mudança retorna `rerun-required`. Esse receipt é
+ignorado, efêmero, não canônico e não substitui validação terminal fresca. O runner cobre apenas
+`bash scripts/test-workspace.sh` nesta raiz; nunca executa gates dos repositórios sob `repos/`.
+
 ## Limites
 
 - Linear permanece canônico para estado operacional das issues.

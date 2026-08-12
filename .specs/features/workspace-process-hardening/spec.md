@@ -135,14 +135,14 @@ closed output schema.
 | WPH-11 | Staged guard | SAFETY | Workspace security contract and user approval | Execute | Verified |
 | WPH-12 | Pre-heavy checkpoint | DECISION | User-approved EDREN adaptation and AD-036 | Execute | Verified |
 | WPH-13 | Pre-heavy checkpoint | DECISION | User-approved EDREN adaptation and AD-036 | Execute | Verified |
-| WPH-14 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
-| WPH-15 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
-| WPH-16 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
-| WPH-17 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
+| WPH-14 | Recoverable gate | DECISION | User-approved EDREN adaptation | Execute | Verified |
+| WPH-15 | Recoverable gate | DECISION | User-approved EDREN adaptation | Execute | Verified |
+| WPH-16 | Recoverable gate | DECISION | User-approved EDREN adaptation | Execute | Verified |
+| WPH-17 | Recoverable gate | DECISION | User-approved EDREN adaptation | Execute | Verified |
 | WPH-18 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Execute | Verified |
-| WPH-19 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Tasks | Pending |
-| WPH-20 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Tasks | Pending |
-| WPH-21 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Tasks | Pending |
+| WPH-19 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Execute | Verified |
+| WPH-20 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Execute | Verified |
+| WPH-21 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Execute | Verified |
 
 **Coverage:** 21 total, 21 mapped to tasks, 0 unmapped.
 
@@ -152,5 +152,5 @@ closed output schema.
 - [x] Five supported workflow routes produce deterministic reference-only context plans.
 - [x] Staged sensitive and unsuitable fixtures fail while safe staged text passes unchanged.
 - [x] Portal checkpoints support `pre-heavy` without weakening existing validation.
-- [ ] A passed root gate is reusable only for the identical workspace state and gate contract.
+- [x] A passed root gate is reusable only for the identical workspace state and gate contract.
 - [ ] `bash scripts/test-workspace.sh` and independent validation pass.

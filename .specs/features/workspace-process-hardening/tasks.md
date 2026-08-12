@@ -179,10 +179,10 @@ T3 -> T4 -> T5
 
 **Done when:**
 
-- [ ] The runner persists the closed receipt schema for pass, fail, interruption, and changed-state outcomes.
-- [ ] Status is reusable only for an identical successful profile, state, contract, schema, path, and permission set.
-- [ ] A newer failure invalidates an older success and every malformed or unsafe store fails closed.
-- [ ] Focused evidence tests and the resource-aware root Build gate pass.
+- [x] The runner persists the closed receipt schema for pass, fail, interruption, and changed-state outcomes.
+- [x] Status is reusable only for an identical successful profile, state, contract, schema, path, and permission set.
+- [x] A newer failure invalidates an older success and every malformed or unsafe store fails closed.
+- [x] Focused evidence tests and the resource-aware root Build gate pass.
 
 **Tests:** unit/integration
 **Gate:** build

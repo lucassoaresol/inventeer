@@ -158,8 +158,12 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   os shards e agregue o resultado antes de chamar o gate de completo.
 - Refaça o snapshot antes de uma etapa pesada posterior quando a sessão for longa ou a carga do host
   tiver mudado. Uma limitação de recurso pode alterar a estratégia, nunca reduzir a cobertura.
-- Use `bash scripts/test-workspace.sh` como gate agregado da raiz; testes focais continuam válidos
-  durante implementação, mas não substituem o gate completo no fechamento.
+- Use `python3 scripts/workspace-gate-evidence.py run --profile workspace` para executar o gate
+  agregado da raiz e gravar seu resultado terminal sanitizado. Consulte uma retomada imediata com
+  `python3 scripts/workspace-gate-evidence.py status --profile workspace`; somente `reusable` para o
+  mesmo estado e contrato evita repetição acidental, e não substitui validação terminal fresca.
+  Testes focais continuam válidos durante implementação, mas não substituem o gate completo no
+  fechamento. O receipt é ignorado, efêmero e restrito ao workspace raiz; não o aplique a `repos/`.
 
 ## Segurança
 
