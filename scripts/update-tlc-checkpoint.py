@@ -15,7 +15,7 @@ from typing import Sequence
 ISSUE_PATTERN = re.compile(r"INV-[1-9][0-9]*")
 HANDOFF_HEADER = re.compile(r"(?m)^## Handoff\r?$")
 NEXT_SECTION = re.compile(r"(?m)^## [^\r\n]+\r?$")
-EVENTS = ("gate", "commit", "bundle", "pr", "validation")
+EVENTS = ("gate", "commit", "bundle", "pr", "validation", "pre-heavy")
 VALIDATION_STATES = ("not-started", "in-progress", "passed", "failed", "blocked")
 
 
@@ -25,7 +25,7 @@ class CheckpointError(ValueError):
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Update the issue-local Portal TLC handoff after a successful transition."
+        description="Update the issue-local Portal TLC handoff at a stable transition."
     )
     parser.add_argument("--workspace-root", required=True)
     parser.add_argument("--issue", required=True)

@@ -152,10 +152,10 @@ T3 -> T4 -> T5
 
 **Done when:**
 
-- [ ] `pre-heavy` renders the existing handoff schema and preserves decisions and following sections.
-- [ ] All existing invalid enums, multiline input, path escape, symlink, no-op, and atomic failure checks remain green.
-- [ ] Workspace instructions require freshness before heavy stages without widening the Portal-only route.
-- [ ] Focused checkpoint gates pass.
+- [x] `pre-heavy` renders the existing handoff schema and preserves decisions and following sections.
+- [x] All existing invalid enums, multiline input, path escape, symlink, no-op, and atomic failure checks remain green.
+- [x] Workspace instructions require freshness before heavy stages without widening the Portal-only route.
+- [x] Focused checkpoint gates pass.
 
 **Tests:** unit/contract
 **Gate:** quick

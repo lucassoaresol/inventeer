@@ -65,8 +65,10 @@ inalterados, e o lifecycle oficial do APEX a substituirá quando houver suporte 
 Depois de uma transição Portal + Codex + TLC bem-sucedida, atualize o handoff local com
 `scripts/update-tlc-checkpoint.py`. O helper calcula o destino exato
 `session-context/portal/<INV-ID>/tlc/STATE.md`; não aceita um path de saída arbitrário. Os eventos
-permitidos são `gate`, `commit`, `bundle`, `pr` e `validation`. Não grave um evento quando a
-transição correspondente falhar antes de produzir seu resultado.
+permitidos são `gate`, `commit`, `bundle`, `pr`, `validation` e `pre-heavy`. Use `pre-heavy`
+imediatamente antes de uma etapa pesada, somente depois do preflight de recursos e da reconciliação
+do estado atual. Não grave um evento quando a transição correspondente falhar antes de produzir seu
+resultado.
 
 Exemplo abreviado:
 

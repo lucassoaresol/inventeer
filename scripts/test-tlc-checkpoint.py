@@ -106,6 +106,14 @@ with tempfile.TemporaryDirectory() as temp:
         "# TLC State\n\n## Decisions\n\n" + expected_handoff()
     )
 
+    for event in ("gate", "commit", "bundle", "pr", "validation", "pre-heavy"):
+        event_root = fixture / f"event-{event}"
+        event_root.mkdir()
+        event_result = invoke(event_root, event=event)
+        assert event_result.returncode == 0, (event, event_result.stderr)
+        event_text = target_for(event_root).read_text(encoding="utf-8")
+        assert f"- **Checkpoint event**: {event}\n" in event_text
+
     preservation_root = fixture / "preservation"
     state = target_for(preservation_root)
     state.parent.mkdir(parents=True)
@@ -225,4 +233,5 @@ print("ok 8 - resolved paths cannot escape the workspace")
 print("ok 9 - missing or duplicate handoff sections are rejected")
 print("ok 10 - uncommitted-file values are relative path labels")
 print("ok 11 - empty repeatable fields render as none")
-print("\n11 teste(s) passaram.")
+print("ok 12 - all six successful transition events render the exact handoff field")
+print("\n12 teste(s) passaram.")

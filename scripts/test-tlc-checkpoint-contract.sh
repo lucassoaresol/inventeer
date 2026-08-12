@@ -21,25 +21,35 @@ grep -A24 '^### AD-036$' .specs/STATE.md | grep -q '\*\*Status\*\*: active' \
   || fail "AD-036 must be active"
 pass "AD-036 records the active checkpoint decision"
 
-for trigger in gate commit bundle PR validation; do
-  grep -A12 'checkpoints TLC resilientes' AGENTS.md | grep -Fq "$trigger" \
+agent_checkpoint=$(grep -A16 'checkpoints TLC resilientes' AGENTS.md | tr '\n' ' ' | tr -s '[:space:]' ' ')
+for trigger in gate commit bundle PR validation pre-heavy; do
+  grep -Fq "$trigger" <<<"$agent_checkpoint" \
     || fail "AGENTS.md is missing checkpoint trigger: $trigger"
 done
-grep -A12 'checkpoints TLC resilientes' AGENTS.md | grep -q 'somente depois.*sucesso' \
+grep -q 'somente depois.*sucesso' <<<"$agent_checkpoint" \
   || fail "AGENTS.md does not require successful transitions"
-grep -A12 'checkpoints TLC resilientes' AGENTS.md | grep -q 'não avance.*falh' \
+grep -q 'Não avance.*falh' <<<"$agent_checkpoint" \
   || fail "AGENTS.md does not prohibit checkpoint advancement on failure"
-pass "workspace instructions require all five successful-transition checkpoints"
+grep -q 'Imediatamente antes.*etapa pesada' <<<"$agent_checkpoint" \
+  || fail "AGENTS.md does not require a checkpoint immediately before heavy work"
+grep -q 'preflight de recursos.*reconciliação do estado atual' <<<"$agent_checkpoint" \
+  || fail "AGENTS.md does not gate pre-heavy on preflight and reconciliation"
+pass "workspace instructions require all six stable-transition checkpoints"
 
 grep -Fq 'scripts/update-tlc-checkpoint.py' README.md \
   || fail "README.md does not document the checkpoint helper"
 grep -Fq 'session-context/portal/<INV-ID>/tlc/STATE.md' README.md \
   || fail "README.md does not document the exact checkpoint target"
-for trigger in gate commit bundle pr validation; do
+for trigger in gate commit bundle pr validation pre-heavy; do
   grep -A45 'Checkpoints resilientes da TLC' README.md | grep -Fq "$trigger" \
     || fail "README.md is missing helper event: $trigger"
 done
 pass "README documents the deterministic helper, target, and events"
+
+checkpoint_docs_normalized=$(grep -A50 'Checkpoints resilientes da TLC' README.md | tr '\n' ' ' | tr -s '[:space:]' ' ')
+grep -q 'preflight de recursos.*reconciliação do estado atual' <<<"$checkpoint_docs_normalized" \
+  || fail "README.md does not document the pre-heavy prerequisites"
+pass "README requires fresh state before pre-heavy work"
 
 checkpoint_docs=$(grep -A45 'Checkpoints resilientes da TLC' README.md)
 for property in 'local' 'efêmero' 'não canônico' 'não oferece portabilidade cross-machine'; do

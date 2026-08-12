@@ -103,7 +103,9 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Para checkpoints TLC resilientes nessa rota Portal + Codex + TLC, invoque
   `scripts/update-tlc-checkpoint.py` somente depois que uma transição produzir seu resultado com sucesso:
   gate concluído (`gate`), commit atômico criado (`commit`), bundle criado (`bundle`), PR criada ou
-  atualizada (`pr`) ou estado de validation alterado (`validation`); não avance o checkpoint como se uma transição que falhou tivesse concluído.
+  atualizada (`pr`) ou estado de validation alterado (`validation`). Imediatamente antes de uma
+  etapa pesada, depois do preflight de recursos e da reconciliação do estado atual, registre
+  `pre-heavy`. Não avance o checkpoint como se uma transição que falhou tivesse concluído.
   Grave em
   `session-context/portal/<INV-ID>/tlc/STATE.md`; em `Uncommitted files`, registre somente paths, sem
   diffs ou conteúdo. Trate processo registrado como contexto e confira sua liveness ao retomar. O
