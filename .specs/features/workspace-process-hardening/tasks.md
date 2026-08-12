@@ -98,10 +98,10 @@ T3 -> T4 -> T5
 
 **Done when:**
 
-- [ ] Exactly five supported routes produce byte-stable metadata-only plans.
-- [ ] Unknown fields/routes, duplicate or unsafe references, and missing paths fail closed.
-- [ ] Feature and decision indexes cover every canonical entry and point back to canonical sources.
-- [ ] Focused context and structure gates pass with no broken links.
+- [x] Exactly five supported routes produce byte-stable metadata-only plans.
+- [x] Unknown fields/routes, duplicate or unsafe references, and missing paths fail closed.
+- [x] Feature and decision indexes cover every canonical entry and point back to canonical sources.
+- [x] Focused context and structure gates pass with no broken links.
 
 **Tests:** unit/contract
 **Gate:** quick

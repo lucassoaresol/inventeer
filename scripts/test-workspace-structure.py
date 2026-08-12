@@ -4,6 +4,7 @@
 import ast
 import pathlib
 import re
+import subprocess
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -53,3 +54,45 @@ for name in local_skills:
     if link.readlink().is_absolute():
         raise AssertionError(f"Claude skill link must be relative: {name}")
 print(f"ok 3 - {len(local_skills)} local skills have exact relative Claude symlinks")
+
+feature_index = ROOT / ".specs/features/INDEX.md"
+feature_index_text = feature_index.read_text(encoding="utf-8")
+feature_rows = re.findall(
+    r"^\| \[([^]]+)\]\(\./([^/]+)/\) \| (Active|Validated|Archived) \|$",
+    feature_index_text,
+    re.M,
+)
+indexed_features = {name: target for name, target, _status in feature_rows}
+canonical_features = {path.name for path in feature_index.parent.iterdir() if path.is_dir()}
+if set(indexed_features) != canonical_features or any(name != target for name, target in indexed_features.items()):
+    raise AssertionError(
+        f"feature index mismatch: missing={sorted(canonical_features - set(indexed_features))}, "
+        f"extra={sorted(set(indexed_features) - canonical_features)}"
+    )
+print(f"ok 4 - feature index covers {len(canonical_features)} canonical directories")
+
+state_at_head = subprocess.run(
+    ["git", "show", "HEAD:.specs/STATE.md"],
+    cwd=ROOT,
+    text=True,
+    capture_output=True,
+    check=True,
+).stdout
+canonical_decisions = {}
+for block in re.split(r"(?=^### AD-\d+$)", state_at_head, flags=re.M):
+    decision = re.search(r"^### (AD-\d+)$", block, re.M)
+    if not decision:
+        continue
+    status = re.search(r"^- \*\*Status\*\*: (.+)$", block, re.M)
+    if not status:
+        raise AssertionError(f"decision has no status: {decision.group(1)}")
+    canonical_decisions[decision.group(1)] = status.group(1)
+decision_index_text = (ROOT / ".specs/DECISIONS.md").read_text(encoding="utf-8")
+indexed_decisions = dict(
+    re.findall(r"^\| \[(AD-\d+)\]\(STATE\.md#ad-\d+\) \| ([^|]+?) \|$", decision_index_text, re.M)
+)
+if indexed_decisions != canonical_decisions:
+    raise AssertionError(
+        f"decision index mismatch: canonical={canonical_decisions}, indexed={indexed_decisions}"
+    )
+print(f"ok 5 - decision index classifies {len(canonical_decisions)} committed decisions")

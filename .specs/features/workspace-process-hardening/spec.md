@@ -15,7 +15,7 @@ dual-engine, multi-repository, and ownership boundaries.
 ## Goals
 
 - [x] Close the resilience pilot with a reproducible aggregate comparison and an explicit decision.
-- [ ] Route each common workflow through a deterministic, reference-only context package.
+- [x] Route each common workflow through a deterministic, reference-only context package.
 - [ ] Prevent likely sensitive or unsuitable staged content through an opt-in local Git hook.
 - [ ] Require a fresh Portal TLC checkpoint before a heavy stage.
 - [ ] Preserve a sanitized, state-bound receipt for the root workspace gate.
@@ -125,10 +125,10 @@ closed output schema.
 | WPH-01 | Close pilot | DECISION | User-approved retrospective and AD-041 | Execute | Verified |
 | WPH-02 | Close pilot | DECISION | User-approved retrospective and AD-041 | Execute | Verified |
 | WPH-03 | Close pilot | DECISION | User-approved retrospective and AD-041 | Execute | Verified |
-| WPH-04 | Bounded context | DECISION | User-approved EDREN adaptation | Tasks | Pending |
-| WPH-05 | Bounded context | DECISION | User-approved EDREN adaptation | Tasks | Pending |
-| WPH-06 | Bounded context | DECISION | User-approved EDREN adaptation | Tasks | Pending |
-| WPH-07 | Bounded context | DECISION | User-approved EDREN adaptation | Tasks | Pending |
+| WPH-04 | Bounded context | DECISION | User-approved EDREN adaptation | Execute | Verified |
+| WPH-05 | Bounded context | DECISION | User-approved EDREN adaptation | Execute | Verified |
+| WPH-06 | Bounded context | DECISION | User-approved EDREN adaptation | Execute | Verified |
+| WPH-07 | Bounded context | DECISION | User-approved EDREN adaptation | Execute | Verified |
 | WPH-08 | Staged guard | SAFETY | Workspace security contract and user approval | Tasks | Pending |
 | WPH-09 | Staged guard | SAFETY | Workspace security contract and user approval | Tasks | Pending |
 | WPH-10 | Staged guard | SAFETY | Workspace security contract and user approval | Tasks | Pending |
@@ -139,7 +139,7 @@ closed output schema.
 | WPH-15 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
 | WPH-16 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
 | WPH-17 | Recoverable gate | DECISION | User-approved EDREN adaptation | Tasks | Pending |
-| WPH-18 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Tasks | Pending |
+| WPH-18 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Execute | Verified |
 | WPH-19 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Tasks | Pending |
 | WPH-20 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Tasks | Pending |
 | WPH-21 | Edge cases | SAFETY | Ownership, integrity, and freshness boundaries | Tasks | Pending |
@@ -149,7 +149,7 @@ closed output schema.
 ## Success Criteria
 
 - [x] The AD-041 pilot is closed with a reproducible aggregate comparison and explicit limitations.
-- [ ] Five supported workflow routes produce deterministic reference-only context plans.
+- [x] Five supported workflow routes produce deterministic reference-only context plans.
 - [ ] Staged sensitive and unsuitable fixtures fail while safe staged text passes unchanged.
 - [ ] Portal checkpoints support `pre-heavy` without weakening existing validation.
 - [ ] A passed root gate is reusable only for the identical workspace state and gate contract.
