@@ -18,7 +18,7 @@ dual-engine, multi-repository, and ownership boundaries.
 - [x] Route each common workflow through a deterministic, reference-only context package.
 - [x] Prevent likely sensitive or unsuitable staged content through an opt-in local Git hook.
 - [x] Require a fresh Portal TLC checkpoint before a heavy stage.
-- [ ] Preserve a sanitized, state-bound receipt for the root workspace gate.
+- [x] Preserve a sanitized, state-bound receipt for the root workspace gate.
 
 ## Out of Scope
 
@@ -153,4 +153,4 @@ closed output schema.
 - [x] Staged sensitive and unsuitable fixtures fail while safe staged text passes unchanged.
 - [x] Portal checkpoints support `pre-heavy` without weakening existing validation.
 - [x] A passed root gate is reusable only for the identical workspace state and gate contract.
-- [ ] `bash scripts/test-workspace.sh` and independent validation pass.
+- [x] `bash scripts/test-workspace.sh` and independent validation pass.

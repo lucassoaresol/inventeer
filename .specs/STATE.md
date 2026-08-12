@@ -679,14 +679,15 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Consolidated Documentation Topology
+- **Feature**: Workspace Process Hardening
 - **Phase / Task**: Validate complete
-- **Completed**: T1 workspace topology (`fabcdd1`), T2 Assistants IDS routing (`59cb43c`), T3 Portal
-  routing (`63ddcca`), T4 evidence-gap closure (`dc4cb5f`), 21-suite workspace gate, and independent
-  verification PASS
+- **Completed**: T1 pilot closure (`3dd8074`), T2 context routing (`2c5c33b`), T3 staged guard
+  (`0a79941`), T4 pre-heavy checkpoint (`fef08f1`), T5 gate evidence (`7ea9a15`), 21-suite root gate,
+  and standalone fresh-eyes verification PASS
 - **In-progress**: none
 - **Next step**: review the local commits; push only on explicit request
 - **Blockers**: none
-- **Uncommitted files**: none expected after the validation commit
+- **Uncommitted files**: `.codex/config.toml`, `.mcp.json`, `.specs/STATE.md`, `AGENTS.md`,
+  `README.md`, `scripts/test-mcp-config.py` (pre-existing Figma work; paths only)
 - **Branch**: main
-- **Validation mode**: PASS at functional head `dc4cb5f` over base `f0583de`
+- **Validation mode**: PASS at functional head `7ea9a15` over base `2745409`
