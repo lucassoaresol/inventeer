@@ -1,6 +1,6 @@
 # Unified Dual-Engine Delivery Specification
 
-**Status:** Approved
+**Status:** Verified
 **Review language:** Portuguese
 **Canonical language:** English
 
@@ -104,9 +104,9 @@ recovery, and cleanup boundaries.
 
 | Requirement | Provenance | Evidence | Status |
 | --- | --- | --- | --- |
-| UDDE-01 | DECISION | User request to consolidate Codex and Claude execution | Implementing |
-| UDDE-02 | INHERITED | AD-034 executable-workflow threshold | Implementing |
-| UDDE-03 | DECISION | User request to continue through `session-context` for Portal | Implementing |
-| UDDE-04 | INHERITED | AD-017 local session-context lifecycle | Implementing |
-| UDDE-05 | INHERITED | AD-036 stable-transition checkpoints | Implementing |
-| UDDE-06 | INHERITED | Workspace canonical-source boundaries | Implementing |
+| UDDE-01 | DECISION | User request to consolidate Codex and Claude execution | Verified |
+| UDDE-02 | INHERITED | AD-034 executable-workflow threshold | Verified |
+| UDDE-03 | DECISION | User request to continue through `session-context` for Portal | Verified |
+| UDDE-04 | INHERITED | AD-017 local session-context lifecycle | Verified |
+| UDDE-05 | INHERITED | AD-036 stable-transition checkpoints | Verified |
+| UDDE-06 | INHERITED | Workspace canonical-source boundaries | Verified |

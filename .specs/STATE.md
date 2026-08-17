@@ -724,15 +724,15 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 
-- **Feature**: Workspace Process Hardening
-- **Phase / Task**: Validate complete
-- **Completed**: T1 pilot closure (`3dd8074`), T2 context routing (`2c5c33b`), T3 staged guard
-  (`0a79941`), T4 pre-heavy checkpoint (`fef08f1`), T5 gate evidence (`7ea9a15`), 21-suite root gate,
-  and standalone fresh-eyes verification PASS
+- **Feature**: Unified Dual-Engine Delivery
+- **Phase / Task**: Validation complete
+- **Completed**: executor contract (`27a32b6`), shared Portal session flow (`bea29b0`), canonical
+  indexes (`bd861c6`), diff-integrity correction (`805165c`), 24-suite root gate, 9/9 ACs,
+  4/4 edge cases, and 3/3 killed discrimination mutants
 - **In-progress**: none
-- **Next step**: review the local commits; push only on explicit request
+- **Next step**: review the five local commits; push only on explicit request
 - **Blockers**: none
-- **Uncommitted files**: `.codex/config.toml`, `.mcp.json`, `.specs/STATE.md`, `AGENTS.md`,
-  `README.md`, `scripts/test-mcp-config.py` (pre-existing Figma work; paths only)
+- **Uncommitted files**: none after the final evidence commit
 - **Branch**: main
-- **Validation mode**: PASS at functional head `7ea9a15` over base `2745409`
+- **Validation mode**: PASS at behavioral head `805165c` over base `bb07515`; final commit contains
+  evidence and traceability only
