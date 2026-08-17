@@ -110,4 +110,3 @@ recovery, and cleanup boundaries.
 | UDDE-04 | INHERITED | AD-017 local session-context lifecycle | Implementing |
 | UDDE-05 | INHERITED | AD-036 stable-transition checkpoints | Implementing |
 | UDDE-06 | INHERITED | Workspace canonical-source boundaries | Implementing |
-
