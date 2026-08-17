@@ -658,6 +658,25 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-10
 - **Status**: active
 
+### AD-043
+- **Decision**: Versionar o MCP remoto oficial do Figma nos dois engines desta raiz, autenticado
+  somente por OAuth em runtime e com ferramentas de escrita sujeitas à aprovação do engine no
+  Codex. Usá-lo para contexto estruturado, variáveis, assets e screenshots dos arquivos Figma aos
+  quais o usuário concedeu acesso, sem persistir tokens no workspace.
+- **Reason**: O trabalho de interface precisa consultar frames e variantes exatos do Figma em vez de
+  depender apenas de screenshots ou transcrição manual do design, e o workspace já opera integrações
+  MCP reproduzíveis nos dois engines.
+- **Trade-off**: Cada engine ou máquina pode exigir autenticação e refresh próprios, e a configuração
+  adiciona ferramentas externas à sessão. Em troca, o handoff de design fica estruturado e
+  verificável sem armazenar credenciais ou copiar o arquivo Figma para o Git.
+- **Alternatives considered**: Configurar apenas o Codex; usar links e screenshots sem MCP; manter o
+  servidor global; persistir token pessoal em variável ou arquivo versionado.
+- **Scope**: Sessões Codex e Claude iniciadas por esta raiz. A integração não transfere ownership,
+  não autoriza mudanças em arquivos Figma ou repos de produto e não substitui as fontes canônicas
+  de código, testes ou documentação.
+- **Date**: 2026-08-11
+- **Status**: active
+
 ### AD-044
 - **Decision**: Encerrar o piloto delimitado da AD-041 e autorizar roteamento de contexto,
   guardrail staged, checkpoint `pre-heavy` e evidência recuperável do gate somente ao workspace

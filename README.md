@@ -216,7 +216,7 @@ engine enxergava metade do conjunto, e a diferença é coberta por arquivo:
 |---|---|---|
 | Instruções | `AGENTS.md` nativo | `CLAUDE.md`, que importa `AGENTS.md` |
 | Skills | `.agents/skills/` nativo | symlinks em `.claude/skills/` |
-| MCPs versionados | `apex`, `linear`, `github`, `context7`, `shadcn` em `.codex/config.toml` | `apex`, `github`, `context7`, `shadcn` em `.mcp.json` |
+| MCPs versionados | `apex`, `linear`, `github`, `context7`, `shadcn`, `figma` em `.codex/config.toml` | `apex`, `github`, `context7`, `shadcn`, `figma` em `.mcp.json` |
 | Workflows APEX | wrappers experimentais `apex-*` | comandos nativos do MCP |
 
 Uma skill global de mesmo nome em `~/.claude/skills/` suprime a deste workspace sem aviso, e as
@@ -272,6 +272,13 @@ O servidor shadcn opera com cwd em `repos/portal-web`, onde o `components.json` 
 aliases e destinos de instalação. Por isso, o clone desse repo é pré-requisito para iniciar o
 servidor. Ferramentas de escrita do shadcn exigem aprovação e só podem ser usadas depois de ler as
 instruções locais e verificar o worktree do produto; a configuração na raiz não transfere ownership.
+
+`figma` também é compartilhado pelos dois engines pelo endpoint remoto oficial. A autenticação usa
+OAuth em runtime, sem token versionado. O servidor fornece contexto estruturado, variáveis, assets e
+screenshots apenas dos arquivos aos quais a conta autenticada já possui acesso. No Codex,
+ferramentas de escrita do Figma exigem aprovação pelo modo `writes`; o arquivo e o node alvo devem
+ser confirmados antes de qualquer mutação. Conclua a autenticação local com
+`codex mcp login figma` e reinicie a sessão iniciada nesta raiz.
 
 Os candidatos de infraestrutura permanecem fora desta raiz por limites de necessidade e autoridade:
 

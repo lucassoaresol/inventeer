@@ -145,6 +145,10 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   seu `components.json`, suas instruções locais e seu worktree.
 - Antes de qualquer ferramenta de escrita do shadcn, confirme que `repos/portal-web` está clonado,
   leia as instruções do repo, verifique o worktree e obtenha a aprovação exigida pelo engine.
+- Use o MCP Figma autenticado por OAuth para obter contexto estruturado, variáveis, assets e
+  screenshots dos arquivos aos quais o usuário concedeu acesso; nunca persista tokens no workspace.
+- Antes de qualquer ferramenta de escrita do Figma, confirme o arquivo e o node alvo e obtenha a
+  aprovação exigida pelo engine. Acesso ao design não autoriza mudanças em arquivos de produto.
 - A disponibilidade do MCP nesta raiz não transfere ownership nem autoriza mudanças de produto.
 - Cloudflare e AWS permanecem fora da configuração até uma nova decisão transversal explícita.
 

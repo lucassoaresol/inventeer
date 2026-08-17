@@ -26,3 +26,8 @@ args = ["shadcn@latest", "mcp"]
 cwd = "repos/portal-web"
 enabled = true
 default_tools_approval_mode = "writes"
+
+[mcp_servers.figma]
+url = "https://mcp.figma.com/mcp"
+enabled = true
+default_tools_approval_mode = "writes"
