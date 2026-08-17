@@ -21,18 +21,23 @@ grep -A18 '^### AD-025$' .specs/STATE.md \
   | grep -q '^\- \*\*Status\*\*: superseded by AD-026$' \
   || fail "AD-025 is not superseded by AD-026"
 grep -A26 '^### AD-026$' .specs/STATE.md \
+  | grep -q '^\- \*\*Status\*\*: superseded by AD-045$' \
+  || fail "AD-026 is not superseded by AD-045"
+grep -A32 '^### AD-045$' .specs/STATE.md \
   | grep -q '^\- \*\*Status\*\*: active$' \
-  || fail "AD-026 is not active"
-ok "a decisao antiga foi supersedida e a rota engine-aware esta ativa"
+  || fail "AD-045 is not active"
+ok "as rotas antigas foram supersedidas e o executor unificado esta ativo"
 
 # shellcheck disable=SC2016 # Backticks are literal Markdown in the searched text.
-grep -Fq 'no Codex, use sempre `tlc-spec-driven`' AGENTS.md \
-  || fail "AGENTS.md does not route Codex delivery to TLC"
-grep -q 'no Claude Code, use APEX quando o repo tiver' AGENTS.md \
-  || fail "AGENTS.md does not route eligible Claude delivery to APEX"
-grep -q 'A preparação continua sendo das skills locais de contexto' AGENTS.md \
+grep -Fq 'Use sempre `tlc-spec-driven` como executor' AGENTS.md \
+  || fail "AGENTS.md does not declare TLC as the shared executor"
+grep -q 'no Codex e' AGENTS.md \
+  || fail "AGENTS.md does not include Codex in shared TLC routing"
+grep -q 'no Claude Code' AGENTS.md \
+  || fail "AGENTS.md does not include Claude Code in shared TLC routing"
+grep -q 'A preparação continua sendo das skills locais de' AGENTS.md \
   || fail "AGENTS.md does not preserve context-skill preparation before execution"
-ok "AGENTS.md diferencia o executor por engine"
+ok "AGENTS.md usa TLC nos dois engines"
 
 grep -q 'não criam uma execução APEX suportada' AGENTS.md \
   || fail "AGENTS.md conflates APEX resource access with supported execution"
@@ -40,11 +45,13 @@ grep -q 'invocação, contexto de' README.md \
   || fail "README.md omits workflow invocation and session context requirements"
 grep -q 'sessão, artifacts e gates completos' README.md \
   || fail "README.md omits artifact and gate requirements"
-grep -q 'única engine deste workspace que usa APEX como executor de entrega' README.md \
-  || fail "README.md does not state the current APEX execution boundary"
-grep -q 'entregas no Codex usam TLC' README.md \
-  || fail "README.md does not state the Codex fallback"
-ok "README.md documenta o mesmo limite operacional"
+grep -q 'Codex e Claude Code usam TLC' README.md \
+  || fail "README.md does not state the shared TLC executor"
+grep -q 'APEX permanece disponível para inspeção e diagnóstico' README.md \
+  || fail "README.md does not preserve the diagnostic APEX boundary"
+grep -q 'Uma chamada bem-sucedida isolada também não conclui um workflow' README.md \
+  || fail "README.md conflates isolated APEX success with workflow execution"
+ok "README.md documenta o executor compartilhado e o limite APEX"
 
 mapfile -t wrappers < <(find .agents/skills -mindepth 2 -maxdepth 2 -path '*/apex-*/SKILL.md' | sort)
 ((${#wrappers[@]} > 0)) || fail "no generated APEX wrappers found"
@@ -65,7 +72,9 @@ ok "nenhum wrapper preserva a alegacao antiga de execucao"
 if find .claude/skills -maxdepth 1 -name 'apex-*' -print -quit | grep -q .; then
   fail "APEX wrappers should not be exposed to Claude Code"
 fi
-ok "Claude continua usando comandos nativos, sem wrappers duplicados"
+grep -q 'No Claude Code, trate também os workflows nativos' AGENTS.md \
+  || fail "Claude native APEX workflows are not bounded to diagnostics"
+ok "Claude preserva comandos nativos apenas como diagnostico, sem wrappers duplicados"
 
 # shellcheck disable=SC2088 # Tildes are literal documentation text, not filesystem paths.
 for path in '~/.codex/sessions/' '~/.claude/projects/'; do

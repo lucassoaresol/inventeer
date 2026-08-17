@@ -310,7 +310,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Scope**: Seleção do executor neste workspace e nos repositórios sob `repos/`; não altera o APEX,
   produtos, Linear ou GitHub.
 - **Date**: 2026-07-28
-- **Status**: active
+- **Status**: superseded by AD-045
 
 ### AD-027
 - **Decision**: Usar os históricos locais de Codex e Claude Code associados à raiz do workspace
@@ -404,7 +404,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
   limpeza após merge e encerramento da issue, e a rota será retirada quando o Codex executar APEX
   end-to-end.
 - **Date**: 2026-07-31
-- **Status**: active
+- **Status**: superseded by AD-045
 
 ### AD-032
 - **Decision**: Manter as leituras diagnósticas do MCP `apex` disponíveis no Codex e exigir
@@ -508,7 +508,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
   AD-032, Claude/APEX, repos de produto, fontes canônicas e a TLC vendorizada; mantém a privacidade
   da AD-027 e o lifecycle de limpeza após merge e encerramento da issue.
 - **Date**: 2026-08-02
-- **Status**: active
+- **Status**: superseded by AD-045
 
 ### AD-037
 - **Decision**: Versionar o GitHub MCP remoto oficial nos dois engines desta raiz, autenticado em
@@ -694,6 +694,32 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Scope**: Navegação, segurança staged, continuidade Portal + Codex + TLC e gate agregado desta
   raiz. Preserva AD-024, AD-026, AD-031, AD-036, fontes canônicas e ownership dos repos em `repos/`.
 - **Date**: 2026-08-12
+- **Status**: superseded by AD-045
+
+### AD-045
+- **Decision**: Usar `tlc-spec-driven` como executor de especificação, implementação e validação
+  tanto no Codex quanto no Claude Code. Para tasks do Portal nos dois engines, manter artifacts TLC,
+  bundles e checkpoints sob `session-context/portal/<INV-ID>/`, preservando APEX apenas como
+  superfície experimental e diagnóstica até uma nova decisão baseada em execução end-to-end que
+  satisfaça AD-034.
+- **Reason**: O recorte sanitizado de 2026-07-28 a 2026-08-18, contrato v2 e com a retrospectiva
+  corrente excluída, contém 30 sessões primárias Codex e 5 Claude. Duas sessões Codex e uma Claude
+  tiveram tools APEX bem-sucedidas, mas somente como operações isoladas; o histórico e o piloto
+  nativo da AD-034 não demonstram um workflow completo com contexto, todas as tools e gates
+  estruturados. A rota TLC do Portal já possui artifacts locais, checkpoints e gates testados.
+- **Trade-off**: O workspace abre mão do lifecycle oficial APEX no Claude e passa a manter artifacts
+  TLC efêmeros também nesse engine. Em troca, as duas engines seguem o mesmo contrato de construção,
+  revisão e continuação. O layout é reproduzível em outra máquina, mas seu conteúdo não sincroniza:
+  retomadas cross-machine reconstroem o estado de Linear, Git, PRs e fontes canônicas ou consomem um
+  pacote temporário sanitizado transferido explicitamente.
+- **Alternatives considered**: Manter o roteamento por engine da AD-026; retirar o APEX somente do
+  Claude; sincronizar `session-context/` por Git; remover o MCP APEX e os wrappers; aguardar outra
+  execução sem consolidar o fluxo já praticado.
+- **Scope**: Executor de entrega nos dois engines e continuidade de tasks do Portal neste workspace.
+  Substitui AD-026, AD-031, AD-036 e AD-044, preservando suas automações de raiz e estendendo a rota
+  Portal + TLC ao Claude. Não altera produtos, Linear, GitHub, repos em `repos/`, fontes canônicas,
+  a TLC vendorizada ou o critério de revalidação APEX da AD-034.
+- **Date**: 2026-08-17
 - **Status**: active
 
 ## Handoff

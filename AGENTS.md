@@ -84,23 +84,27 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Trate as skills `apex-*` como wrappers experimentais de inspeção no Codex. Elas leem
   `apex://framework/workflows/<id>`, mas não criam uma execução APEX suportada nem substituem
   prompts nativos, contexto de sessão, artifacts ou gates ausentes. Não as use como executor de
-  entrega; não edite seu conteúdo gerado. No Claude Code, use os workflows nativos do MCP `apex`.
+  entrega; não edite seu conteúdo gerado. No Claude Code, trate também os workflows nativos do MCP
+  `apex` como superfície experimental e diagnóstica, não como executor de entrega.
 - No Codex, mantenha ferramentas de escrita do MCP `apex` sujeitas a aprovação. A exposição de
   operações Git, GitHub, Linear ou multi-repo não amplia ownership nem autoriza execução APEX.
 - Antes de declarar um workflow APEX executável, confirme que o servidor publica todas as tools que
   o resource canônico exige e que a sessão recebeu o bloco `=== APEX WORKSPACE ===`. Falta de tool,
   contexto, aprovação ou resultado bloqueia a execução; não apresente fallback manual como APEX.
-- Escolha o executor por engine e repositório (AD-026): no Claude Code, use APEX quando o repo tiver
-  `ENV.md` e TLC nos demais; no Codex, use sempre `tlc-spec-driven` para especificação,
-  implementação e validação, inclusive em repos com `ENV.md`, até nova decisão baseada em uma
-  execução APEX end-to-end. A preparação continua sendo das skills locais de contexto.
-- Para tasks do Portal executadas por Codex + TLC, mantenha artifacts file-backed da TLC em
+- Use sempre `tlc-spec-driven` como executor de especificação, implementação e validação no Codex e
+  no Claude Code, inclusive em repos com `ENV.md`. A preparação continua sendo das skills locais de
+  contexto. APEX permanece diagnóstico até uma nova decisão baseada em execução end-to-end que
+  satisfaça AD-034 (AD-045).
+- Para tasks do Portal executadas por TLC em qualquer uma das duas engines, mantenha artifacts
+  file-backed da TLC em
   `session-context/portal/<INV-ID>/tlc/`, nunca em `.specs/` dos repos Portal. Esse material é local,
   efêmero, não canônico e não durável; agrupe bundles em
   `session-context/portal/<INV-ID>/review/` e torne o diretório elegível para limpeza após merge e
-  encerramento da issue. A rota é transitória e deve ser retirada quando o Codex executar APEX
-  end-to-end; não a aplique ao Claude/APEX nem a outros produtos (AD-031).
-- Para checkpoints TLC resilientes nessa rota Portal + Codex + TLC, invoque
+  encerramento da issue. Em outra máquina, use o mesmo layout, mas reconstrua o estado de Linear,
+  Git, PRs e fontes canônicas ou consuma um pacote temporário sanitizado transferido explicitamente;
+  `session-context/` não sincroniza artifacts automaticamente. Não aplique a rota a outros produtos
+  (AD-045).
+- Para checkpoints TLC resilientes nessa rota Portal + TLC, em qualquer uma das duas engines, invoque
   `scripts/update-tlc-checkpoint.py` somente depois que uma transição produzir seu resultado com sucesso:
   gate concluído (`gate`), commit atômico criado (`commit`), bundle criado (`bundle`), PR criada ou
   atualizada (`pr`) ou estado de validation alterado (`validation`). Imediatamente antes de uma
@@ -109,7 +113,7 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   Grave em
   `session-context/portal/<INV-ID>/tlc/STATE.md`; em `Uncommitted files`, registre somente paths, sem
   diffs ou conteúdo. Trate processo registrado como contexto e confira sua liveness ao retomar. O
-  helper atualiza apenas `## Handoff`; decisões e outras seções permanecem intactas (AD-036).
+  helper atualiza apenas `## Handoff`; decisões e outras seções permanecem intactas (AD-045).
 - Mantenha a divisão: triage compara issues e ondas; `advance-delivery-front` coordena a topologia de
   PRs/tasks; `review-pull-request` revisa a mudança submetida sem mutá-la; a skill de produto prepara
   uma issue; a TLC executa e verifica essa issue.

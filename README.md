@@ -44,12 +44,12 @@ de projeto e o escopo da sessão abaixo desse diretório-base.
 Esse estado é efêmero, ignorado pelo Git, não canônico e não deve conter credenciais, dados de
 clientes, saídas de produção ou transcripts. Remova-o somente depois de encerrar as sessões que
 possam depender dele. A regra é transversal ao runtime local do Claude e não altera o contrato
-Portal + Codex + TLC da AD-031.
+Portal + TLC da AD-045.
 
 ### Artifacts TLC transitórios do Portal
 
-Enquanto o Codex não executar o workflow APEX completo, tasks do Portal entregues por Codex + TLC
-guardam somente os artifacts file-backed internos da TLC em
+Tasks do Portal entregues por TLC no Codex ou no Claude Code guardam somente os artifacts
+file-backed internos da TLC em
 `session-context/portal/<INV-ID>/tlc/`. Eles apoiam execução, retomada local e review, mas não são
 canônicos, oficiais nem duráveis e nunca devem ser promovidos como `.specs/` de `portal`,
 `portal-api` ou `portal-web`.
@@ -57,12 +57,16 @@ canônicos, oficiais nem duráveis e nunca devem ser promovidos como `.specs/` d
 Agrupe bundles e checksums em `session-context/portal/<INV-ID>/review/`. Código, testes, ADRs e
 documentação oficial permanecem nos repos de produto; Linear e a PR preservam o resumo oficial da
 entrega. Após merge e encerramento da issue, o diretório local fica elegível para limpeza. A rota é
-um piloto transitório exclusivo do Portal no Codex; Claude/APEX e outros produtos permanecem
-inalterados, e o lifecycle oficial do APEX a substituirá quando houver suporte end-to-end no Codex.
+exclusiva do Portal e compartilhada pelos dois engines; outros produtos permanecem inalterados.
+Uma futura adoção de APEX exige nova decisão depois de uma execução end-to-end que satisfaça AD-034.
+
+Em outra máquina, use a mesma convenção de paths, mas não presuma que o conteúdo local exista.
+Reconstrua o estado de Linear, Git, PRs e fontes canônicas ou transfira explicitamente um pacote
+temporário sanitizado. `session-context/` é ignorado pelo Git e não sincroniza artifacts.
 
 ### Checkpoints resilientes da TLC
 
-Depois de uma transição Portal + Codex + TLC bem-sucedida, atualize o handoff local com
+Depois de uma transição Portal + TLC bem-sucedida em qualquer uma das duas engines, atualize o handoff local com
 `scripts/update-tlc-checkpoint.py`. O helper calcula o destino exato
 `session-context/portal/<INV-ID>/tlc/STATE.md`; não aceita um path de saída arbitrário. Os eventos
 permitidos são `gate`, `commit`, `bundle`, `pr`, `validation` e `pre-heavy`. Use `pre-heavy`
@@ -155,8 +159,8 @@ Use uma rota de contexto antes da TLC:
 | Continuar o ciclo enquanto uma PR aguarda review ou merge | `advance-delivery-front` | Contrato read-only com uma próxima ação; skill de task do produto para a issue selecionada |
 | Revisar ou re-revisar uma PR existente | `review-pull-request` | Parecer read-only ligado ao base/head SHA; sem corrigir, comentar, aprovar ou fazer merge |
 | Entender projeto ou fluxo sem issue | `discover-project-context` | Criar/clarificar issue antes de implementar |
-| Preparar uma issue Assistants | `assistants-task-context` | Codex: TLC; Claude: APEX se houver `ENV.md`, senão TLC |
-| Preparar uma issue Portal | `portal-task-context` | Codex: TLC; Claude: APEX se houver `ENV.md`, senão TLC |
+| Preparar uma issue Assistants | `assistants-task-context` | TLC em Codex ou Claude Code |
+| Preparar uma issue Portal | `portal-task-context` | TLC em Codex ou Claude Code; artifacts locais sob `session-context/portal/<INV-ID>/` |
 | Empacotar trabalho para review | `create-review-bundle` | Review externo; não implica aprovação |
 
 `advance-delivery-front` mantém a topologia da PR pronta e da próxima task ativa/draft, classifica
@@ -187,7 +191,7 @@ fonte canônica sem repetir preparação completa, e deixa diff, commits, review
 `portal-task-context` e `assistants-task-context` preservam ancestry completa porque preparam uma
 task formalmente, mas não são mais a entrada padrão para revisar uma PR existente.
 
-No handoff Portal para TLC no Codex, substitua a raiz file-backed padrão da TLC pelo diretório local
+No handoff Portal para TLC em qualquer uma das duas engines, substitua a raiz file-backed padrão da TLC pelo diretório local
 `session-context/portal/<INV-ID>/tlc/`; essa substituição não altera a skill TLC genérica nem cria
 uma spec oficial de produto.
 
@@ -299,17 +303,19 @@ máquina muda o agendamento, nunca a cobertura exigida pelo gate.
 
 ## Workflows do APEX
 
-O Claude Code recebe os workflows do APEX nativamente, como comandos do servidor MCP, e é hoje a
-única engine deste workspace que usa APEX como executor de entrega. O Codex consome tools e
-resources, mas as sessões reais mostraram que isso não fornece por si só invocação, contexto de
-sessão, artifacts e gates completos. Portanto, entregas no Codex usam TLC, inclusive em repos com
-`ENV.md` (AD-026).
+O Claude Code recebe os workflows do APEX nativamente como comandos do servidor MCP, e o Codex
+consome tools, resources e wrappers experimentais. Nenhuma dessas superfícies demonstrou por si só
+invocação, contexto de sessão, artifacts e gates completos. Por isso, Codex e Claude Code usam TLC
+como executor de especificação, implementação e validação, inclusive em repos com `ENV.md`
+(AD-045). APEX permanece disponível para inspeção e diagnóstico.
 
 A rota nativa também falha fechada quando o resource do workflow e a superfície de tools divergem.
 O piloto read-only de 2026-08-02 leu `eng-ready` no Claude, mas não conseguiu executá-lo: o workflow
 exige `preflight`, a tool não foi publicada e o bloco `=== APEX WORKSPACE ===` não chegou à sessão.
 Uma chamada negada, com erro ou sem resultado não é execução APEX. Consulte o
 [piloto sanitizado](.specs/features/apex-safety-session-audit/apex-native-pilot.md) e AD-034.
+Uma chamada bem-sucedida isolada também não conclui um workflow. Mudar o executor exige uma nova
+decisão baseada em execução end-to-end que cumpra esse contrato.
 
 A superfície Codex também expõe operações mutáveis de Git, GitHub, Linear e coordenação multi-repo.
 Essas ferramentas exigem aprovação pelo modo `writes`; leituras diagnósticas permanecem disponíveis,
