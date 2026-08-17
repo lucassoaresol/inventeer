@@ -17,9 +17,14 @@ fail() {
 
 test "$(grep -c '^### AD-036$' .specs/STATE.md)" -eq 1 \
   || fail "AD-036 must exist exactly once"
-grep -A24 '^### AD-036$' .specs/STATE.md | grep -q '\*\*Status\*\*: active' \
-  || fail "AD-036 must be active"
-pass "AD-036 records the active checkpoint decision"
+if grep -A24 '^### AD-036$' .specs/STATE.md | grep -q '\*\*Status\*\*: active'; then
+  fail "AD-036 must be superseded"
+fi
+grep -A24 '^### AD-036$' .specs/STATE.md | grep -q '\*\*Status\*\*: superseded by AD-045' \
+  || fail "AD-036 must be superseded by AD-045"
+grep -A32 '^### AD-045$' .specs/STATE.md | grep -q '\*\*Status\*\*: active' \
+  || fail "AD-045 must be active"
+pass "AD-045 records the active checkpoint decision"
 
 agent_checkpoint=$(grep -A16 'checkpoints TLC resilientes' AGENTS.md | tr '\n' ' ' | tr -s '[:space:]' ' ')
 for trigger in gate commit bundle PR validation pre-heavy; do
@@ -35,6 +40,12 @@ grep -q 'Imediatamente antes.*etapa pesada' <<<"$agent_checkpoint" \
 grep -q 'preflight de recursos.*reconciliação do estado atual' <<<"$agent_checkpoint" \
   || fail "AGENTS.md does not gate pre-heavy on preflight and reconciliation"
 pass "workspace instructions require all six stable-transition checkpoints"
+
+grep -A16 'checkpoints TLC resilientes' AGENTS.md | grep -q 'qualquer uma das duas engines' \
+  || fail "AGENTS.md does not require checkpoints in both engines"
+grep -A50 'Checkpoints resilientes da TLC' README.md | grep -q 'qualquer uma das duas engines' \
+  || fail "README.md does not document checkpoints in both engines"
+pass "Codex e Claude compartilham os checkpoints Portal TLC"
 
 grep -Fq 'scripts/update-tlc-checkpoint.py' README.md \
   || fail "README.md does not document the checkpoint helper"
@@ -72,14 +83,14 @@ grep -A45 'Checkpoints resilientes da TLC' README.md | grep -q 'transcripts.*dif
   || fail "README.md does not preserve the checkpoint privacy boundary"
 pass "checkpoint content is constrained to sanitized execution metadata"
 
-grep -A24 '^### AD-031$' .specs/STATE.md | grep -q '\*\*Status\*\*: active' \
-  || fail "AD-031 must remain active"
+grep -A24 '^### AD-031$' .specs/STATE.md | grep -q '\*\*Status\*\*: superseded by AD-045' \
+  || fail "AD-031 must be superseded by AD-045"
 grep -A24 '^### AD-032$' .specs/STATE.md | grep -q '\*\*Status\*\*: active' \
   || fail "AD-032 must remain active"
 if rg -q 'update-tlc-checkpoint|portal/<INV-ID>/tlc/STATE.md' .agents/skills/tlc-spec-driven; then
   fail "vendored TLC must remain free of the workspace-specific checkpoint contract"
 fi
-pass "AD-031, AD-032, and the vendored TLC remain unchanged in authority"
+pass "AD-045, AD-032, and the vendored TLC preserve their authority boundaries"
 
 test -z "$(git ls-files session-context)" \
   || fail "session-context checkpoint state must remain untracked"

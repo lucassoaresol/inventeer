@@ -56,16 +56,16 @@ requested without re-collecting GitHub diff, reviews, threads, commits, or check
     requests one. After approval, hand the approved package to the downstream workflow to create or
     update canonical artifacts in the canonical language; do not require a second approval solely for
     translation unless meaning changes.
-    When the active engine is Codex and the downstream executor is TLC, include the transitional
-    artifact contract in the handoff: route file-backed TLC working artifacts to
+    When the downstream executor is TLC in Codex or Claude Code, include the Portal artifact
+    contract in the handoff: route file-backed TLC working artifacts to
     `session-context/portal/<INV-ID>/tlc/` from the workspace root and review bundles to
     `session-context/portal/<INV-ID>/review/`. These files support local execution, recovery, and
     review; they must not be presented as canonical, durable, or official APEX evidence. Do not
     create or promote `.specs/` in `repos/inventeer-ops/artifacts/products/portal`,
     `repos/portal-api`, or `repos/portal-web` for TLC.
-    Keep Claude/APEX and non-Portal routes unchanged. Mark the local task directory eligible for
-    cleanup only after merge and issue closure, and retire this substitution when Codex supports an
-    end-to-end APEX execution.
+    Keep non-Portal routes unchanged. Mark the local task directory eligible for cleanup only after
+    merge and issue closure. On another machine, reconstruct state from canonical sources or use an
+    explicitly transferred sanitized temporary package; do not assume session files synchronize.
 13. Build the user's mental model before requesting decisions: explain the problem, current and
     expected behavior, end-to-end flow, repository ownership, dependencies, scope boundaries, and
     why each unresolved choice matters. Orient with evidence, present options and consequences,
@@ -115,8 +115,8 @@ Return a concise report containing:
 8. Relevant tests and currently asserted behaviors.
 9. Applicable decisions, artifacts, ADRs, and specs.
 10. Review contract: review language, canonical language, required walkthrough depth, artifact
-    status, approval gate, and, for Codex + TLC, the Portal session-artifact path and authority
-    boundary.
+    status, approval gate, and, for Portal + TLC in either engine, the session-artifact path and
+    authority boundary.
 11. Mental model: problem, current behavior, expected behavior, end-to-end flow, repository
     ownership, dependencies, and scope boundaries. Omit only details the user has demonstrated.
 12. Operational readiness when applicable: execution location, binary/configuration, identity,
@@ -145,7 +145,8 @@ recommended action, hand off the prepared context and review contract to it. Kee
 in the review language. After explicit content approval, let the downstream workflow create or
 update canonical artifacts in the canonical language. Do not duplicate its workflow.
 
-For Portal work executed by Codex + TLC, treat `session-context/portal/<INV-ID>/tlc/` as a
+For Portal work executed by TLC in Codex or Claude Code, treat
+`session-context/portal/<INV-ID>/tlc/` as a
 Portal-specific substitution for TLC's file-backed working-artifact root. Create files there only
 when the auto-sized TLC flow needs them. This substitution does not make the workspace a product
 source and does not apply to official specifications or APEX artifacts.
@@ -164,7 +165,7 @@ source and does not apply to official specifications or APEX artifacts.
 - Do not invent missing parent relationships, outcomes, DoDs, or ownership.
 - Do not create a local spec when Linear already defines a precise, testable contract.
 - Do not create or promote `.specs/` in `repos/inventeer-ops/artifacts/products/portal`,
-  `repos/portal-api`, or `repos/portal-web` for a Codex + TLC delivery.
+  `repos/portal-api`, or `repos/portal-web` for a Portal + TLC delivery in either engine.
 - Do not use this full-preparation workflow as the default entry point for an existing GitHub PR;
   preserve `review-pull-request` as the owner of progressive Linear scope and GitHub evidence.
 - Flag conflicts between product intent, contracts, code, and governing standards.

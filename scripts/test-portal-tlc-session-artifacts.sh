@@ -20,15 +20,26 @@ ok() {
 contract_path='session-context/portal/<INV-ID>/tlc/'
 
 grep -A24 '^### AD-031$' .specs/STATE.md \
+  | grep -q '^\- \*\*Status\*\*: superseded by AD-045$' \
+  || fail "AD-031 is not superseded by AD-045"
+grep -A32 '^### AD-045$' .specs/STATE.md \
   | grep -q '^\- \*\*Status\*\*: active$' \
-  || fail "AD-031 is not active"
-ok "a decisao transitoria esta ativa"
+  || fail "AD-045 is not active"
+ok "a rota Portal TLC consolidada esta ativa"
 
 for file in AGENTS.md README.md .agents/skills/portal-task-context/SKILL.md; do
   grep -Fq "$contract_path" "$file" \
     || fail "$file does not declare the Portal TLC session path"
 done
 ok "instrucoes, documentacao e skill usam o mesmo path"
+
+grep -q 'Codex or Claude Code' .agents/skills/portal-task-context/SKILL.md \
+  || fail "portal-task-context does not apply the TLC route to both engines"
+grep -q 'Codex and Claude Code' .agents/skills/portal-task-context/references/specification-policy.md \
+  || fail "specification policy does not apply the TLC route to both engines"
+grep -q 'compartilhada pelos dois engines' README.md \
+  || fail "README.md does not apply the Portal TLC route to both engines"
+ok "Codex e Claude compartilham o contrato Portal TLC"
 
 grep -q 'Esse material é local' AGENTS.md \
   || fail "AGENTS.md does not classify the artifacts as local"
@@ -67,19 +78,20 @@ grep -Fq 'session-context/portal/<INV-ID>/review/' README.md \
   || fail "README.md does not group review evidence by Portal issue"
 grep -q 'merge.*encerr' README.md \
   || fail "README.md does not define post-delivery cleanup"
-grep -q 'não oferece portabilidade cross-machine' .specs/STATE.md \
-  || fail "AD-031 does not preserve the cross-machine limitation"
-ok "review e limpeza possuem lifecycle explicito"
+grep -q 'não sincroniza artifacts' README.md \
+  || fail "README.md does not preserve the cross-machine limitation"
+grep -q 'On another machine, reconstruct state from canonical sources' \
+  .agents/skills/portal-task-context/SKILL.md \
+  || fail "portal-task-context does not define cross-machine reconstruction"
+ok "review, limpeza e retomada cross-machine possuem lifecycle explicito"
 
-grep -q 'deve ser retirada quando o Codex executar APEX' AGENTS.md \
-  || fail "AGENTS.md does not define the transition exit condition"
-grep -q 'end-to-end; não a aplique' AGENTS.md \
-  || fail "AGENTS.md does not bind the exit condition to end-to-end APEX"
-grep -q 'Claude/APEX e outros produtos permanecem' README.md \
-  || fail "README.md does not preserve the Claude/APEX route"
-grep -q '^inalterados, e o lifecycle oficial do APEX' README.md \
-  || fail "README.md does not keep the official APEX lifecycle"
-ok "a rota e transitoria e restrita ao Portal no Codex"
+grep -q 'APEX permanece diagnóstico até uma nova decisão' AGENTS.md \
+  || fail "AGENTS.md does not preserve the APEX diagnostic boundary"
+grep -q 'futura adoção de APEX exige nova decisão' README.md \
+  || fail "README.md does not bind APEX adoption to a new decision"
+grep -q 'outros produtos permanecem inalterados' README.md \
+  || fail "README.md does not preserve the non-Portal boundary"
+ok "a rota e compartilhada entre engines e restrita ao Portal"
 
 if rg -q 'session-context/portal/<INV-ID>/tlc/' .agents/skills/tlc-spec-driven; then
   fail "the vendored TLC skill contains the Portal-specific path"
@@ -91,7 +103,8 @@ if git ls-files 'session-context/**' | grep -q .; then
 fi
 ok "nenhum artifact efemero esta versionado"
 
-python3 /root/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+codex_skill_root="${CODEX_HOME:-${HOME}/.codex}/skills"
+python3 "$codex_skill_root/.system/skill-creator/scripts/quick_validate.py" \
   .agents/skills/portal-task-context >/dev/null
 ok "portal-task-context passa na validacao estrutural"
 

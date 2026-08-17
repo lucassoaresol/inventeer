@@ -34,8 +34,8 @@ ambiguity.
 - partial DoD coverage does not define the exact contribution;
 - existing code or tests expose an unstated compatibility requirement.
 
-Portal does not accept TLC `.specs/` artifacts as official product artifacts. When Codex + TLC needs
-a file-backed working specification, store it under
+Portal does not accept TLC `.specs/` artifacts as official product artifacts. When TLC in Codex or
+Claude Code needs a file-backed working specification, store it under
 `session-context/portal/<INV-ID>/tlc/` and keep it explicitly local, ephemeral, non-canonical, and
 non-durable. Working TLC artifacts are not product specifications and must not be promoted into
 `repos/inventeer-ops/artifacts/products/portal`, `repos/portal-api`, or `repos/portal-web`.
@@ -68,6 +68,7 @@ implementation, or validation. Pass it:
 
 Let TLC auto-size the depth. Do not recreate its phases in this skill.
 
-When the active engine is Codex, replace TLC's file-backed artifact root for this Portal task with
+In Codex and Claude Code, replace TLC's file-backed artifact root for this Portal task with
 `session-context/portal/<INV-ID>/tlc/`. The replacement is a handoff constraint, not a modification
-to the generic TLC skill. Claude/APEX keeps its official artifact lifecycle.
+to the generic TLC skill. APEX remains diagnostic until a new decision follows an end-to-end
+execution that satisfies AD-034.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write a deterministic Portal + Codex + TLC execution checkpoint."""
+"""Write a deterministic Portal + TLC execution checkpoint for either workspace engine."""
 
 from __future__ import annotations
 
