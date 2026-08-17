@@ -31,21 +31,23 @@ excluded until they become versioned workspace state.
 | [AD-023](STATE.md#ad-023) | active |
 | [AD-024](STATE.md#ad-024) | active |
 | [AD-025](STATE.md#ad-025) | superseded by AD-026 |
-| [AD-026](STATE.md#ad-026) | active |
+| [AD-026](STATE.md#ad-026) | superseded by AD-045 |
 | [AD-027](STATE.md#ad-027) | active |
 | [AD-028](STATE.md#ad-028) | active |
 | [AD-029](STATE.md#ad-029) | superseded by AD-030 |
 | [AD-030](STATE.md#ad-030) | active |
-| [AD-031](STATE.md#ad-031) | active |
+| [AD-031](STATE.md#ad-031) | superseded by AD-045 |
 | [AD-032](STATE.md#ad-032) | active |
 | [AD-033](STATE.md#ad-033) | active |
 | [AD-034](STATE.md#ad-034) | active |
 | [AD-035](STATE.md#ad-035) | active |
-| [AD-036](STATE.md#ad-036) | active |
+| [AD-036](STATE.md#ad-036) | superseded by AD-045 |
 | [AD-037](STATE.md#ad-037) | active |
 | [AD-038](STATE.md#ad-038) | active |
 | [AD-039](STATE.md#ad-039) | active |
 | [AD-040](STATE.md#ad-040) | active |
 | [AD-041](STATE.md#ad-041) | active |
 | [AD-042](STATE.md#ad-042) | active |
-| [AD-044](STATE.md#ad-044) | active |
+| [AD-043](STATE.md#ad-043) | active |
+| [AD-044](STATE.md#ad-044) | superseded by AD-045 |
+| [AD-045](STATE.md#ad-045) | active |
