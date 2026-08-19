@@ -768,7 +768,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ## Handoff
 - **Feature**: Value-Oriented TLC Increments
 - **Phase / Task**: Validation complete
-- **Completed**: VI-001 at 52af2b4b718b2d48514f26674ecf3ac75bf9be9e; T1-T4 complete; 27/27 criteria verified; 23 root suites and 29 focal checks green; 3/3 final mutants killed
+- **Completed**: VI-001 at 52af2b4b718b2d48514f26674ecf3ac75bf9be9e; T1-T4 complete; 27/27 criteria verified; 23 root suites and 29 focal checks green; 3/3 final mutants killed; published through evidence commit 2e1089fb3750f21c7db94cd10e909a073aaedfff
 - **In progress**: none
 - **Next durable step**: Review remaining retrospective findings and select the next workflow improvement.
 - **Blockers**: none
@@ -776,8 +776,8 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-19T03:22:15Z
+- **Recorded at**: 2026-08-19T03:25:36Z
 - **Valid at SHA**: 52af2b4b718b2d48514f26674ecf3ac75bf9be9e
-- **Publication state**: unpublished
+- **Publication state**: published
 - **Evidence-only paths**: .specs/STATE.md, .specs/features/value-oriented-tlc-increments/spec.md, .specs/features/value-oriented-tlc-increments/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
