@@ -51,3 +51,4 @@ excluded until they become versioned workspace state.
 | [AD-043](STATE.md#ad-043) | active |
 | [AD-044](STATE.md#ad-044) | superseded by AD-045 |
 | [AD-045](STATE.md#ad-045) | active |
+| [AD-046](STATE.md#ad-046) | active |
