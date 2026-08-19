@@ -745,16 +745,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Status**: active
 
 ## Handoff
-
-- **Feature**: Unified Dual-Engine Delivery
+- **Feature**: Retrospective Evidence Freshness
 - **Phase / Task**: Validation complete
-- **Completed**: executor contract (`27a32b6`), shared Portal session flow (`bea29b0`), canonical
-  indexes (`bd861c6`), diff-integrity correction (`805165c`), 24-suite root gate, 9/9 ACs,
-  4/4 edge cases, and 3/3 killed discrimination mutants
-- **In-progress**: none
-- **Next step**: review the five local commits; push only on explicit request
+- **Completed**: auditor contract v3 and portable receipt, freshness-aware Handoff, dual validation verdicts, 25-suite root gate and 3/3 killed mutants
+- **In progress**: none
+- **Next durable step**: Start the Value Increment workflow improvement
 - **Blockers**: none
-- **Uncommitted files**: none after the final evidence commit
+- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
 - **Branch**: main
-- **Validation mode**: PASS at behavioral head `805165c` over base `bb07515`; final commit contains
-  evidence and traceability only
+- **Contract status**: PASS
+- **Operational status**: PASS
+- **Recorded at**: 2026-08-19T02:10:30Z
+- **Valid at SHA**: 653de07cc9900154543aae73b58e77a4d0de9fb0
+- **Publication state**: unpublished
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/retrospective-evidence-freshness/spec.md, .specs/features/retrospective-evidence-freshness/validation.md
+- **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

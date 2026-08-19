@@ -1,6 +1,6 @@
 # Retrospective Evidence Freshness Specification
 
-**Status:** Approved
+**Status:** Verified
 **Review language:** Portuguese
 **Canonical language:** Portuguese
 
@@ -126,33 +126,33 @@ um único PASS tentar representar simultaneamente contrato e operação não com
 
 | Requirement ID | Story | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- | --- |
-| REF-01 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Implemented |
-| REF-02 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Implemented |
-| REF-03 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Implemented |
-| REF-04 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Implemented |
-| REF-05 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Implemented |
-| REF-06 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Implemented |
-| REF-07 | Evidência retrospectiva | SAFETY | Contrato aprovado; política de segurança do workspace | Execute | Implemented |
-| REF-08 | Evidência retrospectiva | DECISION | Contrato aprovado; comparação cross-machine | Execute | Implemented |
-| REF-09 | Freshness de Handoff | DECISION | Contrato aprovado; Handoff stale observado em `STATE.md` | Execute | Implemented |
-| REF-10 | Freshness de Handoff | INHERITED | AD-023 e contrato TLC de memória | Execute | Implemented |
-| REF-11 | Freshness de Handoff | SAFETY | Handoff stale observado em `STATE.md` | Execute | Implemented |
-| REF-12 | Freshness de Handoff | SAFETY | Publicação divergente observada em `STATE.md` | Execute | Implemented |
-| REF-13 | Freshness de Handoff | DECISION | Contrato aprovado; separação de ação transitória | Execute | Implemented |
-| REF-14 | Freshness de Handoff | SAFETY | Política fail-closed do workspace | Execute | Implemented |
-| REF-15 | Dois eixos de validação | INHERITED | AD-023 e validação AD-045 | Execute | Implemented |
-| REF-16 | Dois eixos de validação | DECISION | Contrato aprovado; piloto ainda ausente | Execute | Implemented |
-| REF-17 | Edge cases | SAFETY | Drift de cohort observado | Execute | Implemented |
-| REF-18 | Edge cases | SAFETY | Deduplicação cross-engine | Execute | Implemented |
-| REF-19 | Edge cases | SAFETY | Input inválido | Execute | Implemented |
-| REF-20 | Edge cases | SAFETY | Falha de upstream Git | Execute | Implemented |
+| REF-01 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Verified |
+| REF-02 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Verified |
+| REF-03 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Verified |
+| REF-04 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Verified |
+| REF-05 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Verified |
+| REF-06 | Evidência retrospectiva | DECISION | Contrato aprovado; AD-027, AD-033 e AD-041 | Execute | Verified |
+| REF-07 | Evidência retrospectiva | SAFETY | Contrato aprovado; política de segurança do workspace | Execute | Verified |
+| REF-08 | Evidência retrospectiva | DECISION | Contrato aprovado; comparação cross-machine | Execute | Verified |
+| REF-09 | Freshness de Handoff | DECISION | Contrato aprovado; Handoff stale observado em `STATE.md` | Execute | Verified |
+| REF-10 | Freshness de Handoff | INHERITED | AD-023 e contrato TLC de memória | Execute | Verified |
+| REF-11 | Freshness de Handoff | SAFETY | Handoff stale observado em `STATE.md` | Execute | Verified |
+| REF-12 | Freshness de Handoff | SAFETY | Publicação divergente observada em `STATE.md` | Execute | Verified |
+| REF-13 | Freshness de Handoff | DECISION | Contrato aprovado; separação de ação transitória | Execute | Verified |
+| REF-14 | Freshness de Handoff | SAFETY | Política fail-closed do workspace | Execute | Verified |
+| REF-15 | Dois eixos de validação | INHERITED | AD-023 e validação AD-045 | Execute | Verified |
+| REF-16 | Dois eixos de validação | DECISION | Contrato aprovado; piloto ainda ausente | Execute | Verified |
+| REF-17 | Edge cases | SAFETY | Drift de cohort observado | Execute | Verified |
+| REF-18 | Edge cases | SAFETY | Deduplicação cross-engine | Execute | Verified |
+| REF-19 | Edge cases | SAFETY | Input inválido | Execute | Verified |
+| REF-20 | Edge cases | SAFETY | Falha de upstream Git | Execute | Verified |
 
 **Coverage:** 20 total, 20 mapped to Execute, 0 unmapped.
 
 ## Success Criteria
 
-- [ ] Fixtures comportamentais discriminam todos os 20 requisitos.
-- [ ] O gate agregado da raiz passa sem alterar os dois arquivos de lessons preexistentes.
-- [ ] Uma coleta local gera receipt portátil sem cwd ou IDs de sessão.
-- [ ] O Handoff final consulta como `fresh` no SHA e estado de publicação registrados.
-- [ ] O relatório final declara contrato e operação em eixos separados.
+- [x] Fixtures comportamentais discriminam todos os 20 requisitos.
+- [x] O gate agregado da raiz passa sem alterar os dois arquivos de lessons preexistentes.
+- [x] Uma coleta local gera receipt portátil sem cwd ou IDs de sessão.
+- [x] O Handoff final consulta como `fresh` no SHA e estado de publicação registrados.
+- [x] O relatório final declara contrato e operação em eixos separados.
