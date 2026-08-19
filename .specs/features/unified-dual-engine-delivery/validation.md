@@ -1,6 +1,9 @@
 # Unified Dual-Engine Delivery Validation
 
-**Overall**: PASS ✅
+**Contract status**: PASS
+**Operational status**: UNPROVEN
+**Missing operational evidence**: a real Portal task completed through this route in both Codex and
+Claude Code, including cross-engine continuation and post-transition checkpoint recovery
 **Date**: 2026-08-17
 **Spec**: `.specs/features/unified-dual-engine-delivery/spec.md`
 **Diff range**: `bb07515..805165c`
@@ -10,11 +13,11 @@
 
 ## Delivery Evidence
 
-- **Validation state**: `pass`
+- **Validation state**: `contract-pass`; operational pilot unproven
 - **Evidence binding**: base `bb07515`, head/work SHA `805165c5f0e49ab1c0eea65e6fc9bb559f21a347`; commits `27a32b6`, `bea29b0`, `bd861c6`, and corrective commit `805165c`
 - **Requirement contract**: `.specs/features/unified-dual-engine-delivery/spec.md` at `805165c`
 - **Gate state**: green; root gate and complete-range diff-integrity gate returned zero
-- **Pending delivery conditions**: none
+- **Pending delivery conditions**: dual-engine Portal pilot described above
 - **High-risk paths**: `AGENTS.md`, `.agents/skills/portal-task-context/SKILL.md`, `.specs/STATE.md`, and the three feature contract test scripts; all received targeted review and mutation coverage
 
 ---

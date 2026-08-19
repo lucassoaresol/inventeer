@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import pathlib
 import subprocess
 import tempfile
@@ -16,6 +17,9 @@ CONTINUATION = "22222222-2222-4222-8222-222222222222"
 SUBAGENT = "33333333-3333-4333-8333-333333333333"
 THREAD_SOURCE_SUBAGENT = "16161616-1616-4616-8616-161616161616"
 EXCLUDED = "44444444-4444-4444-8444-444444444444"
+SHARED_EXCLUDED = "17171717-1717-4717-8717-171717171717"
+OUTSIDE_EXCLUSION = "18181818-1818-4818-8818-181818181818"
+BACKFILLED = "19191919-1919-4919-8919-191919191919"
 OLD_PARENT = "66666666-6666-4666-8666-666666666666"
 SECRET = "TRANSCRIPT_CONTENT_MUST_NOT_LEAK"
 CLAUDE_DENIED = "99999999-9999-4999-8999-999999999999"
@@ -218,6 +222,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         thread_source="subagent",
     )
     codex_session(codex_root, EXCLUDED, apex_tool="apex_git_push")
+    codex_session(codex_root, SHARED_EXCLUDED)
     codex_session(
         codex_root,
         "55555555-5555-4555-8555-555555555555",
@@ -272,6 +277,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         final_cwd=CWD,
     )
     claude_session(claude_root, CLAUDE_APEX_RESOURCE, resource_server="apex")
+    claude_session(claude_root, SHARED_EXCLUDED)
     claude_session(
         claude_root,
         CLAUDE_OTHER_RESOURCE,
@@ -305,6 +311,10 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         str(claude_root),
         "--exclude-session",
         EXCLUDED,
+        "--exclude-session",
+        SHARED_EXCLUDED,
+        "--exclude-session",
+        OUTSIDE_EXCLUSION,
         "--format",
         "json",
     ]
@@ -317,20 +327,25 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "claude",
         "codex",
         "contract_version",
-        "excluded_sessions",
+        "exclusions_by_engine",
+        "exclusions_matched",
+        "exclusions_requested",
+        "exclusions_unmatched",
         "since",
         "until",
     }
-    assert report["contract_version"] == 2
+    assert report["contract_version"] == 3
     assert report["since"] == "2026-07-29T00:00:00Z"
     assert report["until"] == UNTIL
-    assert report["excluded_sessions"] == 1
+    assert report["exclusions_requested"] == 3
+    assert report["exclusions_matched"] == 2
+    assert report["exclusions_unmatched"] == 1
+    assert report["exclusions_by_engine"] == {"codex": 2, "claude": 1}
     assert report["codex"] == {
         "history_root_available": True,
         "matching_history_found": True,
         "files": 6,
-        "main_sessions": 3,
-        "primary_sessions": 3,
+        "session_instances": 3,
         "continuations": 1,
         "subagents": 2,
         "copies": 1,
@@ -354,7 +369,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "history_root_available": True,
         "matching_history_found": True,
         "files": 9,
-        "primary_sessions": 7,
+        "session_instances": 7,
         "sidechains": 1,
         "copies": 1,
         "logical_sessions": 7,
@@ -370,7 +385,10 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
 
     text_output = subprocess.run(command[:-1] + ["text"], check=True, capture_output=True, text=True)
     assert "logical_work_streams: 2" in text_output.stdout
-    assert "Contract version: 2" in text_output.stdout
+    assert "Contract version: 3" in text_output.stdout
+    assert "Exclusions requested: 3" in text_output.stdout
+    assert "Exclusions matched: 2" in text_output.stdout
+    assert "Exclusions unmatched: 1" in text_output.stdout
     assert f"Until (exclusive, UTC): {UNTIL}" in text_output.stdout
     assert "sessions_with_aborts_percent: 66.67" in text_output.stdout
     assert "apex_framework_index: 1" in text_output.stdout
@@ -469,7 +487,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         text=True,
     )
     subagent_only = json.loads(subagent_only_output.stdout)["codex"]
-    assert subagent_only["primary_sessions"] == 0
+    assert subagent_only["session_instances"] == 0
     assert subagent_only["aborted_turns"] == 3
     assert subagent_only["compactions"] == 2
     assert subagent_only["sessions_with_aborts"] == 0
@@ -478,6 +496,115 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
     assert subagent_only["max_compactions_per_session"] == 0
     assert subagent_only["sessions_with_aborts_percent"] == 0.0
     assert subagent_only["sessions_with_compactions_percent"] == 0.0
+
+    portable_receipts = []
+    for label in ("machine-a", "machine-b"):
+        portable_cwd = f"/{label}/inventeer"
+        portable_codex = fixture / label / "codex"
+        portable_claude = fixture / label / "claude"
+        codex_session(portable_codex, PRIMARY, cwd=portable_cwd)
+        claude_session(portable_claude, CLAUDE_DRIFT, initial_cwd=portable_cwd)
+        receipt_output = subprocess.run(
+            [
+                str(SUBJECT),
+                "--cwd",
+                portable_cwd,
+                "--since",
+                "2026-07-29",
+                "--until",
+                UNTIL,
+                "--codex-root",
+                str(portable_codex),
+                "--claude-project",
+                str(portable_claude),
+                "--workspace-id",
+                "inventeer-personal-engineering",
+                "--format",
+                "receipt-json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert portable_cwd not in receipt_output.stdout
+        assert str(portable_codex) not in receipt_output.stdout
+        assert PRIMARY not in receipt_output.stdout
+        assert CLAUDE_DRIFT not in receipt_output.stdout
+        portable_receipts.append(json.loads(receipt_output.stdout))
+
+    assert portable_receipts[0] == portable_receipts[1]
+    receipt = portable_receipts[0]
+    assert set(receipt) == {
+        "auditor_sha256",
+        "normalized_arguments",
+        "receipt_version",
+        "report",
+        "report_sha256",
+        "source_availability",
+        "workspace_id",
+        "workspace_root",
+    }
+    assert receipt["receipt_version"] == 1
+    assert receipt["workspace_root"] == "<workspace-root>"
+    assert receipt["workspace_id"] == "inventeer-personal-engineering"
+    assert receipt["normalized_arguments"] == {
+        "cwd": "<workspace-root>",
+        "exclude_session_count": 0,
+        "format": "receipt-json",
+        "since": "2026-07-29T00:00:00Z",
+        "until": UNTIL,
+    }
+    canonical_report = json.dumps(
+        receipt["report"], sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    assert receipt["report_sha256"] == hashlib.sha256(canonical_report).hexdigest()
+    assert len(receipt["auditor_sha256"]) == 64
+
+    codex_session(portable_codex, BACKFILLED, cwd=portable_cwd)
+    backfilled_output = subprocess.run(
+        [
+            str(SUBJECT),
+            "--cwd",
+            portable_cwd,
+            "--since",
+            "2026-07-29",
+            "--until",
+            UNTIL,
+            "--codex-root",
+            str(portable_codex),
+            "--claude-project",
+            str(portable_claude),
+            "--workspace-id",
+            "inventeer-personal-engineering",
+            "--format",
+            "receipt-json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    backfilled_receipt = json.loads(backfilled_output.stdout)
+    assert backfilled_receipt["report_sha256"] != receipt["report_sha256"]
+    assert backfilled_receipt["report"]["since"] == receipt["report"]["since"]
+    assert backfilled_receipt["report"]["until"] == receipt["report"]["until"]
+    assert "exclusions_matched" in backfilled_receipt["report"]
+    assert "exclusions_unmatched" in backfilled_receipt["report"]
+
+    invalid_workspace = subprocess.run(
+        [
+            str(SUBJECT),
+            "--cwd",
+            CWD,
+            "--workspace-id",
+            "",
+            "--format",
+            "receipt-json",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert invalid_workspace.returncode != 0
+    assert invalid_workspace.stderr.strip().startswith("--workspace-id must match")
 
     invalid_until = subprocess.run(
         [str(SUBJECT), "--cwd", CWD, "--until", "invalid"],
@@ -526,4 +653,10 @@ print("ok 11 - report provenance and availability states are explicit")
 print("ok 12 - interruption concentration excludes copies and subagents")
 print("ok 13 - invalid and reversed upper bounds fail closed")
 print("ok 14 - omitting the upper bound preserves unbounded behavior")
-print("\n14 teste(s) passaram.")
+print("ok 15 - exclusion outcomes distinguish requested, matched, and unmatched IDs")
+print("ok 16 - cross-engine exclusion totals deduplicate shared IDs")
+print("ok 17 - portable receipts bind normalized provenance and report checksums")
+print("ok 18 - equivalent cohorts under different roots emit identical receipts")
+print("ok 19 - receipt workspace identity fails closed")
+print("ok 20 - historical backfill changes the checksum without hiding cohort bounds")
+print("\n20 teste(s) passaram.")

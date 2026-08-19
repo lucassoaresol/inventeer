@@ -722,6 +722,28 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-17
 - **Status**: active
 
+### AD-046
+- **Decision**: Vincular retrospectivas a receipts sanitizados do contrato v3 e Handoffs
+  versionados a um SHA comportamental, estado de publicação e allowlist de evidência; separar
+  `Contract status` de `Operational status` e manter ações transitórias fora do estado durável.
+- **Reason**: O contrato anterior misturava instâncias físicas, continuations e fluxos lógicos,
+  contava exclusões solicitadas como aplicadas e não permitia reproduzir a proveniência entre
+  máquinas. O Handoff também reteve uma instrução de push depois que os commits já estavam
+  publicados, enquanto apontar literalmente para o commit que contém o próprio Handoff criaria uma
+  autorreferência impossível.
+- **Trade-off**: O auditor v3 quebra consumidores dos nomes ambíguos e o Handoff ganha schema,
+  helper e consulta obrigatórios. Em troca, cohorts ficam portáteis e verificáveis, descendants
+  documentais de fechamento não invalidam o SHA comportamental e ausência de upstream ou schema
+  válido deixa de ser confundida com freshness.
+- **Alternatives considered**: Preservar aliases v2; persistir cwd e IDs para reconciliação;
+  comparar apenas com `HEAD`; deixar freshness como disciplina textual; registrar push ou PR no
+  Handoff; representar contrato e operação com um único PASS.
+- **Scope**: Retrospectivas, relatórios de validação materialmente revisados e Handoff versionado
+  desta raiz. Não altera histories, repositórios em `repos/`, fontes canônicas de produto, Linear,
+  GitHub ou artifacts efêmeros de Portal.
+- **Date**: 2026-08-18
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: Unified Dual-Engine Delivery

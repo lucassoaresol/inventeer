@@ -363,10 +363,18 @@ Use o inventário sanitizado antes da análise qualitativa:
 ./scripts/audit-session-history.py \
   --cwd "$PWD" \
   --since 2026-07-29 \
+  --until 2026-08-19 \
   --exclude-session <ID-DA-SESSAO-CORRENTE>
 ```
 
-O relatório contém somente contagens agregadas: sessões principais, continuations, subagents ou
+Para produzir um receipt comparável entre máquinas, acrescente
+`--workspace-id inventeer-personal-engineering --format receipt-json`. O contrato v3 separa
+`session_instances`, continuations ou sidechains e fluxos lógicos; também distingue exclusões
+solicitadas, encontradas e não encontradas. O receipt registra somente a identidade lógica do
+workspace, `<workspace-root>`, janela e parâmetros normalizados, disponibilidade das fontes e
+checksums SHA-256 do auditor e do relatório. IDs e paths físicos não entram no envelope.
+
+O relatório contém somente contagens agregadas: instâncias de sessão, continuations, subagents ou
 sidechains, trabalhos lógicos, tentativas APEX e seus outcomes estruturados.
 `apex_tool_successes` contém somente tools com resultado bem-sucedido; falhas, negações e tentativas
 sem resultado ficam separadas em `apex_tool_failures`, `apex_tool_denials` e
@@ -375,6 +383,24 @@ emite prompts, respostas, resultados de tools, caminhos dos histories nem corpos
 vínculo de continuation no Codex é uma heurística conservadora: UUID referenciado junto de `caiu` e
 `continue`; no Claude, o primeiro `cwd` não vazio define a origem da sessão e apenas sidechains
 estruturadas são deduplicadas automaticamente.
+
+## Freshness do Handoff
+
+Use `scripts/workspace-handoff.py write` para substituir somente `## Handoff` em `.specs/STATE.md`.
+O comando exige o SHA comportamental, estado de publicação observado, statuses de contrato e
+operação, paths de evidência permitidos e somente os paths — nunca diffs — de arquivos ainda não
+commitados. Ações transitórias como push, PR ou publicação ficam no chat e são rejeitadas pelo
+helper.
+
+Consulte o estado antes de retomar uma instrução versionada:
+
+```bash
+./scripts/workspace-handoff.py status
+```
+
+`fresh` exige ancestry válida, descendants limitados à evidência declarada, worktree compatível e
+publicação igual à registrada. Mudança comportamental ou de publicação retorna `stale`; upstream
+indisponível ou schema inválido retorna `indeterminate` sem afirmar freshness.
 
 ## Repositórios locais
 

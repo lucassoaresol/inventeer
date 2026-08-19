@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import collections
 import datetime as dt
+import hashlib
 import json
 import pathlib
 import re
@@ -17,7 +18,9 @@ UUID_RE = re.compile(
     r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b",
     re.IGNORECASE,
 )
-CONTRACT_VERSION = 2
+CONTRACT_VERSION = 3
+RECEIPT_VERSION = 1
+WORKSPACE_ID_RE = re.compile(r"[a-z0-9][a-z0-9._-]{0,63}")
 
 
 def parse_timestamp(value: str | None) -> dt.datetime | None:
@@ -80,8 +83,7 @@ def empty_codex(*, root_available: bool = False) -> dict[str, Any]:
         "history_root_available": root_available,
         "matching_history_found": False,
         "files": 0,
-        "main_sessions": 0,
-        "primary_sessions": 0,
+        "session_instances": 0,
         "continuations": 0,
         "subagents": 0,
         "copies": 0,
@@ -109,11 +111,12 @@ def scan_codex(
     since: dt.datetime,
     until: dt.datetime | None,
     excluded: set[str],
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], set[str]]:
     if not root.is_dir():
-        return empty_codex()
+        return empty_codex(), set()
 
     accepted: list[dict[str, Any]] = []
+    matched_exclusions: set[str] = set()
     for path in sorted(root.rglob("*.jsonl")):
         metadata = None
         parent = None
@@ -162,11 +165,12 @@ def scan_codex(
         if not isinstance(session_id, str):
             continue
         session_id = session_id.lower()
-        if session_id in excluded:
-            continue
         if timestamp is None or timestamp < since:
             continue
         if until is not None and timestamp >= until:
+            continue
+        if session_id in excluded:
+            matched_exclusions.add(session_id)
             continue
         accepted.append(
             {
@@ -199,15 +203,15 @@ def scan_codex(
         }
 
     primary = [item for item in by_session.values() if not item["subagent"]]
-    primary_sessions = len(primary)
+    session_instances = len(primary)
     continuations = sum(item["continuation"] for item in primary)
     sessions_with_aborts = sum(item["aborted_turns"] > 0 for item in primary)
     sessions_with_compactions = sum(item["compactions"] > 0 for item in primary)
 
     def primary_percent(count: int) -> float:
-        if primary_sessions == 0:
+        if session_instances == 0:
             return 0.0
-        return round(count * 100 / primary_sessions, 2)
+        return round(count * 100 / session_instances, 2)
 
     apex_totals: collections.Counter[str] = collections.Counter()
     apex_failures: collections.Counter[str] = collections.Counter()
@@ -219,12 +223,11 @@ def scan_codex(
         "history_root_available": True,
         "matching_history_found": bool(accepted),
         "files": len(accepted),
-        "main_sessions": primary_sessions,
-        "primary_sessions": primary_sessions,
+        "session_instances": session_instances,
         "continuations": continuations,
         "subagents": sum(item["subagent"] for item in by_session.values()),
         "copies": copies,
-        "logical_work_streams": primary_sessions - continuations,
+        "logical_work_streams": session_instances - continuations,
         "compactions": sum(item["compactions"] for item in by_session.values()),
         "aborted_turns": sum(item["aborted_turns"] for item in by_session.values()),
         "sessions_with_aborts": sessions_with_aborts,
@@ -248,7 +251,7 @@ def scan_codex(
         "apex_tool_failures": dict(sorted(apex_failures.items())),
         "apex_tool_denials": {},
         "apex_tool_unresolved": {},
-    }
+    }, matched_exclusions
 
 
 def empty_claude(*, root_available: bool = False) -> dict[str, Any]:
@@ -256,7 +259,7 @@ def empty_claude(*, root_available: bool = False) -> dict[str, Any]:
         "history_root_available": root_available,
         "matching_history_found": False,
         "files": 0,
-        "primary_sessions": 0,
+        "session_instances": 0,
         "sidechains": 0,
         "copies": 0,
         "logical_sessions": 0,
@@ -275,11 +278,12 @@ def scan_claude(
     since: dt.datetime,
     until: dt.datetime | None,
     excluded: set[str],
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], set[str]]:
     if not project.is_dir():
-        return empty_claude()
+        return empty_claude(), set()
 
     accepted: list[dict[str, Any]] = []
+    matched_exclusions: set[str] = set()
     for path in sorted(project.glob("*.jsonl")):
         session_id = None
         session_origin_cwd = None
@@ -333,12 +337,15 @@ def scan_claude(
                     else:
                         apex_outcomes[tool_id] = "success"
 
-        if session_origin_cwd != cwd or not session_id or session_id in excluded:
+        if session_origin_cwd != cwd or not session_id:
             continue
         if not timestamps:
             continue
         origin = min(timestamps)
         if origin < since or (until is not None and origin >= until):
+            continue
+        if session_id in excluded:
+            matched_exclusions.add(session_id)
             continue
         session_successes: collections.Counter[str] = collections.Counter()
         session_failures: collections.Counter[str] = collections.Counter()
@@ -390,15 +397,15 @@ def scan_claude(
         unresolved_totals.update(item["unresolved"])
 
     sidechains = sum(item["sidechain"] for item in by_session.values())
-    primary_sessions = len(by_session) - sidechains
+    session_instances = len(by_session) - sidechains
     return {
         "history_root_available": True,
         "matching_history_found": bool(accepted),
         "files": len(accepted),
-        "primary_sessions": primary_sessions,
+        "session_instances": session_instances,
         "sidechains": sidechains,
         "copies": copies,
-        "logical_sessions": primary_sessions,
+        "logical_sessions": session_instances,
         "apex_tool_success_sessions": sum(
             bool(item["successes"]) for item in by_session.values()
         ),
@@ -415,7 +422,7 @@ def scan_claude(
         "apex_tool_failures": dict(sorted(failure_totals.items())),
         "apex_tool_denials": dict(sorted(denial_totals.items())),
         "apex_tool_unresolved": dict(sorted(unresolved_totals.items())),
-    }
+    }, matched_exclusions
 
 
 def render_text(report: dict[str, Any]) -> str:
@@ -423,7 +430,10 @@ def render_text(report: dict[str, Any]) -> str:
         f"Contract version: {report['contract_version']}",
         f"Since (inclusive, UTC): {report['since']}",
         f"Until (exclusive, UTC): {report['until'] or 'unbounded'}",
-        f"Excluded sessions: {report['excluded_sessions']}",
+        f"Exclusions requested: {report['exclusions_requested']}",
+        f"Exclusions matched: {report['exclusions_matched']}",
+        f"Exclusions unmatched: {report['exclusions_unmatched']}",
+        f"Exclusions matched by engine: codex={report['exclusions_by_engine']['codex']}, claude={report['exclusions_by_engine']['claude']}",
         "",
         "Codex",
     ]
@@ -432,8 +442,7 @@ def render_text(report: dict[str, Any]) -> str:
         "history_root_available",
         "matching_history_found",
         "files",
-        "main_sessions",
-        "primary_sessions",
+        "session_instances",
         "continuations",
         "subagents",
         "copies",
@@ -464,7 +473,7 @@ def render_text(report: dict[str, Any]) -> str:
         "history_root_available",
         "matching_history_found",
         "files",
-        "primary_sessions",
+        "session_instances",
         "sidechains",
         "copies",
         "logical_sessions",
@@ -482,6 +491,33 @@ def render_text(report: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def canonical_json(value: dict[str, Any]) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def render_receipt(report: dict[str, Any], workspace_id: str) -> dict[str, Any]:
+    report_bytes = canonical_json(report)
+    return {
+        "receipt_version": RECEIPT_VERSION,
+        "workspace_id": workspace_id,
+        "workspace_root": "<workspace-root>",
+        "auditor_sha256": hashlib.sha256(pathlib.Path(__file__).read_bytes()).hexdigest(),
+        "normalized_arguments": {
+            "cwd": "<workspace-root>",
+            "since": report["since"],
+            "until": report["until"],
+            "exclude_session_count": report["exclusions_requested"],
+            "format": "receipt-json",
+        },
+        "source_availability": {
+            "codex": report["codex"]["history_root_available"],
+            "claude": report["claude"]["history_root_available"],
+        },
+        "report_sha256": hashlib.sha256(report_bytes).hexdigest(),
+        "report": report,
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Aggregate session metadata without emitting transcript content."
@@ -492,7 +528,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--codex-root", type=pathlib.Path)
     parser.add_argument("--claude-project", type=pathlib.Path)
     parser.add_argument("--exclude-session", action="append", default=[])
-    parser.add_argument("--format", choices=("text", "json"), default="text")
+    parser.add_argument("--workspace-id")
+    parser.add_argument("--format", choices=("text", "json", "receipt-json"), default="text")
     return parser
 
 
@@ -506,22 +543,42 @@ def main() -> int:
         raise SystemExit("--until must be an ISO date or timestamp")
     if until is not None and until <= since:
         raise SystemExit("--until must be later than --since")
+    if args.format == "receipt-json" and (
+        not isinstance(args.workspace_id, str)
+        or WORKSPACE_ID_RE.fullmatch(args.workspace_id) is None
+    ):
+        raise SystemExit(
+            "--workspace-id must match [a-z0-9][a-z0-9._-]{0,63} for receipt-json"
+        )
 
     codex_root = args.codex_root or pathlib.Path.home() / ".codex/sessions"
     claude_project = args.claude_project or (
         pathlib.Path.home() / ".claude/projects" / args.cwd.replace("/", "-")
     )
     excluded = {session_id.lower() for session_id in args.exclude_session}
+    codex, codex_matched = scan_codex(codex_root, args.cwd, since, until, excluded)
+    claude, claude_matched = scan_claude(
+        claude_project, args.cwd, since, until, excluded
+    )
+    matched = codex_matched | claude_matched
     report = {
         "contract_version": CONTRACT_VERSION,
         "since": since.isoformat().replace("+00:00", "Z"),
         "until": until.isoformat().replace("+00:00", "Z") if until else None,
-        "excluded_sessions": len(excluded),
-        "codex": scan_codex(codex_root, args.cwd, since, until, excluded),
-        "claude": scan_claude(claude_project, args.cwd, since, until, excluded),
+        "exclusions_requested": len(excluded),
+        "exclusions_matched": len(matched),
+        "exclusions_unmatched": len(excluded - matched),
+        "exclusions_by_engine": {
+            "codex": len(codex_matched),
+            "claude": len(claude_matched),
+        },
+        "codex": codex,
+        "claude": claude,
     }
     if args.format == "json":
         print(json.dumps(report, indent=2, sort_keys=True))
+    elif args.format == "receipt-json":
+        print(json.dumps(render_receipt(report, args.workspace_id), indent=2, sort_keys=True))
     else:
         print(render_text(report), end="")
     return 0

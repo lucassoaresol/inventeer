@@ -124,14 +124,22 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   sessões principais, continuations e cópias; não conte a própria retrospectiva como evidência.
   Use `scripts/audit-session-history.py` como inventário inicial sanitizado, com `cwd` exato,
   recorte temporal fechado com `--since` e `--until` e o ID da sessão corrente em
-  `--exclude-session`; registre `contract_version`, limites e quantidade de exclusões antes de
-  interpretar resultados somente depois dessa deduplicação.
+  `--exclude-session`; no contrato v3, registre `contract_version`, limites,
+  `session_instances`, continuations ou sidechains, fluxos lógicos e exclusões solicitadas,
+  encontradas e não encontradas antes de interpretar resultados. Para comparação cross-machine,
+  use `--workspace-id inventeer-personal-engineering --format receipt-json` e preserve somente o
+  envelope sanitizado; ele usa `<workspace-root>` e não persiste IDs ou paths físicos.
   Diferencie `apex_tool_successes` de `apex_tool_failures`, `apex_tool_denials` e
   `apex_tool_unresolved`; esses campos descrevem outcomes de tools, e tentativa ou sucesso de uma
   tool isolada não prova execução de workflow.
   Não copie transcripts para o Git. Destile decisão transversal em `.specs/STATE.md`, lesson de
   execução somente após validação pelo script da TLC e achado de produto na fonte do produto
   (AD-027).
+- Para Handoffs versionados desta raiz, use `scripts/workspace-handoff.py write` para substituir
+  somente `## Handoff` e `scripts/workspace-handoff.py status` antes de retomar. Registre SHA
+  comportamental, publicação, `Contract status`, `Operational status`, paths de evidência e somente
+  paths de arquivos não commitados; mantenha instruções transitórias de push, PR ou publicação fora
+  do estado durável. Trate `stale` e `indeterminate` como não autorizativos (AD-046).
 
 ## MCPs
 
