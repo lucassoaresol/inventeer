@@ -767,17 +767,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 - **Feature**: Value-Oriented TLC Increments
-- **Phase / Task**: Phase 1 / VI-001 / T3
-- **Completed**: T1 and T2 gates green; T3 focal adoption green with 13 Value Increment contracts, 18 indexed features, and 47 indexed decisions
-- **In progress**: Terminal Build gate for VI-001
-- **Next durable step**: Run resource preflight, then workspace-gate-evidence for the full terminal gate; close T3 only after success.
+- **Phase / Task**: Validation complete
+- **Completed**: VI-001 at 52af2b4b718b2d48514f26674ecf3ac75bf9be9e; T1-T4 complete; 27/27 criteria verified; 23 root suites and 29 focal checks green; 3/3 final mutants killed
+- **In progress**: none
+- **Next durable step**: Review remaining retrospective findings and select the next workflow improvement.
 - **Blockers**: none
-- **Uncommitted files**: .agents/skills/tlc-spec-driven/SKILL.md, .agents/skills/tlc-spec-driven/references/implement.md, .agents/skills/tlc-spec-driven/references/memory.md, .agents/skills/tlc-spec-driven/references/sub-agents.md, .agents/skills/tlc-spec-driven/references/tasks.md, .agents/skills/tlc-spec-driven/references/validate.md, .agents/skills/tlc-spec-driven/scripts/check_commit.py, .agents/skills/tlc-spec-driven/scripts/validate_tasks.py, .agents/vendor.json, .specs/DECISIONS.md, .specs/LESSONS.md, .specs/STATE.md, .specs/features/INDEX.md, .specs/features/value-oriented-tlc-increments/design.md, .specs/features/value-oriented-tlc-increments/spec.md, .specs/features/value-oriented-tlc-increments/tasks.md, .specs/lessons.json, scripts/test-tlc-deterministic-gates.py, scripts/test-tlc-value-increments.py, scripts/test-workspace-structure.py, scripts/test-workspace.sh
+- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
 - **Branch**: main
-- **Contract status**: UNPROVEN
-- **Operational status**: UNPROVEN
-- **Recorded at**: 2026-08-19T02:56:18Z
-- **Valid at SHA**: 1032d1e5b67ec379022afb80b1fefaa3d0985372
+- **Contract status**: PASS
+- **Operational status**: PASS
+- **Recorded at**: 2026-08-19T03:22:15Z
+- **Valid at SHA**: 52af2b4b718b2d48514f26674ecf3ac75bf9be9e
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/features/value-oriented-tlc-increments/design.md, .specs/features/value-oriented-tlc-increments/spec.md, .specs/features/value-oriented-tlc-increments/tasks.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/value-oriented-tlc-increments/spec.md, .specs/features/value-oriented-tlc-increments/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

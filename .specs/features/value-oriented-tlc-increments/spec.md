@@ -140,33 +140,33 @@ reescrito.
 
 | Requirement ID | Story | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- | --- |
-| VIC-01 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Implemented |
-| VIC-02 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Implemented |
-| VIC-03 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Implemented |
-| VIC-04 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Implemented |
-| VIC-05 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Implemented |
-| VIC-06 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Implemented |
-| VIC-07 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-08 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-09 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-10 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-11 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-12 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-13 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-14 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-15 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Implemented |
-| VIC-16 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Implemented |
-| VIC-17 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Implemented |
-| VIC-18 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Implemented |
-| VIC-19 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Implemented |
-| VIC-20 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Implemented |
-| VIC-21 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Implemented |
-| VIC-22 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Implemented |
-| VIC-23 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Implemented |
-| VIC-24 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Implemented |
-| VIC-25 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Implemented |
-| VIC-26 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Implemented |
-| VIC-27 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Implemented |
+| VIC-01 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Verified |
+| VIC-02 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Verified |
+| VIC-03 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Verified |
+| VIC-04 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Verified |
+| VIC-05 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Verified |
+| VIC-06 | P1: Planejamento | DECISION | Recomendação retrospectiva aprovada e evidência EDREN `47ff1fd` | Execute | Verified |
+| VIC-07 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-08 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-09 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-10 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-11 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-12 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-13 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-14 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-15 | P1: Execução | DECISION | Recomendação retrospectiva aprovada e Handoff AD-046 | Execute | Verified |
+| VIC-16 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Verified |
+| VIC-17 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Verified |
+| VIC-18 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Verified |
+| VIC-19 | P1: Compatibilidade | INHERITED | AD-045 e contrato TLC 3.3.0 atual | Execute | Verified |
+| VIC-20 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Verified |
+| VIC-21 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Verified |
+| VIC-22 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Verified |
+| VIC-23 | P1: Vendorização | INHERITED | `.agents/vendor.json`, skill-creator e artifacts históricos | Execute | Verified |
+| VIC-24 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Verified |
+| VIC-25 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Verified |
+| VIC-26 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Verified |
+| VIC-27 | Edge cases | DECISION | Retrospectiva cross-workspace e limites de publicação | Execute | Verified |
 
 **Coverage:** 27 total, 27 mapped to tasks, 0 unmapped.
 
