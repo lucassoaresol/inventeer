@@ -1,8 +1,10 @@
 # Execute
 
-**Goal**: Implement ONE task at a time. Surgical changes. Verify. Commit. Repeat.
+**Goal**: Implement one task at a time and close Git history by verifiable value increment.
 
-This is where code gets written. Every task follows the same cycle: plan → implement → verify → commit. Verification is built into every task, not a separate phase.
+This is where code gets written. Every task follows plan → implement → verify. Tasks in the same
+`Value Increment` accumulate behind recoverable Handoff checkpoints; the increment's terminal gate
+authorizes its single commit. Verification remains built into every task.
 
 ---
 
@@ -25,7 +27,7 @@ receives the task definitions for every phase in its batch, coding principles, t
 Coverage Matrix and Gate Check Commands from tasks.md, and relevant spec/design context. A batch is
 one or more consecutive whole phases packed to ~7 tasks. The worker executes ALL tasks in its
 assigned batch in order - finishing every task in one phase before starting the next phase in the
-batch - and each task follows every step below (implement → gate → atomic commit) before moving to
+batch - and each task follows every step below (implement → gate → status) before moving to
 the next. After all tasks in the batch are complete, the worker reports a compact summary (tasks
 done, commit hashes, test counts, deviations/blockers) to the orchestrator. See
 [sub-agents.md](sub-agents.md) for the full model.
@@ -46,6 +48,11 @@ Isolate per-worker services when the repository requires it, and aggregate resul
 the gate complete. A resource-aware plan changes scheduling, never required coverage. Re-run the
 snapshot before a later heavy phase when the session is long or host load has materially changed.
 
+While a `Value Increment` remains open, refresh the `## Handoff` snapshot after each verified task
+and before heavy work. Record the verified tasks and exact next task. The Handoff is the recoverable
+boundary until the terminal gate authorizes the increment commit; it complements `tasks.md` and does
+not replace it. See [memory.md](memory.md).
+
 ### 0. List Atomic Steps (MANDATORY when Tasks phase was skipped)
 
 If there is no `tasks.md` for this feature, you MUST list atomic steps before writing any code. This is non-negotiable - it prevents the agent from losing focus and doing too many things at once.
@@ -62,7 +69,7 @@ If there is no `tasks.md` for this feature, you MUST list atomic steps before wr
 
 - ONE deliverable (one component, one function, one endpoint, one file change)
 - Independently verifiable (can prove it works before moving on)
-- Independently committable (gets its own atomic git commit)
+- Independently verifiable and assigned to one value increment
 
 If listing steps reveals >5 steps or complex dependencies, STOP and create a formal `tasks.md` instead. The Tasks phase was wrongly skipped.
 
@@ -160,7 +167,7 @@ After the gate check passes:
 
 4. **Test Adequacy Review (MANDATORY - hard gate).**
 
-   A task cannot be committed or marked done until all four checks below pass. Tests must be both **necessary** (every test traces to a requirement) and **sufficient** (every requirement is covered). The scope boundary is the feature spec - do not test beyond it.
+   A task cannot be marked done or included in an increment commit until all four checks below pass. Tests must be both **necessary** (every test traces to a requirement) and **sufficient** (every requirement is covered). The scope boundary is the feature spec - do not test beyond it.
 
    **Check A - Sufficient coverage (per-layer depth).** Build and output this table:
 
@@ -226,14 +233,23 @@ After the gate check passes:
 
    Add the two mapping tables and a one-line adequacy verdict to the Execution Template's Post-Gate section.
 
-### 7. Status + Atomic Commit (same commit)
+### 7. Close Task and, When Ready, the Value Increment
 
-After the gate is green, close the task record **before** creating the commit, then commit code and status together. Never leave `tasks.md` still open after a successful task commit - a crash between those steps is how resume redoes finished work.
+After the task gate is green, close its task record. If more tasks remain in the same increment,
+refresh Handoff and continue without committing incomplete value. When the final task in the
+increment is green, run its terminal gate and commit the implementation, tests, status, and
+traceability together.
 
-1. Mark the task complete in `tasks.md`. Update requirement traceability in `spec.md` if requirement IDs are used.
-2. Create **one** atomic commit that includes the implementation, its tests, and those status/traceability updates.
+1. Mark the task complete in `tasks.md`. Update requirement traceability in `spec.md` when used.
+2. If the increment remains open, update Handoff with the verified task and exact next task.
+3. If the increment closes, run its terminal gate and create the proposed Conventional Commit for
+   the predominant outcome. All tasks in that increment, their tests, and status updates belong to
+   this commit.
 
-Each task gets its own commit immediately after verification. Never batch multiple tasks into one commit.
+If a correction is found before the increment is published, keep it in the open increment or its
+inseparable evidence-only closure and re-run the terminal evidence. If the increment is already
+published, create a new auditable value increment. Never rewrite remote history. If a local history
+rewrite has an unclear target or safety boundary, stop and ask for direction before changing it.
 
 **Format ([Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)):**
 
@@ -296,11 +312,11 @@ for reuse across multiple endpoints.
 
 **Rules:**
 
-- One task = one commit
+- One verifiable value increment = one commit
 - Description references what was DONE, not what was planned
 - Include only files listed in the task - plus the `tasks.md` / `spec.md` status updates for this task
 - Never sneak in "while I'm here" changes
-- If tests are part of the task, include them in the same commit
+- If tests are part of a task, include them in its value-increment commit
 
 **Deterministic check.** Validate the message before committing: `python3 <skill-dir>/scripts/check_commit.py --message "<your message>"`. A non-zero exit means fix the format first. This makes the format rule enforceable instead of memory-dependent.
 
@@ -327,7 +343,7 @@ During implementation, you will notice things that could be improved, refactored
 
 ### 9. Feature-Level Validation (after the LAST task - MANDATORY, always runs)
 
-When the task you just completed is the **last task of the feature** (or of a priority group being delivered on its own, e.g. all P1 tasks), you MUST run feature-level validation before reporting the work as done. **This is not optional and is never prompted - it runs automatically.** Do not stop at the final task's commit.
+When the increment you just completed is the **final increment of the feature** (or of a priority group delivered on its own), you MUST run feature-level validation before reporting the work as done. **This is not optional and is never prompted.** Do not stop at the final increment commit.
 
 **Author ≠ verifier.** An author checking their own work reapplies the mental model that may have produced the gaps. The Verifier is a fresh sub-agent that re-derives coverage from the spec independently - this separation is the quality gate, not a style preference.
 
@@ -424,9 +440,9 @@ If you are unsure whether more tasks remain, check `tasks.md`: if every task is 
 - **One task at a time** - Focus prevents errors
 - **Tools matter** - Wrong MCP = wrong approach
 - **Reuses save tokens** - Copy patterns, don't reinvent
-- **Status then commit, same commit** - Mark `tasks.md` complete before the atomic commit and include that update in it
+- **Status travels with value** - Mark tasks complete as they pass; include their final status in the increment commit
 - **Stay surgical** - Touch only what's necessary
-- **Commit per task** - Clean git history enables bisect and rollback
+- **Commit per Value Increment** - Commit only a complete outcome with its terminal gate and rollback boundary
 - **Never "while I'm here"** - Scope creep during implementation is the #1 quality killer
 - **Approval is local** - Push, deploy, and other remote/destructive ops need an explicit go-ahead
 - **Learn from mistakes** - If something goes wrong, surface it to the user so it informs the next task

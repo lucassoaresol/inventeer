@@ -17,6 +17,7 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | [retrospective-evidence-freshness](./retrospective-evidence-freshness/) | Validated |
 | [tlc-spec-driven-3-3-upgrade](./tlc-spec-driven-3-3-upgrade/) | Validated |
 | [unified-dual-engine-delivery](./unified-dual-engine-delivery/) | Validated |
+| [value-oriented-tlc-increments](./value-oriented-tlc-increments/) | Active |
 | [workspace-context-routing-review-bundles](./workspace-context-routing-review-bundles/) | Validated |
 | [workspace-mcp-resource-preflight](./workspace-mcp-resource-preflight/) | Validated |
 | [workspace-process-hardening](./workspace-process-hardening/) | Active |

@@ -1,8 +1,8 @@
 # Decision Index
 
-This file classifies decisions committed in [STATE.md](STATE.md). The canonical rationale, scope,
-trade-offs, and supersession history remain there. Uncommitted decision drafts are intentionally
-excluded until they become versioned workspace state.
+This file classifies decisions recorded in [STATE.md](STATE.md). The canonical rationale, scope,
+trade-offs, and supersession history remain there. Decision drafts that have not been recorded in
+`STATE.md` are intentionally excluded.
 
 | Decision | Status |
 | --- | --- |
@@ -52,3 +52,4 @@ excluded until they become versioned workspace state.
 | [AD-044](STATE.md#ad-044) | superseded by AD-045 |
 | [AD-045](STATE.md#ad-045) | active |
 | [AD-046](STATE.md#ad-046) | active |
+| [AD-047](STATE.md#ad-047) | active |

@@ -51,7 +51,7 @@ Captures mid-task / in-flight state so work can resume without re-reading the fu
 ## Handoff
 
 - **Feature**: [feature name / .specs path]
-- **Phase / Task**: [e.g., Phase 2 / T4 - implement repository layer]
+- **Phase / Task**: [e.g., Phase 2 / VI-002 / T4 - implement repository layer]
 - **Completed**: [comma-separated task IDs or "none"]
 - **In-progress** (file:line): [e.g., `src/billing/subscription.service.ts:88` - mid-write]
 - **Next step**: [one sentence - exactly what to do next]
@@ -116,7 +116,7 @@ Both are silent data loss. The section-scoped write rule is the single correctne
 1. Locate the `## Handoff` section in `.specs/STATE.md`.
 2. Replace its body (everything between `## Handoff` and the next `##` or EOF) with the current snapshot.
 3. Do NOT modify anything above or before `## Handoff`.
-4. Commit or stash outstanding changes as appropriate.
+4. Commit only a complete green Value Increment; otherwise preserve the open increment in Handoff.
 
 ### Resume
 
@@ -129,8 +129,9 @@ Both are silent data loss. The section-scoped write rule is the single correctne
    - Recent commits on the branch (messages and touched files)
    - `tasks.md` completion marks and, when present, gate evidence / commit references
 5. **Resolve conflicts with evidence, not narrative:**
-   - A task with a green gate and an atomic commit already on the branch → do **not** redo it; mark it complete in `tasks.md` if the file still shows it open, then continue from the next incomplete task
-   - Partial unverified work in the working tree → preserve it, re-run the relevant gate, then finish the status+commit cycle
+   - A task with a green gate recorded in `tasks.md` and a matching fresh Handoff inside an open increment → do **not** redo it; confirm the gate evidence, then continue from the next incomplete task without committing partial value
+   - A complete increment with a green terminal gate and its outcome commit already on the branch → do **not** redo it; reconcile any stale task marks, then continue from the next increment
+   - Partial unverified work in the working tree → preserve it, re-run the relevant gate, then finish the task status or increment-commit cycle
    - Stale or missing Handoff → rebuild next-step from git + `tasks.md`, then propose that to the user
    - Unexplained local changes you cannot map to the current task → STOP and ask; do not discard them
 6. Propose the reconciled next step to the user before writing any code.

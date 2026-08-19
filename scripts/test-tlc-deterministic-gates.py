@@ -78,6 +78,12 @@ def tasks_fixture(*, dependency: str = "T1") -> str:
         | --- | --- |
         | Quick | test command |
 
+        ## Value Increment Plan
+
+        | Value Increment | Outcome | Requirements | Tasks | Terminal Gate | Rollback Boundary | Proposed Commit |
+        | --- | --- | --- | --- | --- | --- | --- |
+        | VI-001 | The deterministic fixture is validated. | GATE-01 | T1, T2 | Quick | Revert the bounded fixture. | `test(tlc): validate task fixture` |
+
         ## Execution Plan
 
         ```mermaid
@@ -93,6 +99,7 @@ def tasks_fixture(*, dependency: str = "T1") -> str:
 
         - **Depends on:** none
         - **Where:** `fixture.md`
+        - **Value Increment:** VI-001
         - **Tests:** unit
         - **Gate:** quick
 
@@ -100,6 +107,7 @@ def tasks_fixture(*, dependency: str = "T1") -> str:
 
         - **Depends on:** {dependency}
         - **Where:** `validator.py`
+        - **Value Increment:** VI-001
         - **Tests:** unit
         - **Gate:** quick
         """
@@ -214,6 +222,8 @@ class WorkspaceAdoptionTests(unittest.TestCase):
             "requirement provenance",
             "resource-aware execution preflight",
             "deterministic gate compatibility and prospective adoption",
+            "value-oriented increments",
+            "task-to-commit regression sensor",
         ]
         self.assertEqual(expected_customizations, manifest["local_customizations"])
 

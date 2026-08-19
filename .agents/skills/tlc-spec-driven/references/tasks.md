@@ -23,7 +23,7 @@
 
 - **Agents don't err** - Single focus, no ambiguity
 - **Easy to test** - Each task = one verifiable outcome
-- **Clean commits** - Each task = one atomic, revertable commit
+- **Clean history** - Related tasks converge into one verifiable, revertable value increment
 - **Errors isolated** - One failure doesn't block everything
 
 **Rule**: One task = ONE reversible semantic deliverable, such as:
@@ -161,11 +161,24 @@ Group tasks into ordered phases. Each phase depends on the ones before it; tasks
 
 This keeps phase boundaries meaningful while letting the packing hit its target worker count.
 
+### 4.5. Define Value Increments
+
+Group tasks by shared verifiable outcome and rollback boundary. Every task belongs to exactly one
+`VI-NNN`. A value increment may contain one task or several sequential tasks; it closes only after
+its terminal gate passes. Use Handoff as the checkpoint while an increment is open.
+
+Do not split a value increment across phase-batch workers. When an increment crosses a phase
+boundary, keep those phases in the same batch even if the batch exceeds the approximate task budget.
+
+| Value Increment | Outcome | Requirements | Tasks | Terminal Gate | Rollback Boundary | Proposed Commit |
+| --- | --- | --- | --- | --- | --- | --- |
+| VI-001 | [observable result] | [requirement IDs] | T1, T2 | Build | [independent revert boundary] | `feat(scope): describe outcome` |
+
 ### 5. Validate Before Presenting (MANDATORY)
 
 Before showing tasks to the user, run ALL three pre-approval checks. These are NOT optional - they are gates. If any check fails, restructure the tasks and re-run until all pass.
 
-**Deterministic backing (run it, do not eyeball it).** `python3 <skill-dir>/scripts/validate_tasks.py <tasks-path-or-feature>` enforces the structural half of these checks so they cannot drift: it flags a `Where` that names multiple files (granularity smell, Check 1), a diagram edge with no matching `Depends on` within a phase and vice-versa (Check 2), a task missing its `Tests` or `Gate` field, a `Tests: none` to confirm against the matrix (Check 3), and any dependency pointing to a later phase. A non-zero exit means restructure before presenting. The script checks structure; you still build the two tables below (the layer-to-test co-location judgment is yours). If no code-execution tool is available, run the checks by reading `tasks.md`.
+**Deterministic backing (run it, do not eyeball it).** `python3 <skill-dir>/scripts/validate_tasks.py <tasks-path-or-feature>` enforces the structural half of these checks so they cannot drift: it flags a `Where` that names multiple files (granularity smell, Check 1), a diagram edge with no matching `Depends on` within a phase and vice-versa (Check 2), a task missing its `Tests`, `Gate`, or `Value Increment` field, a `Tests: none` to confirm against the matrix (Check 3), inconsistent Value Increment ownership, incomplete increment fields, and any dependency pointing to a later phase. A non-zero exit means restructure before presenting. The script checks structure; you still build the two tables below (the layer-to-test co-location and increment-cohesion judgments are yours). If no code-execution tool is available, run the checks by reading `tasks.md`.
 
 **Check 1: Task Granularity** - verify each task is atomic (see Granularity Check section).
 
@@ -220,6 +233,12 @@ The generated commands MUST include a diff-integrity gate bound to the complete 
 range, following the contract in step 1.5. Do not substitute a working-tree-only
 `git diff --check` after the feature has been committed.
 
+## Value Increment Plan
+
+| Value Increment | Outcome | Requirements | Tasks | Terminal Gate | Rollback Boundary | Proposed Commit |
+| --- | --- | --- | --- | --- | --- | --- |
+| VI-001 | [observable result] | [FEAT-01..02] | T1, T2 | Build | [independent revert boundary] | `feat(scope): describe outcome` |
+
 ---
 
 ## Execution Plan
@@ -261,6 +280,7 @@ T8 → T9
 **Depends on**: None
 **Reuses**: `src/existing/BaseInterface.ts`
 **Requirement**: [FEAT]-01
+**Value Increment**: VI-001
 
 **Tools**:
 
@@ -284,6 +304,7 @@ T8 → T9
 **Where**: `src/services/YService.ts`
 **Depends on**: T1
 **Reuses**: `src/services/BaseService.ts` patterns
+**Value Increment**: VI-001
 
 **Tools**:
 
@@ -308,6 +329,7 @@ T8 → T9
 **Where**: `src/components/ZComponent.tsx`
 **Depends on**: T1
 **Reuses**: `src/components/BaseComponent.tsx`
+**Value Increment**: VI-002
 
 **Tools**:
 
@@ -333,6 +355,7 @@ T8 → T9
 **Where**: `src/services/YService.ts` (modify)
 **Depends on**: T2, T3
 **Reuses**: Existing service patterns
+**Value Increment**: VI-002
 
 **Tools**:
 
@@ -347,8 +370,6 @@ T8 → T9
 
 **Tests**: integration
 **Gate**: full
-
-**Commit**: `feat([scope]): [description]`
 
 ---
 
@@ -378,6 +399,9 @@ before the next batch starts. This right-sizes the worker count by workload inst
 count (one-per-phase is too fragmented; expensive and slow). See [sub-agents.md](sub-agents.md) for
 the full model - packing algorithm, offer-then-confirm, worker payload, compact summary contract,
 failure handling, and context sizing guidance.
+
+A batch boundary may not split a `Value Increment`. Adjust the phase-aligned packing so every task
+owned by one increment stays with the same worker.
 
 When the whole feature fits a single batch (≤ ~8 tasks), execution happens inline in the main window
 with no sub-agents spawned.
@@ -464,7 +488,7 @@ Pick whichever option keeps tasks atomic and cohesive. The goal: no task produce
 - **Dependencies are gates** - Clear what blocks what
 - **Done when = Testable** - If you can't verify it, rewrite it
 - **Requirement ID = Traceable** - Every task traces back to a spec requirement
-- **One commit per task** - Plan the commit message format in advance
+- **One commit per value increment** - Plan its outcome, terminal gate, rollback boundary, and message in advance
 
 ---
 

@@ -20,7 +20,7 @@ The benchmarked sweet spot is ~7 tasks of context per worker (~20 tasks → 3 wo
 1. Count total tasks `T`.
 2. If `T ≤ ~8` → inline, no sub-agents.
 3. Otherwise walk phases **in order**, accumulating whole phases into the current batch. When the batch's running task count reaches ~7 **and** phases remain, close the batch and start the next.
-4. **Never split a phase** across workers - the cut only ever lands on a phase boundary. This preserves dependency ordering and keeps a phase's tasks + shared context in one worker.
+4. **Never split a phase or Value Increment** across workers. The cut lands on a phase boundary and moves as needed so every `VI-NNN` stays with one worker. This preserves dependency ordering, outcome ownership, and shared context.
 5. If the final batch is a lone tail (1-2 tasks), fold it into the previous batch.
 
 Result ≈ `ceil(T / 7)` workers, scaling linearly. Unevenness is absorbed by greedy packing - phases never need to divide evenly. Worked examples (20 tasks):
@@ -57,11 +57,12 @@ Batches run strictly sequentially: a batch never starts until the previous batch
 
 **What a batch worker does:**
 
-Executes ALL tasks in its assigned batch **in order** - finishing every task in one phase before starting the next phase in the batch - following the `implement.md` cycle for each task (implement → gate → atomic commit). It does NOT spawn further sub-agents. After completing all tasks in the batch, the worker reports a **compact summary** to the orchestrator:
+Executes ALL tasks in its assigned batch **in order** - finishing every task in one phase before starting the next phase in the batch - following the `implement.md` cycle for each task (implement → task gate → status; terminal gate and commit when a Value Increment closes). It does NOT spawn further sub-agents. After completing all tasks in the batch, the worker reports a **compact summary** to the orchestrator:
 
 ```
 Batch (phases [N]-[M]) complete:
-- Tasks done: [list with commit hashes]
+- Tasks done: [list]
+- Value Increments closed: [list with commit hashes]
 - Tests: [N passed, 0 failed]
 - Deviations/blockers: [none | description]
 ```
@@ -87,7 +88,7 @@ No raw logs, no full test output - only the above fields keep the main context c
 
 ## Verifier Sub-Agent
 
-**Always-on, never prompted - one per feature completion.** The Verifier is a separate role from the batch worker. It runs once - after the last task of the feature is committed - as an independent quality gate, dispatched automatically by the orchestrator. It is **not** gated behind the batching offer; it always runs. Do NOT ask the user whether to run validation; it is mandatory.
+**Always-on, never prompted - one per feature completion.** The Verifier is a separate role from the batch worker. It runs once - after the final feature increment is committed - as an independent quality gate, dispatched automatically by the orchestrator. It is **not** gated behind the batching offer; it always runs. Do NOT ask the user whether to run validation; it is mandatory.
 
 **Author ≠ verifier:** The agent (or batch worker) that wrote the code and tests is the author. The Verifier is a fresh sub-agent dispatched by the orchestrator after the final commit. It does not inherit the author's context, mental model, or assumptions. This separation is what makes the gate trustworthy.
 

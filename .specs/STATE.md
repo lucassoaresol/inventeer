@@ -744,19 +744,40 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-18
 - **Status**: active
 
+### AD-047
+- **Decision**: Planejar e registrar commits TLC por `Value Increment`: um outcome completo,
+  verificável e reversível composto por uma ou mais tarefas atômicas. Tarefas continuam com gates
+  e status próprios; o Handoff cobre o incremento aberto; somente o gate terminal verde autoriza o
+  commit único com implementação, testes, documentação e rastreabilidade do outcome.
+- **Reason**: O contrato task-to-commit fragmentava no histórico atividades mecânicas que só
+  produziam valor em conjunto. O schema `VI-NNN`, seu ownership determinístico e o sensor de
+  regressão preservam granularidade operacional sem confundir checkpoints com entregas revisáveis.
+- **Trade-off**: Um incremento aberto pode acumular mais mudanças locais antes do commit e depende
+  de Handoff fresco para retomada segura. Em troca, cada commit ganha gate terminal, fronteira de
+  rollback e outcome explícitos, sem perder gates por tarefa, traceability ou verificação final.
+- **Alternatives considered**: Manter um commit por tarefa; registrar a preferência somente em
+  `AGENTS.md`; criar uma wrapper paralela à TLC; migrar planos históricos; importar as políticas
+  Codex-only e single-agent do EDREN.
+- **Scope**: Features TLC novas ou materialmente revisadas conforme AD-040, nos dois engines da
+  AD-045. Preserva artifacts históricos, o Verifier e o fallback standalone, a evidência e freshness
+  da AD-046, ownership de produto e limites de publicação. Não autoriza reescrever história remota,
+  alterar Linear, GitHub ou repositórios em `repos/`.
+- **Date**: 2026-08-18
+- **Status**: active
+
 ## Handoff
-- **Feature**: Retrospective Evidence Freshness
-- **Phase / Task**: Validation complete
-- **Completed**: auditor contract v3 and portable receipt, freshness-aware Handoff, dual validation verdicts, 25-suite root gate and 3/3 killed mutants
-- **In progress**: none
-- **Next durable step**: Start the Value Increment workflow improvement
+- **Feature**: Value-Oriented TLC Increments
+- **Phase / Task**: Phase 1 / VI-001 / T3
+- **Completed**: T1 and T2 gates green; T3 focal adoption green with 13 Value Increment contracts, 18 indexed features, and 47 indexed decisions
+- **In progress**: Terminal Build gate for VI-001
+- **Next durable step**: Run resource preflight, then workspace-gate-evidence for the full terminal gate; close T3 only after success.
 - **Blockers**: none
-- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
+- **Uncommitted files**: .agents/skills/tlc-spec-driven/SKILL.md, .agents/skills/tlc-spec-driven/references/implement.md, .agents/skills/tlc-spec-driven/references/memory.md, .agents/skills/tlc-spec-driven/references/sub-agents.md, .agents/skills/tlc-spec-driven/references/tasks.md, .agents/skills/tlc-spec-driven/references/validate.md, .agents/skills/tlc-spec-driven/scripts/check_commit.py, .agents/skills/tlc-spec-driven/scripts/validate_tasks.py, .agents/vendor.json, .specs/DECISIONS.md, .specs/LESSONS.md, .specs/STATE.md, .specs/features/INDEX.md, .specs/features/value-oriented-tlc-increments/design.md, .specs/features/value-oriented-tlc-increments/spec.md, .specs/features/value-oriented-tlc-increments/tasks.md, .specs/lessons.json, scripts/test-tlc-deterministic-gates.py, scripts/test-tlc-value-increments.py, scripts/test-workspace-structure.py, scripts/test-workspace.sh
 - **Branch**: main
-- **Contract status**: PASS
-- **Operational status**: PASS
-- **Recorded at**: 2026-08-19T02:10:30Z
-- **Valid at SHA**: 653de07cc9900154543aae73b58e77a4d0de9fb0
+- **Contract status**: UNPROVEN
+- **Operational status**: UNPROVEN
+- **Recorded at**: 2026-08-19T02:56:18Z
+- **Valid at SHA**: 1032d1e5b67ec379022afb80b1fefaa3d0985372
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/retrospective-evidence-freshness/spec.md, .specs/features/retrospective-evidence-freshness/validation.md
+- **Evidence-only paths**: .specs/features/value-oriented-tlc-increments/design.md, .specs/features/value-oriented-tlc-increments/spec.md, .specs/features/value-oriented-tlc-increments/tasks.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

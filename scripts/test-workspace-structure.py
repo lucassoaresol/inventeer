@@ -4,7 +4,6 @@
 import ast
 import pathlib
 import re
-import subprocess
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -71,15 +70,9 @@ if set(indexed_features) != canonical_features or any(name != target for name, t
     )
 print(f"ok 4 - feature index covers {len(canonical_features)} canonical directories")
 
-state_at_head = subprocess.run(
-    ["git", "show", "HEAD:.specs/STATE.md"],
-    cwd=ROOT,
-    text=True,
-    capture_output=True,
-    check=True,
-).stdout
+state_text = (ROOT / ".specs/STATE.md").read_text(encoding="utf-8")
 canonical_decisions = {}
-for block in re.split(r"(?=^### AD-\d+$)", state_at_head, flags=re.M):
+for block in re.split(r"(?=^### AD-\d+$)", state_text, flags=re.M):
     decision = re.search(r"^### (AD-\d+)$", block, re.M)
     if not decision:
         continue

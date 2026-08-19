@@ -13,7 +13,9 @@
       "operational enablement discovery",
       "requirement provenance",
       "resource-aware execution preflight",
-      "deterministic gate compatibility and prospective adoption"
+      "deterministic gate compatibility and prospective adoption",
+      "value-oriented increments",
+      "task-to-commit regression sensor"
     ]
   }
 }

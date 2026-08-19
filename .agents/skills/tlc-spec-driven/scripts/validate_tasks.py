@@ -10,7 +10,8 @@ markdown artifact, so it is stack-agnostic and tool-agnostic.
 
 What it checks (heuristic markdown inspection, not a full parser):
   ERROR  - a required section is missing
-  ERROR  - a task is missing its `Tests` or `Gate` field
+  ERROR  - a task is missing its `Tests`, `Gate`, or `Value Increment` field
+  ERROR  - a Value Increment is malformed, incomplete, or owns inconsistent tasks
   ERROR  - a task depends on a task in a LATER phase (dependencies point back only)
   ERROR  - a dependency edge shown in the diagram has no matching `Depends on`
            (and vice-versa) when both sides are parseable
@@ -35,10 +36,30 @@ import os
 import re
 import sys
 
-REQUIRED_SECTIONS = ["Test Coverage Matrix", "Gate Check Commands", "Execution Plan", "Task Breakdown"]
+REQUIRED_SECTIONS = [
+    "Test Coverage Matrix",
+    "Gate Check Commands",
+    "Value Increment Plan",
+    "Execution Plan",
+    "Task Breakdown",
+]
 TASK_RE = re.compile(r"^#{2,4}\s+(T\d+)\s*:", re.IGNORECASE)
 EDGE_RE = re.compile(r"\bT\d+\b")
 FILE_HINT_RE = re.compile(r"[\w./-]+\.\w{1,6}\b")
+VI_RE = re.compile(r"^VI-\d{3}$")
+COMMIT_RE = re.compile(
+    r"^(?:feat|fix|refactor|docs|test|style|perf|build|ci|chore)"
+    r"(?:\([^)]+\))?: [a-z].*[^.]$"
+)
+VI_HEADERS = [
+    "Value Increment",
+    "Outcome",
+    "Requirements",
+    "Tasks",
+    "Terminal Gate",
+    "Rollback Boundary",
+    "Proposed Commit",
+]
 
 
 def resolve_tasks(target, root):
@@ -77,15 +98,26 @@ def section_present(lines, name):
     return any(re.match(r"^#{1,4}\s+" + re.escape(name) + r"\b", ln.strip()) for ln in lines)
 
 
+def field_value(match):
+    """Remove a closing Markdown emphasis delimiter captured after `Field:`."""
+    return match.group(1).lstrip("*").strip()
+
+
 def parse_tasks(lines):
-    """Return a dict: task_id -> {'deps': set, 'tests': str|None, 'gate': str|None, 'where': str}."""
+    """Return task fields required by structural and value-increment checks."""
     tasks = {}
     current = None
     for ln in lines:
         m = TASK_RE.match(ln.strip())
         if m:
             current = m.group(1).upper()
-            tasks[current] = {"deps": set(), "tests": None, "gate": None, "where": ""}
+            tasks[current] = {
+                "deps": set(),
+                "tests": None,
+                "gate": None,
+                "where": "",
+                "value_increment": None,
+            }
             continue
         if current is None:
             continue
@@ -93,20 +125,89 @@ def parse_tasks(lines):
         field_prefix = r"^(?:-\s+)?\*{0,2}"
         dm = re.match(field_prefix + r"Depends on\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if dm:
-            body = dm.group(1)
+            body = field_value(dm)
             if "none" not in body.lower():
                 for e in EDGE_RE.findall(body.upper()):
                     tasks[current]["deps"].add(e)
         wm = re.match(field_prefix + r"Where\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if wm:
-            tasks[current]["where"] = wm.group(1)
+            tasks[current]["where"] = field_value(wm)
         tm = re.match(field_prefix + r"Tests\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if tm:
-            tasks[current]["tests"] = tm.group(1).strip()
+            tasks[current]["tests"] = field_value(tm)
         gm = re.match(field_prefix + r"Gate\*{0,2}\s*:\s*(.*)$", stripped, re.IGNORECASE)
         if gm:
-            tasks[current]["gate"] = gm.group(1).strip()
+            tasks[current]["gate"] = field_value(gm)
+        vm = re.match(
+            field_prefix + r"Value Increment\*{0,2}\s*:\s*(.*)$",
+            stripped,
+            re.IGNORECASE,
+        )
+        if vm:
+            tasks[current]["value_increment"] = field_value(vm)
     return tasks
+
+
+def markdown_cells(line):
+    return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+
+def parse_value_increments(lines):
+    """Parse the canonical Value Increment Plan table."""
+    start = next(
+        (
+            index
+            for index, line in enumerate(lines)
+            if re.match(r"^#{1,4}\s+Value Increment Plan\b", line.strip(), re.IGNORECASE)
+        ),
+        None,
+    )
+    if start is None:
+        return {}, ["missing value increment table"]
+
+    table_lines = []
+    for line in lines[start + 1 :]:
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            break
+        if stripped.startswith("|"):
+            table_lines.append(stripped)
+        elif table_lines and stripped:
+            break
+    if len(table_lines) < 3:
+        return {}, ["Value Increment Plan must contain a header and at least one increment"]
+
+    headers = markdown_cells(table_lines[0])
+    if headers != VI_HEADERS:
+        return {}, [
+            "Value Increment Plan headers must be exactly: " + " | ".join(VI_HEADERS)
+        ]
+
+    increments, errors = {}, []
+    for line in table_lines[2:]:
+        cells = markdown_cells(line)
+        if len(cells) != len(VI_HEADERS):
+            errors.append("Value Increment Plan row has the wrong number of columns")
+            continue
+        row = dict(zip(VI_HEADERS, cells))
+        increment_id = row["Value Increment"]
+        if not VI_RE.fullmatch(increment_id):
+            errors.append(f"invalid value increment ID: {increment_id or '<empty>'}")
+            continue
+        if increment_id in increments:
+            errors.append(f"duplicate value increment: {increment_id}")
+            continue
+        for field in VI_HEADERS[1:]:
+            if not row[field].strip(" `"):
+                errors.append(f"{increment_id}: empty `{field}`")
+        commit = row["Proposed Commit"].strip(" `")
+        if commit and not COMMIT_RE.fullmatch(commit):
+            errors.append(f"{increment_id}: invalid Conventional Commit proposal: {commit!r}")
+        row["task_ids"] = set(EDGE_RE.findall(row["Tasks"].upper()))
+        if not row["task_ids"]:
+            errors.append(f"{increment_id}: `Tasks` must name at least one Tn task")
+        increments[increment_id] = row
+    return increments, errors
 
 
 def parse_phase_membership(lines):
@@ -182,9 +283,37 @@ def check(tasks_path):
             warnings.append(f"{tid}: Tests: none - confirm the Test Coverage Matrix says 'none' for this layer")
         if t["gate"] is None:
             errors.append(f"{tid}: missing `Gate` field")
+        increment_id = t["value_increment"]
+        if not increment_id:
+            errors.append(f"{tid}: missing `Value Increment` field")
+        elif not VI_RE.fullmatch(increment_id):
+            errors.append(f"{tid}: invalid `Value Increment`: {increment_id!r}")
         files = FILE_HINT_RE.findall(t["where"])
         if len(set(files)) > 1:
             warnings.append(f"{tid}: `Where` names multiple files {sorted(set(files))} - granularity smell, consider splitting")
+
+    increments, increment_errors = parse_value_increments(lines)
+    errors.extend(increment_errors)
+    planned_owners = {}
+    for increment_id, row in increments.items():
+        for tid in row["task_ids"]:
+            if tid in planned_owners:
+                errors.append(
+                    f"{tid}: appears in multiple value increments: "
+                    f"{planned_owners[tid]}, {increment_id}"
+                )
+            planned_owners[tid] = increment_id
+            if tid not in tasks:
+                errors.append(f"{increment_id}: references unknown task {tid}")
+    for tid, task in tasks.items():
+        assigned = task["value_increment"]
+        owner = planned_owners.get(tid)
+        if assigned and assigned not in increments:
+            errors.append(f"{tid}: references unknown value increment {assigned}")
+        if owner is None:
+            errors.append(f"{tid}: is not listed in the Value Increment Plan")
+        elif assigned and owner != assigned:
+            errors.append(f"{tid}: task assigns {assigned}, but the plan assigns {owner}")
 
     # Forward-phase dependency.
     membership = parse_phase_membership(lines)
@@ -199,7 +328,7 @@ def check(tasks_path):
 
     # Diagram vs definition cross-check (best effort).
     edges, parsed = parse_diagram_edges(lines)
-    if not parsed:
+    if not parsed and len(tasks) > 1:
         warnings.append("diagram arrows not parsed confidently - diagram/definition cross-check skipped (verify by hand)")
     else:
         def intra_phase(a, b):

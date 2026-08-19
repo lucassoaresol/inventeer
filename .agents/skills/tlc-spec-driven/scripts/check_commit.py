@@ -2,8 +2,8 @@
 """
 check_commit.py - deterministic Conventional Commits validation.
 
-The per-task atomic-commit rule mandates Conventional Commits 1.0.0. This makes
-that rule checkable instead of trusting the model to remember the format. Pure
+Each completed Value Increment uses Conventional Commits 1.0.0 and describes
+its predominant outcome. This makes the format checkable instead of trusting the model to remember it. Pure
 standard library, zero dependencies, agent-agnostic.
 
 It reads the message from (in priority order): a positional file path, --message,

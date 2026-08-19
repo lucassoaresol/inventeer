@@ -4,9 +4,9 @@
 
 **Three levels of verification:**
 
-1. **Per-task verification (always, author self-check):** After implementing each task, verify its "Done when" criteria before committing. This is mandatory and automatic. The implementer runs it.
+1. **Per-task verification (always, author self-check):** After implementing each task, verify its "Done when" criteria before closing its status or including it in a Value Increment. This is mandatory and automatic. The implementer runs it.
 
-2. **Feature-level validation (independent Verifier sub-agent, always-on, never prompted):** After all tasks for a feature (or priority group) are done, validation runs automatically - the orchestrator dispatches a **fresh Verifier sub-agent** (see [sub-agents.md](sub-agents.md)). Do NOT ask the user whether to run it; it is the safety net, not an opt-in. User interaction is limited to interactive UAT (for user-facing features) and acting on a FAIL verdict ("fix these gaps now?"). The Verifier:
+2. **Feature-level validation (independent Verifier sub-agent, always-on, never prompted):** After all Value Increments for a feature (or priority group) are committed, validation runs automatically - the orchestrator dispatches a **fresh Verifier sub-agent** (see [sub-agents.md](sub-agents.md)). Do NOT ask the user whether to run it; it is the safety net, not an opt-in. User interaction is limited to interactive UAT (for user-facing features) and acting on a FAIL verdict ("fix these gaps now?"). The Verifier:
    - Runs **read-only** over the real implementation and tests - mutations run in a scratch/throwaway state only (see Discrimination Sensor section)
    - Scopes coverage to the feature's **git diff surface** (not the full repository)
    - Re-derives coverage independently using **evidence-or-zero**: every AC must be traced to a `file:line` + assertion expression; a criterion with no `file:line` citation counts as NOT covered

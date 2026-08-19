@@ -35,6 +35,7 @@ run_suite "delivery-front inspector" bash .agents/skills/advance-delivery-front/
 run_suite "review bundle" bash .agents/skills/create-review-bundle/scripts/test-create-review-bundle.sh
 run_suite "TLC lessons" python3 .agents/skills/tlc-spec-driven/scripts/test-lessons.py
 run_suite "TLC validation guidance" python3 .agents/skills/tlc-spec-driven/scripts/test-validation-guidance.py
+run_suite "TLC value increments" python3 scripts/test-tlc-value-increments.py
 run_suite "TLC deterministic gates" python3 scripts/test-tlc-deterministic-gates.py
 run_suite "workspace structure" python3 scripts/test-workspace-structure.py
 
