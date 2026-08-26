@@ -1,6 +1,6 @@
 # Bounded Workspace Context Specification
 
-**Status:** Approved
+**Status:** Validated
 **Review language:** Portuguese
 **Canonical language:** English
 
@@ -85,17 +85,17 @@ boundary while comparing the fixture tree before and after each call.
 
 | Requirement ID | Story | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- | --- |
-| BWC-01 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Implemented |
-| BWC-02 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Implemented |
-| BWC-03 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Implemented |
-| BWC-04 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Implemented |
-| BWC-05 | Closed boundaries | SAFETY | Existing planner fail-closed contract | Execute | Implemented |
-| BWC-06 | Closed boundaries | INHERITED | AD-044 and workspace ownership rules | Execute | Implemented |
-| BWC-07 | Closed boundaries | SAFETY | Workspace security and retrospective privacy rules | Execute | Implemented |
-| BWC-08 | Closed boundaries | INHERITED | L-008 and five-route workspace contract | Execute | Implemented |
-| BWC-09 | Edge cases | DECISION | Approved heading-selection semantics | Execute | Implemented |
-| BWC-10 | Edge cases | DECISION | Approved heading-selection semantics | Execute | Implemented |
-| BWC-11 | Edge cases | SAFETY | Complete fail-closed audit behavior | Execute | Implemented |
+| BWC-01 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Verified |
+| BWC-02 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Verified |
+| BWC-03 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Verified |
+| BWC-04 | Measure routes | DECISION | User-approved retrospective implementation | Execute | Verified |
+| BWC-05 | Closed boundaries | SAFETY | Existing planner fail-closed contract | Execute | Verified |
+| BWC-06 | Closed boundaries | INHERITED | AD-044 and workspace ownership rules | Execute | Verified |
+| BWC-07 | Closed boundaries | SAFETY | Workspace security and retrospective privacy rules | Execute | Verified |
+| BWC-08 | Closed boundaries | INHERITED | L-008 and five-route workspace contract | Execute | Verified |
+| BWC-09 | Edge cases | DECISION | Approved heading-selection semantics | Execute | Verified |
+| BWC-10 | Edge cases | DECISION | Approved heading-selection semantics | Execute | Verified |
+| BWC-11 | Edge cases | SAFETY | Complete fail-closed audit behavior | Execute | Verified |
 
 **Coverage:** 11 total, 11 mapped to tasks, 0 unmapped.
 
@@ -104,4 +104,4 @@ boundary while comparing the fixture tree before and after each call.
 - [x] All five canonical routes pass a deterministic context-budget check.
 - [x] Adjacent budget boundaries discriminate pass from fail.
 - [x] Heading, schema, privacy, and no-mutation fixtures pass.
-- [ ] The root workspace gate and independent validation pass.
+- [x] The root workspace gate and independent validation pass.

@@ -784,17 +784,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 - **Feature**: bounded-workspace-context
-- **Phase / Task**: VI-001 / T1-T3 complete; validation pending
-- **Completed**: T1,T2,T3
+- **Phase / Task**: VI-001 validated and closed
+- **Completed**: T1, T2, T3, T4
 - **In progress**: none
-- **Next durable step**: Create the local VI commit and run independent fresh-eyes validation.
+- **Next durable step**: Specify the checkpoint-by-recovery-boundary improvement as a separate Value Increment.
 - **Blockers**: none
-- **Uncommitted files**: .specs/DECISIONS.md, .specs/LESSONS.md, .specs/STATE.md, .specs/context/routes.json, .specs/features/INDEX.md, .specs/features/bounded-workspace-context/spec.md, .specs/features/bounded-workspace-context/tasks.md, .specs/lessons.json, AGENTS.md, README.md, scripts/test-workspace-context.py, scripts/workspace-context.py
+- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-26T05:54:56Z
-- **Valid at SHA**: 747499280ed4588a8b28f9fbd4d588016fbf2da0
-- **Publication state**: published
-- **Evidence-only paths**: .specs/features/bounded-workspace-context/spec.md, .specs/features/bounded-workspace-context/tasks.md
+- **Recorded at**: 2026-08-26T06:21:25Z
+- **Valid at SHA**: 6c58e73fa55a743b46f30ef761ec88212d2d027f
+- **Publication state**: unpublished
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/bounded-workspace-context/spec.md, .specs/features/bounded-workspace-context/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
