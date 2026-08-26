@@ -793,8 +793,8 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-26T06:21:25Z
+- **Recorded at**: 2026-08-26T06:26:25Z
 - **Valid at SHA**: 6c58e73fa55a743b46f30ef761ec88212d2d027f
-- **Publication state**: unpublished
+- **Publication state**: published
 - **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/bounded-workspace-context/spec.md, .specs/features/bounded-workspace-context/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
