@@ -826,17 +826,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 - **Feature**: cycle-10-closeout-and-cycle-11-pending-followup
-- **Phase / Task**: Validated and ready to commit
-- **Completed**: Claude review reconciled; Cycle 11 accompaniment corrected; AD-050 indexed; Cycle 10 contract synchronized with nine Portuguese snapshots; focal test passed; workspace gate receipt passed; Portuguese handoff-state mutant killed
-- **In progress**: Validated documentation and contract-test increment is ready to commit
-- **Next durable step**: Create the atomic documentation and contract synchronization commit without including the pre-existing lessons files
+- **Phase / Task**: Completed and validated
+- **Completed**: Commit 0e77586 records the Cycle 11 accompaniment, AD-050 lifecycle, and synchronized Cycle 10 contract test; focal contract passed; aggregate workspace gate passed; Portuguese handoff-state mutant killed
+- **In progress**: none
+- **Next durable step**: Use the Cycle 11 accompaniment for material revalidations and distill its final dispositions when the cycle closes
 - **Blockers**: none
-- **Uncommitted files**: .specs/DECISIONS.md, .specs/LESSONS.md, .specs/STATE.md, .specs/lessons.json, cycles/11/README.md, cycles/11/portal/ACOMPANHAMENTO-DE-PENDENCIAS.md, cycles/README.md, scripts/test-cycle-task-clarifications.py
+- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-26T11:04:00Z
-- **Valid at SHA**: fe0f1b597c4bc77d698822e861f1894346e5d12b
-- **Publication state**: published
+- **Recorded at**: 2026-08-26T11:08:00Z
+- **Valid at SHA**: 0e77586e7bfce16424245c514586262dca365c44
+- **Publication state**: unpublished
 - **Evidence-only paths**: .specs/STATE.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
