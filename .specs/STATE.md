@@ -805,17 +805,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 - **Feature**: versioned-cycle-task-clarifications
-- **Phase / Task**: Validation complete
-- **Completed**: CTC-01..CTC-10; 8 Cycle 10 Portal task records; focused and root gates; independent verifier
+- **Phase / Task**: Published and validated
+- **Completed**: CTC-01..CTC-10; 8 Cycle 10 Portal task records; independent verification; commit 195678d published to origin/main
 - **In progress**: none
-- **Next durable step**: Review and commit the validated workspace increment when desired.
+- **Next durable step**: Start the next workspace improvement from the current main branch.
 - **Blockers**: none
-- **Uncommitted files**: .specs/DECISIONS.md, .specs/LESSONS.md, .specs/features/versioned-cycle-task-clarifications/design.md, .specs/lessons.json, AGENTS.md, README.md, cycles/10/README.md, cycles/10/portal/tasks/INV-3828.md, cycles/10/portal/tasks/INV-3830.md, cycles/10/portal/tasks/INV-3831.md, cycles/10/portal/tasks/INV-3832.md, cycles/10/portal/tasks/INV-3833.md, cycles/10/portal/tasks/INV-3834.md, cycles/10/portal/tasks/INV-3847.md, cycles/10/portal/tasks/INV-3875.md, cycles/10/portal/tasks/README.md, cycles/README.md, projects/portal.md, scripts/test-cycle-task-clarifications.py, scripts/test-workspace.sh
+- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-26T06:54:06Z
-- **Valid at SHA**: 4a7b1f644a69ec911651eb5b3a4b3f0991362eac
+- **Recorded at**: 2026-08-26T07:00:00Z
+- **Valid at SHA**: 195678d905653d179735feead757964409faaa62
 - **Publication state**: published
 - **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/versioned-cycle-task-clarifications/spec.md, .specs/features/versioned-cycle-task-clarifications/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

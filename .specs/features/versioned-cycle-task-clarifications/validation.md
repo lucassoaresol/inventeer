@@ -7,10 +7,10 @@
 ## Delivery Evidence
 
 - **Validation state:** `pass`
-- **Evidence binding:** working tree at `HEAD` `4a7b1f644a69ec911651eb5b3a4b3f0991362eac`; 22-file implementation-content fingerprint `sha256:beb997d4237abf7d36abefe92ea3e0bc9206c910440ac033731ef49f64aab4a0`; porcelain fingerprint excluding this report `sha256:9cf2d68da4a463dac7433ecf11e927e69592a76512b0917e875773e70c38b9d6`
+- **Evidence binding:** published work SHA `195678d905653d179735feead757964409faaa62`; independently verified pre-commit implementation fingerprint `sha256:beb997d4237abf7d36abefe92ea3e0bc9206c910440ac033731ef49f64aab4a0`
 - **Requirement contract:** approved `.specs/features/versioned-cycle-task-clarifications/spec.md` observed on 2026-08-26
 - **Gate state:** green; spec validator, focused contract gate, diff integrity, and aggregate root workspace gate passed. The aggregate receipt was `reusable` after this final report was written.
-- **Pending delivery conditions:** commit and any later publication remain delivery actions outside this validation
+- **Pending delivery conditions:** none; the independently verified increment is committed and published
 - **High-risk paths:** `scripts/test-cycle-task-clarifications.py` and the authority/safety boundaries of `cycles/10/portal/tasks/`
 
 ## Spec-Anchored Acceptance Criteria
