@@ -26,6 +26,12 @@ repos/portal-web
 
 ## Pontos de entrada
 
+### Clarificações históricas do workspace
+
+- `cycles/<ciclo>/portal/tasks/INV-<id>.md` preserva snapshots versionados de clarificação por
+  ciclo. Esses registros exigem revalidação e não substituem Linear nem as fontes abaixo.
+- Primeiro conjunto: [`cycles/10/portal/tasks/`](../cycles/10/portal/tasks/README.md).
+
 ### Produto — `repos/inventeer-ops/artifacts/products/portal`
 
 1. `repos/inventeer-ops/CLAUDE.md` — contexto operacional compartilhado do tenant.

@@ -19,6 +19,7 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | [tlc-spec-driven-3-3-upgrade](./tlc-spec-driven-3-3-upgrade/) | Validated |
 | [unified-dual-engine-delivery](./unified-dual-engine-delivery/) | Validated |
 | [value-oriented-tlc-increments](./value-oriented-tlc-increments/) | Active |
+| [versioned-cycle-task-clarifications](./versioned-cycle-task-clarifications/) | Validated |
 | [workspace-context-routing-review-bundles](./workspace-context-routing-review-bundles/) | Validated |
 | [workspace-mcp-resource-preflight](./workspace-mcp-resource-preflight/) | Validated |
 | [workspace-process-hardening](./workspace-process-hardening/) | Active |

@@ -16,6 +16,7 @@ Esse arquivo registra memória do workspace; specs de produto permanecem nos res
 ├── .claude/skills/        Symlinks para .agents/skills/, porque o Claude não lê .agents/
 ├── AGENTS.md              Instruções do workspace; CLAUDE.md apenas as importa
 ├── .specs/STATE.md        Decisões e handoff deste workspace
+├── cycles/                Clarificações de tasks versionadas por ciclo
 ├── projects/              Pontos de entrada versionados dos projetos
 ├── scripts/               Automações locais do workspace
 ├── session-context/       Documentos efêmeros para a sessão (ignorado pelo Git)
@@ -63,6 +64,20 @@ Uma futura adoção de APEX exige nova decisão depois de uma execução end-to-
 Em outra máquina, use a mesma convenção de paths, mas não presuma que o conteúdo local exista.
 Reconstrua o estado de Linear, Git, PRs e fontes canônicas ou transfira explicitamente um pacote
 temporário sanitizado. `session-context/` é ignorado pelo Git e não sincroniza artifacts.
+
+### Clarificações versionadas por ciclo
+
+Quando a clarificação de uma task produzir um contrato durável, promova somente esse resultado para
+`cycles/<ciclo>/<produto>/tasks/INV-<id>.md`. O registro é um snapshot histórico de planejamento:
+preserva conclusões, decisões, limites, dependências e ponteiros para fontes canônicas, mas não
+substitui Linear, documentação de produto, código, testes ou ADRs.
+
+Não copie o handoff bruto. Cronologia de sessão, artifacts TLC, branches, instruções de PR, logs,
+bundles e evidência operacional continuam em `session-context/` e ignorados. Antes de agir sobre uma
+task, revalide o Linear e as fontes canônicas citadas. Se a mesma INV receber clarificação material
+em outro ciclo, preserve o snapshot anterior e crie um novo registro no ciclo posterior.
+
+O primeiro conjunto está em [`cycles/10/portal/tasks/`](cycles/10/portal/tasks/README.md).
 
 ### Contexto delimitado por rota
 

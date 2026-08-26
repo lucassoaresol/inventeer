@@ -782,19 +782,40 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-26
 - **Status**: active
 
+### AD-049
+- **Decision**: Versionar clarificações duráveis de tasks em
+  `cycles/<ciclo>/<produto>/tasks/INV-<id>.md` como snapshots históricos curados, mantendo todo o
+  estado de sessão e execução sob `session-context/` ignorado.
+- **Reason**: O Ciclo 10 produziu contratos de task, decisões e limites que continuam úteis depois da
+  limpeza da sessão, mas os handoffs de origem também carregam cronologia, estados superados e
+  evidência operacional que não devem virar memória durável nem concorrer com Linear e os repos de
+  produto.
+- **Trade-off**: O workspace passa a manter uma camada histórica adicional que precisa declarar
+  snapshot e autoridade, ser curada antes da promoção e ser revalidada antes do uso. Em troca, a
+  clarificação deixa de depender de uma máquina sem versionar TLC, logs, bundles ou estado corrente.
+- **Alternatives considered**: Versionar `session-context/`; copiar handoffs integrais; guardar
+  clarificações apenas por INV fora dos ciclos; mover os registros para os repos de produto; manter
+  todo o trabalho efêmero.
+- **Scope**: Clarificação de tasks neste workspace. Linear permanece canônico para hierarquia, ciclo,
+  estado, owner, relações e estimates; fontes de produto e repos permanecem canônicos para intenção,
+  código, testes, specs e ADRs. Uma reclarificação material em outro ciclo cria novo snapshot sem
+  mover ou sobrescrever o anterior.
+- **Date**: 2026-08-26
+- **Status**: active
+
 ## Handoff
-- **Feature**: bounded-workspace-context
-- **Phase / Task**: VI-001 validated and closed
-- **Completed**: T1, T2, T3, T4
+- **Feature**: versioned-cycle-task-clarifications
+- **Phase / Task**: Validation complete
+- **Completed**: CTC-01..CTC-10; 8 Cycle 10 Portal task records; focused and root gates; independent verifier
 - **In progress**: none
-- **Next durable step**: Specify the checkpoint-by-recovery-boundary improvement as a separate Value Increment.
+- **Next durable step**: Review and commit the validated workspace increment when desired.
 - **Blockers**: none
-- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
+- **Uncommitted files**: .specs/DECISIONS.md, .specs/LESSONS.md, .specs/features/versioned-cycle-task-clarifications/design.md, .specs/lessons.json, AGENTS.md, README.md, cycles/10/README.md, cycles/10/portal/tasks/INV-3828.md, cycles/10/portal/tasks/INV-3830.md, cycles/10/portal/tasks/INV-3831.md, cycles/10/portal/tasks/INV-3832.md, cycles/10/portal/tasks/INV-3833.md, cycles/10/portal/tasks/INV-3834.md, cycles/10/portal/tasks/INV-3847.md, cycles/10/portal/tasks/INV-3875.md, cycles/10/portal/tasks/README.md, cycles/README.md, projects/portal.md, scripts/test-cycle-task-clarifications.py, scripts/test-workspace.sh
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-26T06:26:25Z
-- **Valid at SHA**: 6c58e73fa55a743b46f30ef761ec88212d2d027f
+- **Recorded at**: 2026-08-26T06:54:06Z
+- **Valid at SHA**: 4a7b1f644a69ec911651eb5b3a4b3f0991362eac
 - **Publication state**: published
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/bounded-workspace-context/spec.md, .specs/features/bounded-workspace-context/validation.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/versioned-cycle-task-clarifications/spec.md, .specs/features/versioned-cycle-task-clarifications/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

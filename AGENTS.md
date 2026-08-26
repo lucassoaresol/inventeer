@@ -19,6 +19,8 @@ Este é o workspace pessoal de engenharia de Lucas Oliveira para projetos da Inv
   testes e decisões técnicas locais.
 - Cada repositório de produto é canônico para seu código, testes, artifacts e specs locais.
 - Os arquivos em `projects/` são ponteiros; não substituem nem copiam fontes canônicas.
+- Os arquivos em `cycles/<ciclo>/<produto>/tasks/` são snapshots versionados de clarificação, não
+  estado operacional nem fonte canônica. Antes de usá-los, revalide Linear e as fontes do produto.
 - `.specs/STATE.md` registra decisões e handoff deste workspace, não specs dos produtos.
 
 Antes de alterar a estrutura, convenções ou workflow deste workspace, leia as decisões ativas em
@@ -121,6 +123,12 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 - Mantenha a divisão: triage compara issues e ondas; `advance-delivery-front` coordena a topologia de
   PRs/tasks; `review-pull-request` revisa a mudança submetida sem mutá-la; a skill de produto prepara
   uma issue; a TLC executa e verifica essa issue.
+- Promova clarificações duráveis de task para
+  `cycles/<ciclo>/<produto>/tasks/INV-<id>.md` somente depois de separar conclusões, decisões,
+  limites, dependências e fontes canônicas da cronologia local. Não promova handoff bruto, estado
+  TLC, logs, branches, instruções de PR, bundles, credenciais, dados de clientes ou outputs de
+  produção. Se uma INV for materialmente reclarificada em outro ciclo, preserve o snapshot anterior
+  e crie outro no novo ciclo; Linear continua canônico para o ciclo e estado atuais.
 - Não duplique o workflow da TLC em skills específicas de projeto.
 - Trate `tlc-spec-driven` como conteúdo vendorizado e atualize-a em commit isolado.
 - Em retrospectivas de skills e fluxo, consulte os históricos locais das duas engines associados a
