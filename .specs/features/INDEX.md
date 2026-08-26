@@ -5,6 +5,7 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | Feature | Lifecycle |
 | --- | --- |
 | [apex-safety-session-audit](./apex-safety-session-audit/) | Validated |
+| [bounded-workspace-context](./bounded-workspace-context/) | Active |
 | [claude-runtime-state-audit](./claude-runtime-state-audit/) | Validated |
 | [consolidated-documentation-topology](./consolidated-documentation-topology/) | Validated |
 | [delivery-front-continuity](./delivery-front-continuity/) | Validated |

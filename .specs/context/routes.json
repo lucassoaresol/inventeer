@@ -1,46 +1,55 @@
 {
-  "version": 1,
+  "version": 2,
+  "estimator": {
+    "unit": "unicode-code-points",
+    "code_points_per_estimated_token": 4
+  },
   "routes": [
     {
       "name": "portal-task",
+      "budget_estimated_tokens": 20000,
       "references": [
-        {"source": "projects/portal.md", "section": "## Pontos de entrada", "reason": "locate Portal product and implementation authority", "gate": "route ownership before repository access"},
-        {"source": ".agents/skills/portal-task-context/SKILL.md", "section": null, "reason": "prepare the selected Portal issue and inherited contract", "gate": "complete product task context before execution"},
-        {"source": ".agents/skills/tlc-spec-driven/SKILL.md", "section": "## Critical Rules (read before acting)", "reason": "execute specification and implementation through the Codex route", "gate": "validate TLC artifacts and tasks before implementation"},
-        {"source": ".specs/DECISIONS.md", "section": null, "reason": "locate active workspace constraints without loading the decision bodies", "gate": "open canonical STATE entries only when relevant"}
+        {"source": "projects/portal.md", "headings": ["## Pontos de entrada"], "reason": "locate Portal product and implementation authority", "gate": "route ownership before repository access"},
+        {"source": ".agents/skills/portal-task-context/SKILL.md", "headings": [], "reason": "prepare the selected Portal issue and inherited contract", "gate": "complete product task context before execution"},
+        {"source": ".agents/skills/tlc-spec-driven/SKILL.md", "headings": ["## Critical Rules (read before acting)"], "reason": "execute specification and implementation through the Codex route", "gate": "validate TLC artifacts and tasks before implementation"},
+        {"source": ".specs/DECISIONS.md", "headings": [], "reason": "locate active workspace constraints without loading the decision bodies", "gate": "open canonical STATE entries only when relevant"}
       ]
     },
     {
       "name": "assistants-task",
+      "budget_estimated_tokens": 20000,
       "references": [
-        {"source": "projects/assistants.md", "section": "## Fontes canônicas", "reason": "locate Assistants product and IDS authority", "gate": "route ownership before repository access"},
-        {"source": ".agents/skills/assistants-task-context/SKILL.md", "section": null, "reason": "prepare the selected Assistants issue and inherited contract", "gate": "complete product task context before execution"},
-        {"source": ".agents/skills/tlc-spec-driven/SKILL.md", "section": "## Critical Rules (read before acting)", "reason": "execute specification and implementation through the Codex route", "gate": "validate TLC artifacts and tasks before implementation"},
-        {"source": ".specs/DECISIONS.md", "section": null, "reason": "locate active workspace constraints without loading the decision bodies", "gate": "open canonical STATE entries only when relevant"}
+        {"source": "projects/assistants.md", "headings": ["## Fontes canônicas"], "reason": "locate Assistants product and IDS authority", "gate": "route ownership before repository access"},
+        {"source": ".agents/skills/assistants-task-context/SKILL.md", "headings": [], "reason": "prepare the selected Assistants issue and inherited contract", "gate": "complete product task context before execution"},
+        {"source": ".agents/skills/tlc-spec-driven/SKILL.md", "headings": ["## Critical Rules (read before acting)"], "reason": "execute specification and implementation through the Codex route", "gate": "validate TLC artifacts and tasks before implementation"},
+        {"source": ".specs/DECISIONS.md", "headings": [], "reason": "locate active workspace constraints without loading the decision bodies", "gate": "open canonical STATE entries only when relevant"}
       ]
     },
     {
       "name": "pr-review",
+      "budget_estimated_tokens": 20000,
       "references": [
-        {"source": "projects/README.md", "section": "## Roteamento de trabalho", "reason": "locate product ownership and the review handoff", "gate": "select one pull request and repository"},
-        {"source": ".agents/skills/review-pull-request/SKILL.md", "section": null, "reason": "apply the read-only SHA-anchored review contract", "gate": "revalidate base and head before verdict"},
-        {"source": ".specs/DECISIONS.md", "section": null, "reason": "locate review and evidence decisions", "gate": "load only decisions that can change the verdict"}
+        {"source": "projects/README.md", "headings": ["## Roteamento de trabalho"], "reason": "locate product ownership and the review handoff", "gate": "select one pull request and repository"},
+        {"source": ".agents/skills/review-pull-request/SKILL.md", "headings": [], "reason": "apply the read-only SHA-anchored review contract", "gate": "revalidate base and head before verdict"},
+        {"source": ".specs/DECISIONS.md", "headings": [], "reason": "locate review and evidence decisions", "gate": "load only decisions that can change the verdict"}
       ]
     },
     {
       "name": "cycle-triage",
+      "budget_estimated_tokens": 20000,
       "references": [
-        {"source": "projects/README.md", "section": "## Roteamento de trabalho", "reason": "locate project sources for the compared issues", "gate": "keep triage read-only across candidate tasks"},
-        {"source": ".agents/skills/triage-project-cycle/SKILL.md", "section": null, "reason": "compare readiness, dependencies, and collisions", "gate": "handoff one selected issue to its product skill"},
-        {"source": ".specs/DECISIONS.md", "section": null, "reason": "locate cross-workspace sequencing constraints", "gate": "open canonical decisions only when relevant"}
+        {"source": "projects/README.md", "headings": ["## Roteamento de trabalho"], "reason": "locate project sources for the compared issues", "gate": "keep triage read-only across candidate tasks"},
+        {"source": ".agents/skills/triage-project-cycle/SKILL.md", "headings": [], "reason": "compare readiness, dependencies, and collisions", "gate": "handoff one selected issue to its product skill"},
+        {"source": ".specs/DECISIONS.md", "headings": [], "reason": "locate cross-workspace sequencing constraints", "gate": "open canonical decisions only when relevant"}
       ]
     },
     {
       "name": "delivery-front",
+      "budget_estimated_tokens": 20000,
       "references": [
-        {"source": "projects/README.md", "section": "## Roteamento de trabalho", "reason": "locate ownership for the active delivery front", "gate": "keep repository and issue state read-only"},
-        {"source": ".agents/skills/advance-delivery-front/SKILL.md", "section": null, "reason": "classify the next task against pending pull requests", "gate": "produce only evidence, contract, and next action"},
-        {"source": ".specs/DECISIONS.md", "section": null, "reason": "locate continuity and review boundaries", "gate": "open canonical decisions only when relevant"}
+        {"source": "projects/README.md", "headings": ["## Roteamento de trabalho"], "reason": "locate ownership for the active delivery front", "gate": "keep repository and issue state read-only"},
+        {"source": ".agents/skills/advance-delivery-front/SKILL.md", "headings": [], "reason": "classify the next task against pending pull requests", "gate": "produce only evidence, contract, and next action"},
+        {"source": ".specs/DECISIONS.md", "headings": [], "reason": "locate continuity and review boundaries", "gate": "open canonical decisions only when relevant"}
       ]
     }
   ]

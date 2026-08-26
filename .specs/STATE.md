@@ -765,19 +765,36 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-18
 - **Status**: active
 
+### AD-048
+- **Decision**: Exigir que as cinco rotas determinísticas de contexto declarem headings e orçamento,
+  exponham medição sanitizada por fonte e falhem fechado quando o contexto selecionado exceder o
+  limite da rota.
+- **Reason**: No recorte recente, 49,02% das sessões Codex tiveram compactação, enquanto o EDREN
+  comprovou que seleção por heading e orçamento verificável reduzem contexto sem duplicar fontes
+  canônicas.
+- **Trade-off**: Manifestos passam a exigir manutenção quando headings mudarem, e a estimativa de
+  quatro code points por token não reproduz o tokenizer de cada modelo. Em troca, drift e excesso de
+  contexto falham de modo determinístico antes de uma sessão carregar fontes amplas.
+- **Alternatives considered**: Manter referências sem medição; copiar sources para snapshots
+  compactos; usar um tokenizer específico por engine; importar integralmente o planner do EDREN.
+- **Scope**: Rotas de preparação e review deste workspace. Não carrega conteúdo automaticamente,
+  não altera repos em `repos/`, Linear, GitHub, engines, skills de produto ou fontes canônicas.
+- **Date**: 2026-08-26
+- **Status**: active
+
 ## Handoff
-- **Feature**: Value-Oriented TLC Increments
-- **Phase / Task**: Validation complete
-- **Completed**: VI-001 at 52af2b4b718b2d48514f26674ecf3ac75bf9be9e; T1-T4 complete; 27/27 criteria verified; 23 root suites and 29 focal checks green; 3/3 final mutants killed; published through evidence commit 2e1089fb3750f21c7db94cd10e909a073aaedfff
+- **Feature**: bounded-workspace-context
+- **Phase / Task**: VI-001 / T1-T3 complete; validation pending
+- **Completed**: T1,T2,T3
 - **In progress**: none
-- **Next durable step**: Review remaining retrospective findings and select the next workflow improvement.
+- **Next durable step**: Create the local VI commit and run independent fresh-eyes validation.
 - **Blockers**: none
-- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
+- **Uncommitted files**: .specs/DECISIONS.md, .specs/LESSONS.md, .specs/STATE.md, .specs/context/routes.json, .specs/features/INDEX.md, .specs/features/bounded-workspace-context/spec.md, .specs/features/bounded-workspace-context/tasks.md, .specs/lessons.json, AGENTS.md, README.md, scripts/test-workspace-context.py, scripts/workspace-context.py
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-19T03:25:36Z
-- **Valid at SHA**: 52af2b4b718b2d48514f26674ecf3ac75bf9be9e
+- **Recorded at**: 2026-08-26T05:54:56Z
+- **Valid at SHA**: 747499280ed4588a8b28f9fbd4d588016fbf2da0
 - **Publication state**: published
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/value-oriented-tlc-increments/spec.md, .specs/features/value-oriented-tlc-increments/validation.md
+- **Evidence-only paths**: .specs/features/bounded-workspace-context/spec.md, .specs/features/bounded-workspace-context/tasks.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

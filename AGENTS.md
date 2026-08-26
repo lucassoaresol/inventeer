@@ -60,6 +60,10 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 
 - As skills requeridas ficam em `.agents/skills/`; não presuma equivalentes globais.
 - Leia completamente o `SKILL.md` selecionado antes de agir.
+- Antes de carregar uma rota registrada, execute `python3 scripts/workspace-context.py check` e
+  `python3 scripts/workspace-context.py plan --route <rota>`. Use `measure --route <rota>` para
+  diagnosticar contribuições por fonte. exit `1` indica orçamento excedido; exit `2` indica contrato
+  inválido. Os comandos emitem somente metadata e nunca substituem a leitura das fontes selecionadas.
 - Use `assistants-task-context` para preparar uma issue do produto Assistants.
 - Use `portal-task-context` para preparar uma issue do Portal e determinar os repos em escopo.
 - Use `triage-project-cycle` para comparar várias issues, ciclos ou frentes antes de selecionar uma

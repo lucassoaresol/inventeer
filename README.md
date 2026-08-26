@@ -64,6 +64,28 @@ Em outra máquina, use a mesma convenção de paths, mas não presuma que o cont
 Reconstrua o estado de Linear, Git, PRs e fontes canônicas ou transfira explicitamente um pacote
 temporário sanitizado. `session-context/` é ignorado pelo Git e não sincroniza artifacts.
 
+### Contexto delimitado por rota
+
+As cinco rotas operacionais do workspace declaram fontes, headings e orçamento em
+`.specs/context/routes.json`. Antes de carregar uma rota, valide todos os contratos e consulte seu
+plano metadata-only:
+
+```bash
+python3 scripts/workspace-context.py check
+python3 scripts/workspace-context.py plan --route portal-task
+```
+
+Para investigar tamanho sem emitir o conteúdo selecionado:
+
+```bash
+python3 scripts/workspace-context.py measure --route portal-task
+```
+
+O estimador conta code points Unicode e arredonda um token estimado para cada quatro pontos. `check`
+retorna exit `1` quando qualquer rota excede seu orçamento; contrato, path ou heading inválido retorna
+exit `2`. `plan` e `measure` exibem somente paths relativos, headings e metadata sanitizada. Eles não
+leem as fontes em nome da skill nem substituem os contratos de ownership.
+
 ### Checkpoints resilientes da TLC
 
 Depois de uma transição Portal + TLC bem-sucedida em qualquer uma das duas engines, atualize o handoff local com
