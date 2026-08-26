@@ -1,35 +1,51 @@
-# Cycle Clarification Register
+# Registro de Clarificações por Ciclo
 
-This directory preserves curated task-clarification snapshots by planning cycle. It is durable
-workspace memory, not a mirror of Linear and not a product specification store.
+Este diretório preserva snapshots curados de clarificação de tasks por ciclo de planejamento. É uma
+memória durável do workspace, não um espelho do Linear nem um repositório de especificações de
+produto.
 
-## Authority
+## Autoridade
 
-- Linear remains canonical for current hierarchy, cycle, state, owner, relations, estimates, and
-  execution.
-- Product documentation remains canonical for product intent and governed contracts.
-- Product repositories remain canonical for code, tests, and local technical decisions.
-- A cycle record preserves what was clarified for planning at a dated snapshot. Revalidate its facts
-  before preparing, implementing, reviewing, or resuming an issue.
+- Linear permanece canônico para hierarquia, ciclo, estado, responsável, relações, estimativas e
+  execução atuais.
+- A documentação de produto permanece canônica para intenção e contratos governados do produto.
+- Os repositórios de produto permanecem canônicos para código, testes e decisões técnicas locais.
+- Um registro de ciclo preserva o que foi clarificado para planejamento em uma data específica.
+  Revalide seus fatos antes de preparar, implementar, revisar ou retomar uma issue.
 
-## Layout
+## Estrutura
 
 ```text
-cycles/<cycle>/<product>/tasks/INV-<id>.md
+cycles/<ciclo>/README.md
+cycles/<ciclo>/<produto>/PENDENCIAS-DE-ENTRADA.md
+cycles/<ciclo>/<produto>/PENDENCIAS-DO-FECHAMENTO.md
+cycles/<ciclo>/<produto>/tasks/INV-<id>.md
 ```
 
-Each task record contains durable conclusions, decisions, scope boundaries, material dependencies,
-and canonical source pointers. Session chronology, TLC artifacts, local process state, logs, review
-bundles, credentials, customer data, and production output remain under ignored
-`session-context/` or in their canonical system.
+Cada registro de task contém conclusões duráveis, decisões, limites de escopo, dependências materiais
+e referências às fontes canônicas. Cronologia de sessão, artifacts TLC, estado de processos locais,
+logs, pacotes de revisão, credenciais, dados de clientes e saídas de produção permanecem em
+`session-context/`, que é ignorado, ou em seus sistemas canônicos.
 
-## Lifecycle
+Os registros de pendências são opcionais e têm duas etapas distintas:
 
-Promote a clarification only after its durable outcome can be separated from the working handoff.
-Do not copy a raw handoff into this tree. If an issue receives materially new clarification in a
-later cycle, preserve the earlier record and create a new snapshot in the later cycle. Linear, not
-the directory location, answers which cycle currently owns the issue.
+1. **Entrada do ciclo:** revalida o que foi herdado contra Linear e fontes atuais, registra o recorte
+   comprometido e separa trabalho canônico, candidata ainda sem issue e decisão encerrada.
+2. **Fechamento do ciclo:** registra descobertas do período, a disposição de cada item e o que será
+   levado à entrada seguinte.
 
-## Available cycles
+Uma pendência versionada não cria backlog. Somente a issue no Linear define owner, prioridade, ciclo
+e execução. O documento de entrada e o de fechamento permanecem como snapshots; o ciclo seguinte
+cria sua própria etapa em vez de reescrever a anterior.
 
-- [Cycle 10](./10/README.md)
+## Ciclo de vida
+
+Promova uma clarificação somente depois de separar seu resultado durável do handoff de trabalho. Não
+copie um handoff bruto para esta árvore. Se uma issue receber uma clarificação materialmente nova em
+outro ciclo, preserve o registro anterior e crie um novo registro no ciclo posterior. O Linear, não
+a localização do diretório, informa qual ciclo contém atualmente a issue.
+
+## Ciclos disponíveis
+
+- [Ciclo 10](./10/README.md)
+- [Ciclo 11](./11/README.md)

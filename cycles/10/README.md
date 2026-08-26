@@ -1,18 +1,27 @@
-# Cycle 10 Clarification Register
+# Registro de Clarificações do Ciclo 10
 
-Cycle 10 is the first cycle whose task clarifications were promoted from local session working
-material into durable workspace memory.
+O Ciclo 10 é o primeiro ciclo cujas clarificações de tasks foram promovidas de materiais locais de
+sessão para a memória durável do workspace.
 
-## Products
+## Produtos
 
-- [Portal tasks](./portal/tasks/README.md)
+- [Tasks do Portal](./portal/tasks/README.md)
+- [Retrospectiva de entrega do Portal — Lucas Oliveira](./portal/RETROSPECTIVE.md)
+- [Retrospectiva de planejamento e capacidade do Portal](./portal/PLANEJAMENTO-E-CAPACIDADE.md)
+- [Pendências e decisões de escopo no fechamento do Portal](./portal/PENDENCIAS-DO-FECHAMENTO.md)
 
-## Snapshot boundary
+## Limite do snapshot
 
-The records capture clarification performed during Cycle 10 and delivery evidence available through
-2026-08-25. They intentionally exclude the broader capacity analysis, follow-up backlog, TLC state,
-PR instructions, and environment logs. Those surfaces have different lifecycles and are not made
-durable by this register.
+Os registros de task capturam a clarificação realizada durante o Ciclo 10 e as evidências de entrega
+disponíveis até 2026-08-25. Os documentos de fechamento acrescentam a reconciliação final do Linear
+e do GitHub observada em 2026-08-26. A análise de capacidade e os achados incidentais foram
+promovidos somente como sínteses históricas reconciliadas; o material bruto de sessão, o estado TLC,
+instruções de PR e logs de ambiente continuam excluídos. Uma pendência documentada não substitui uma
+issue no Linear.
 
-Before using any record, revalidate the issue in Linear and inspect the current canonical product
-and repository sources named by that record.
+O recorte do Portal atribuído a Lucas Oliveira foi fechado em 2026-08-26 com nove tasks em `Done` e
+todas as quinze PRs vinculadas merged. A iniciativa pai e o projeto de Tickets permanecem abertos
+porque o trabalho restante passou para o Ciclo 11.
+
+Antes de usar qualquer registro, revalide a issue no Linear e consulte as fontes canônicas de
+produto e repositório indicadas nele.
