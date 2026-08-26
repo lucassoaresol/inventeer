@@ -55,3 +55,4 @@ trade-offs, and supersession history remain there. Decision drafts that have not
 | [AD-047](STATE.md#ad-047) | active |
 | [AD-048](STATE.md#ad-048) | active |
 | [AD-049](STATE.md#ad-049) | active |
+| [AD-050](STATE.md#ad-050) | active |

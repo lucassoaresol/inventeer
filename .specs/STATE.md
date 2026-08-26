@@ -803,19 +803,40 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-26
 - **Status**: active
 
+### AD-050
+- **Decision**: Registrar pendências duráveis de produto por ciclo em três superfícies opcionais e
+  distintas: entrada congelada, acompanhamento evolutivo e fechamento congelado. Revalidações após
+  a entrada são acrescentadas ao acompanhamento com evidência e limites explícitos; o fechamento
+  destila a disposição final e somente itens ainda materiais seguem para a entrada seguinte.
+- **Reason**: O review cruzado do início do Ciclo 11 produziu evidência nova para achados herdados
+  sem mudar o que era conhecido na virada do ciclo. Reescrever o documento de entrada apagaria a
+  evolução histórica, enquanto esperar o fechamento deixaria decisões intermediárias dependentes de
+  uma sessão local.
+- **Trade-off**: Cada produto pode manter um documento adicional durante o ciclo e precisa evitar
+  duplicar prosa entre as três etapas. Em troca, o histórico distingue baseline, evolução e
+  disposição final sem criar backlog paralelo ou promover transcripts.
+- **Alternatives considered**: Reescrever o snapshot de entrada; abrir o documento de fechamento no
+  primeiro dia; manter acompanhamento apenas em `session-context/`; registrar toda observação como
+  issue Linear.
+- **Scope**: Documentação histórica sob `cycles/`. Linear permanece canônico para owner, prioridade,
+  ciclo e execução; repos e artifacts de produto permanecem canônicos para código, testes, decisões
+  técnicas e contratos. O acompanhamento não autoriza mudanças fora do workspace raiz.
+- **Date**: 2026-08-26
+- **Status**: active
+
 ## Handoff
-- **Feature**: versioned-cycle-task-clarifications
-- **Phase / Task**: Published and validated
-- **Completed**: CTC-01..CTC-10; 8 Cycle 10 Portal task records; independent verification; commit 195678d published to origin/main
-- **In progress**: none
-- **Next durable step**: Start the next workspace improvement from the current main branch.
+- **Feature**: cycle-10-closeout-and-cycle-11-pending-followup
+- **Phase / Task**: Validated and ready to commit
+- **Completed**: Claude review reconciled; Cycle 11 accompaniment corrected; AD-050 indexed; Cycle 10 contract synchronized with nine Portuguese snapshots; focal test passed; workspace gate receipt passed; Portuguese handoff-state mutant killed
+- **In progress**: Validated documentation and contract-test increment is ready to commit
+- **Next durable step**: Create the atomic documentation and contract synchronization commit without including the pre-existing lessons files
 - **Blockers**: none
-- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
+- **Uncommitted files**: .specs/DECISIONS.md, .specs/LESSONS.md, .specs/STATE.md, .specs/lessons.json, cycles/11/README.md, cycles/11/portal/ACOMPANHAMENTO-DE-PENDENCIAS.md, cycles/README.md, scripts/test-cycle-task-clarifications.py
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-26T07:00:00Z
-- **Valid at SHA**: 195678d905653d179735feead757964409faaa62
+- **Recorded at**: 2026-08-26T11:04:00Z
+- **Valid at SHA**: fe0f1b597c4bc77d698822e861f1894346e5d12b
 - **Publication state**: published
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/versioned-cycle-task-clarifications/spec.md, .specs/features/versioned-cycle-task-clarifications/validation.md
+- **Evidence-only paths**: .specs/STATE.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

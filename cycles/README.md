@@ -18,6 +18,7 @@ produto.
 ```text
 cycles/<ciclo>/README.md
 cycles/<ciclo>/<produto>/PENDENCIAS-DE-ENTRADA.md
+cycles/<ciclo>/<produto>/ACOMPANHAMENTO-DE-PENDENCIAS.md
 cycles/<ciclo>/<produto>/PENDENCIAS-DO-FECHAMENTO.md
 cycles/<ciclo>/<produto>/tasks/INV-<id>.md
 ```
@@ -27,16 +28,19 @@ e referências às fontes canônicas. Cronologia de sessão, artifacts TLC, esta
 logs, pacotes de revisão, credenciais, dados de clientes e saídas de produção permanecem em
 `session-context/`, que é ignorado, ou em seus sistemas canônicos.
 
-Os registros de pendências são opcionais e têm duas etapas distintas:
+Os registros de pendências são opcionais e têm três etapas distintas:
 
 1. **Entrada do ciclo:** revalida o que foi herdado contra Linear e fontes atuais, registra o recorte
    comprometido e separa trabalho canônico, candidata ainda sem issue e decisão encerrada.
-2. **Fechamento do ciclo:** registra descobertas do período, a disposição de cada item e o que será
+2. **Acompanhamento:** acumula revalidações materiais ocorridas depois da entrada, com evidência e
+   limites explícitos, sem reescrever o snapshot inicial nem presumir backlog.
+3. **Fechamento do ciclo:** registra descobertas do período, a disposição de cada item e o que será
    levado à entrada seguinte.
 
 Uma pendência versionada não cria backlog. Somente a issue no Linear define owner, prioridade, ciclo
-e execução. O documento de entrada e o de fechamento permanecem como snapshots; o ciclo seguinte
-cria sua própria etapa em vez de reescrever a anterior.
+e execução. O documento de entrada e o de fechamento permanecem como snapshots; o acompanhamento
+pode evoluir durante o ciclo e é destilado no fechamento. O ciclo seguinte cria sua própria etapa em
+vez de reescrever a anterior.
 
 ## Ciclo de vida
 

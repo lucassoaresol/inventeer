@@ -18,20 +18,23 @@ EXPECTED_TASKS = {
     "INV-3834",
     "INV-3847",
     "INV-3875",
+    "INV-3941",
 }
 REQUIRED_HEADINGS = {
-    "## Authority and freshness",
-    "## Durable clarification",
-    "## Decisions preserved",
-    "## Boundaries and dependencies",
-    "## Canonical sources to revalidate",
+    "## Autoridade e atualidade",
+    "## Clarificação durável",
+    "## Decisões preservadas",
+    "## Limites e dependências",
+    "## Fontes canônicas a revalidar",
 }
 FORBIDDEN_PATTERNS = {
     "session-context dependency": re.compile(r"session-context/portal/", re.I),
     "session identifier": re.compile(
         r"\b(?:session|sessão)\s+(?:Codex|Claude\s+)?[0-9a-f]{8}-[0-9a-f-]{20,}", re.I
     ),
-    "TLC handoff state": re.compile(r"\*\*(?:Phase / Task|Next step|Blockers)\*\*"),
+    "TLC handoff state": re.compile(
+        r"\*\*(?:Phase / Task|Next step|Blockers|Fase / Tarefa|Próximo passo|Bloqueios)\*\*"
+    ),
     "review bundle": re.compile(r"\.zip\b|/review/", re.I),
     "raw log path": re.compile(r"(?:api|web)\.log\b", re.I),
     "runtime or branch instruction": re.compile(
@@ -82,14 +85,14 @@ for path in task_files:
     missing = sorted(REQUIRED_HEADINGS - set(sections))
     if missing:
         fail(f"{path.relative_to(ROOT)} is missing headings: {missing}")
-    if not re.search(r"Linear.{0,120}canonical", text, re.S):
+    if not re.search(r"Linear.{0,120}canônic", text, re.S):
         fail(f"{path.relative_to(ROOT)} does not preserve Linear authority")
     if "- **Snapshot:** 2026-" not in text:
         fail(f"{path.relative_to(ROOT)} does not declare a dated snapshot")
-    canonical_sources = sections["## Canonical sources to revalidate"]
+    canonical_sources = sections["## Fontes canônicas a revalidar"]
     if not re.search(r"^- Linear:", canonical_sources, re.M):
         fail(f"{path.relative_to(ROOT)} does not name Linear in its canonical sources")
-    if not re.search(r"^- .*(?:`repos/|Portal product|product intent)", canonical_sources, re.M):
+    if not re.search(r"^- .*(?:`repos/|Intenção do Portal|intenção de produto)", canonical_sources, re.M):
         fail(f"{path.relative_to(ROOT)} does not name an applicable product or repository source")
     for label, pattern in FORBIDDEN_PATTERNS.items():
         if pattern.search(text):
@@ -119,10 +122,10 @@ if not re.search(
 print("ok 5 - agent instructions enforce historical status and canonical revalidation")
 
 cycles_readme = (ROOT / "cycles/README.md").read_text(encoding="utf-8")
-if "materially new clarification" not in cycles_readme:
+if "clarificação materialmente nova" not in cycles_readme:
     fail("cycles lifecycle does not preserve cross-cycle clarification history")
-if "Linear, not" not in cycles_readme:
+if "O Linear, não" not in cycles_readme:
     fail("cycles lifecycle does not distinguish directory history from current Linear cycle")
-if "Do not copy a raw handoff" not in cycles_readme:
+if "copie um handoff bruto" not in cycles_readme:
     fail("cycles lifecycle does not forbid raw handoff promotion")
 print("ok 6 - promotion and cross-cycle lifecycle are explicit")

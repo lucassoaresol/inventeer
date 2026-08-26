@@ -6,6 +6,7 @@ substituir Linear, os repositórios de produto ou a documentação canônica do 
 ## Produtos
 
 - [Entrada de pendências do Portal](./portal/PENDENCIAS-DE-ENTRADA.md)
+- [Acompanhamento de pendências do Portal](./portal/ACOMPANHAMENTO-DE-PENDENCIAS.md)
 
 ## Estado deste registro
 
