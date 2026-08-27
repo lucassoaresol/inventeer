@@ -48,7 +48,24 @@ SIGNALS = {
     "review_finding": "External review finding independently confirmed by the Verifier",
 }
 
-DEFAULTS = {"promote_threshold": 2, "window_days": 45, "quarantine_threshold": 2}
+DEFAULTS = {
+    "promote_threshold": 2,
+    "window_days": 45,
+    "quarantine_threshold": 2,
+    "merge_similarity": 0.60,
+}
+
+# Function words carry no lesson content and inflate similarity between unrelated lessons, which
+# would eat the safety margin the threshold depends on.
+STOPWORDS = frozenset(
+    """a an the and or of to in on for it its is are be that this those these with as at by from
+    not no only never every each any when where which who whom whose than then so if but do does
+    did done can could should would may might must will shall have has had""".split()
+)
+
+
+class _StoreError(Exception):
+    """Store contract violation. Raised before any write so the file is left untouched."""
 
 
 def _now():
@@ -73,14 +90,9 @@ def _render_path(root):
 def _load(root):
     path = _store_path(root)
     if not os.path.exists(path):
-        return {
-            "schema": 1,
-            "promote_threshold": DEFAULTS["promote_threshold"],
-            "window_days": DEFAULTS["window_days"],
-            "quarantine_threshold": DEFAULTS["quarantine_threshold"],
-            "next_id": 1,
-            "lessons": [],
-        }
+        # Derived from DEFAULTS rather than restated, so a new tuning key cannot exist in one
+        # construction path and be missing from the other.
+        return {"schema": 1, **DEFAULTS, "next_id": 1, "lessons": []}
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     for k, v in DEFAULTS.items():
@@ -88,6 +100,11 @@ def _load(root):
     data.setdefault("schema", 1)
     data.setdefault("next_id", 1)
     data.setdefault("lessons", [])
+    threshold = data["merge_similarity"]
+    if isinstance(threshold, bool) or not isinstance(threshold, (int, float)):
+        raise _StoreError(f"merge_similarity must be a number, got {threshold!r}")
+    if not 0.0 <= threshold <= 1.0:
+        raise _StoreError(f"merge_similarity must be within 0.0..1.0, got {threshold!r}")
     return data
 
 
@@ -148,6 +165,23 @@ def _key(signal, text):
     return signal + "::" + _norm(text)
 
 
+def _content_tokens(text):
+    """Content words of a lesson, for similarity comparison.
+
+    Reuses _norm so both merge axes agree on casing, diacritics and punctuation. Drops stopwords
+    and tokens shorter than three characters, which are function words in every language the
+    normalizer keeps.
+    """
+    return {w for w in _norm(text).split() if len(w) > 2 and w not in STOPWORDS}
+
+
+def _similarity(left, right):
+    """Jaccard index over content tokens. 0.0 when either side has no content."""
+    if not left or not right:
+        return 0.0
+    return len(left & right) / len(left | right)
+
+
 def _auto_prune(data):
     """Drop candidates that never recurred within the window. Mutates data."""
     threshold = data["promote_threshold"]
@@ -167,11 +201,37 @@ def _auto_prune(data):
 
 
 def _find(data, signal, text):
+    """Locate the lesson an incoming signal restates.
+
+    Exact normalized-key match first - it is the cheap, unambiguous case. Otherwise fall back to
+    token-set similarity within the same signal: a lesson reworded in a later feature is the same
+    lesson, and requiring identical text is why recurrence almost never rose. Signals never merge
+    across each other, because the signal is what grounds the lesson in a verification failure.
+    """
     k = _key(signal, text)
     for l in data["lessons"]:
         if l.get("key") == k:
             return l
-    return None
+
+    threshold = data["merge_similarity"]
+    incoming = _content_tokens(text)
+    if not incoming:
+        return None
+
+    best = None
+    best_score = 0.0
+    for l in data["lessons"]:
+        if l.get("signal") != signal:
+            continue
+        score = _similarity(incoming, _content_tokens(l.get("text", "")))
+        if score < threshold:
+            continue
+        # Highest similarity wins; ties break on lowest id so the result cannot depend on
+        # store order.
+        if best is None or score > best_score or (score == best_score and l["id"] < best["id"]):
+            best = l
+            best_score = score
+    return best
 
 
 def _render(root, data):
@@ -180,7 +240,7 @@ def _render(root, data):
     lines.append("")
     lines.append("> Machine-owned. Do NOT hand-edit. Changes are overwritten on the next `lessons.py` write.")
     lines.append("> Canonical state lives in `.specs/lessons.json`. Edit lessons only via the script.")
-    lines.append(f"> promote_threshold={data['promote_threshold']} distinct features · window_days={data['window_days']} · quarantine_threshold={data['quarantine_threshold']}")
+    lines.append(f"> promote_threshold={data['promote_threshold']} distinct features · window_days={data['window_days']} · quarantine_threshold={data['quarantine_threshold']} · merge_similarity={data['merge_similarity']}")
     lines.append("")
 
     by_status = {"confirmed": [], "candidate": [], "quarantined": []}
@@ -406,7 +466,11 @@ def main(argv=None):
 
     args = p.parse_args(argv)
     root = os.path.abspath(args.root)
-    return args.fn(root, args)
+    try:
+        return args.fn(root, args)
+    except _StoreError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":
