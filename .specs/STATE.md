@@ -864,18 +864,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Status**: active
 
 ## Handoff
-- **Feature**: workspace-learning-and-skill-hygiene
+- **Feature**: dual-engine-skill-parity
 - **Phase / Task**: Completed and validated
-- **Completed**: Behavioral commits 5c88372 (orphan pruning) and 2254304 (lesson similarity merge); 27 orphan apex-* directories removed; lessons L-009..L-030 recorded in 632a492 and L-031..L-032 distilled in dfcc4ae; validation records 20 of 20 criteria and 8 of 8 killed mutants; aggregate gate passed
+- **Completed**: Behavioral commit c7d3547 adds scripts/test-skill-engine-parity.py to the aggregate gate, now 29 suites; the five previously unexercised skills were smoke-tested under Claude (context routes, referenced scripts, repos, github and Linear MCP reads, a real review bundle); parity sensor killed 8 of 8 mutants; pre-commit hook installed via core.hooksPath=.githooks
 - **In progress**: none
-- **Next durable step**: Decide whether the retrospective findings still open - dual-engine skill parity, symmetric v4 audit contract, context preflight inside the skills, and the AD-046 evidence allowlist named in validation Findings 3 - become AD entries
+- **Next durable step**: Decide whether the remaining retrospective findings - symmetric v4 audit contract for Claude sessions, context preflight moved inside the skills, and the AD-046 evidence allowlist - become AD entries
 - **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-27T17:55:14Z
-- **Valid at SHA**: dfcc4ae7e21de53c186f317d812687141e5668bc
+- **Recorded at**: 2026-08-27T18:06:28Z
+- **Valid at SHA**: c7d3547047aedd43168e99c655df85e53978f114
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/workspace-learning-and-skill-hygiene/spec.md, .specs/features/workspace-learning-and-skill-hygiene/tasks.md, .specs/features/workspace-learning-and-skill-hygiene/validation.md
+- **Evidence-only paths**: .specs/STATE.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
