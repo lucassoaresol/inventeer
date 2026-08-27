@@ -95,7 +95,7 @@ Record the merge SHA/date and observation cutoff. Use:
 
 Never report `no-confirmed-escape` as proven zero escaped defects.
 
-## Pilot metrics
+## Review metrics
 
 Aggregate only comparable, evidence-backed states:
 
@@ -117,20 +117,21 @@ not use approval count, thread resolution, or absence of later commits as a prox
 Do not reward fewer Linear reads by itself: the goal is to remove repeated or irrelevant traversal
 without omitting inherited requirements that can change the verdict.
 
-## Sanitized pilot record
+## Sanitized review record
 
 Append one closed-schema JSON record through `scripts/pr-review-pilot.py`; never write the ledger by
-hand. The schema permits identity SHAs, timestamps, enum states, issue identifiers, expansion reason
-enums, check states, and finding IDs/severity/outcome only. It intentionally has no field for review
-prose, comments, diffs, code, credentials, customer data, production output, or transcripts. Store
-the resulting JSONL only below ignored `session-context/review-pilot/`; it is local, ephemeral,
-non-canonical, and eligible for deletion after the pilot decision is closed.
+hand. Schema v2 permits identity SHAs, timestamps, enum states, issue identifiers, expansion reason
+enums, check states, sanitized local-validation reason enums, and finding IDs/severity/outcome only.
+It intentionally has no field for review prose, comments, diffs, code, credentials, customer data,
+production output, or transcripts. Schema-v1 pilot records remain readable and comparable. Store the
+resulting JSONL only below ignored `session-context/review-pilot/`; it is local, ephemeral, and
+non-canonical.
 
 Use this exact shape; values remain subject to the helper's enums and validation:
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "repository": "inventeer/portal-api",
   "pr": 280,
   "observed_at": "2026-08-07T12:00:00Z",
@@ -147,8 +148,22 @@ Use this exact shape; values remain subject to the helper's enums and validation
     "reads": 1,
     "expansions": []
   },
-  "checks": {"remote": "passed", "local": "unbound"},
+  "checks": {
+    "remote": "passed",
+    "local": "passed",
+    "local_reason": null,
+    "local_head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
   "findings": [],
   "post_merge": {"status": "not-observed", "cutoff": null}
 }
 ```
+
+For a result without head-bound validation, `local_head_sha` is null and `local_reason` is the exact
+state-compatible enum:
+
+- `unbound`: `exact-head-unavailable`;
+- `not-run`: `validation-command-unavailable`, `resource-limit`, or `review-stale`;
+- `not-applicable`: `validation-not-proportionate`.
+
+`passed` and `failed` require `local_head_sha` equal to `final_head_sha` and a null reason.

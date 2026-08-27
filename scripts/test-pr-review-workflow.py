@@ -24,6 +24,8 @@ for phrase in (
     "current base SHA and head SHA",
     "If either SHA changed",
     "Never modify product files, branches, worktrees, GitHub, or Linear",
+    "materialize-review-head.sh",
+    "exact-head-unavailable",
     "Do not post comments, request changes, approve, merge",
 ):
     assert phrase in skill_flat, f"SKILL.md omits guardrail: {phrase}"
@@ -106,10 +108,24 @@ for phrase in (
     "0 escapes confirmados",
     "24 das 41 reviews estreitas",
     "215 leituras de issue",
-    "**Status**: active",
+    "**Status**: superseded by AD-053",
 ):
     assert phrase in ad_038_flat, f"AD-038 omits pilot evidence: {phrase}"
 ok(10, "AD-038 records review, Linear, and prospective pilot evidence")
+
+ad_053 = state.split("### AD-053", 1)[1].split("## Handoff", 1)[0]
+ad_053_flat = " ".join(ad_053.split())
+for phrase in (
+    "9 PRs",
+    "7 findings decididos",
+    "0 falsos positivos decididos",
+    "3 validações locais sem vínculo",
+    "schema v2",
+    "materialização efêmera",
+    "**Status**: active",
+):
+    assert phrase in ad_053_flat, f"AD-053 omits promoted review evidence: {phrase}"
+ok(11, "AD-053 promotes review with exact-head evidence and sanitized schema v2")
 
 pilot_helper = ROOT / "scripts/pr-review-pilot.py"
 workspace_gate = ROOT / "scripts/test-workspace.sh"
@@ -118,6 +134,7 @@ assert workspace_gate.is_file()
 assert "session-context/review-pilot" in skill
 assert "pr-review-pilot.py record" in skill
 assert "test-pr-review-pilot.py" in workspace_gate.read_text(encoding="utf-8")
-ok(11, "review pilot has sanitized persistence and a unified workspace gate")
+assert "test-materialize-review-head.sh" in workspace_gate.read_text(encoding="utf-8")
+ok(12, "review evidence has sanitized persistence, materialization, and a unified gate")
 
-print("\n11 teste(s) passaram.")
+print("\n12 teste(s) passaram.")

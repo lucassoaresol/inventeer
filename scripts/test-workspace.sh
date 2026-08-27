@@ -22,6 +22,7 @@ run_suite "consolidated documentation topology" bash scripts/test-consolidated-d
 run_suite "Portal TLC session artifacts" bash scripts/test-portal-tlc-session-artifacts.sh
 run_suite "PR review pilot behavior" python3 scripts/test-pr-review-pilot.py
 run_suite "PR review workflow contract" python3 scripts/test-pr-review-workflow.py
+run_suite "PR review exact-head materializer" bash .agents/skills/review-pull-request/scripts/test-materialize-review-head.sh
 run_suite "session history audit" python3 scripts/test-session-history-audit.py
 run_suite "workspace Handoff freshness" python3 scripts/test-workspace-handoff.py
 run_suite "session resilience contract" bash scripts/test-session-resilience-contract.sh

@@ -569,7 +569,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
   produto, Linear ou GitHub, não substitui validação do executor e não transforma métricas do piloto
   em fonte canônica de produto.
 - **Date**: 2026-08-07
-- **Status**: active
+- **Status**: superseded by AD-053
 
 ### AD-039
 - **Decision**: Endurecer o piloto `review-pull-request` revalidando base e head SHA antes do
@@ -863,19 +863,48 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-27
 - **Status**: active
 
+### AD-053
+- **Decision**: Promover `review-pull-request` de piloto para workflow read-only adotado após nove
+  PRs observadas; exigir que validações locais positivas usem o head final exato e que ausências
+  usem motivos enumerados no schema v2; permitir materialização efêmera em clone isolado sem alterar
+  o worktree-fonte. Exigir também provenance explícita do Verifier TLC, identidade semântica
+  `pattern_key` para novas lessons e uma skill read-only dedicada a retrospectivas sanitizadas de
+  uso e comportamento das skills nos dois engines.
+- **Reason**: O piloto registrou 9 PRs, 7 findings decididos aceitos ou corrigidos, 0 falsos
+  positivos decididos e uma review invalidada por mudança de head. A expansão progressiva do Linear
+  ficou restrita à issue alvo em sete reviews e expandiu uma vez por DoD herdado. A lacuna restante
+  foi operacional: 3 validações locais sem vínculo ao head e 2 não executadas. A retrospectiva da
+  sessão Claude `6f9dd839…` também encontrou relatórios TLC sem subagente independente e 31 lessons
+  candidates sem recorrência útil, enquanto o workflow de auditoria reapareceu em cinco decisões
+  anteriores sem uma skill owner.
+- **Trade-off**: Reviews que precisam de validação local podem criar um clone temporário e schema v2
+  adiciona enums, mas o repo-fonte permanece intocado e a ausência de validação deixa de ser ambígua.
+  Novas validações TLC e lessons ganham metadata obrigatória; artifacts históricos permanecem
+  compatíveis. A nova skill amplia a superfície em uma entrada deliberada depois da consolidação da
+  AD-051, sem restaurar wrappers diagnósticos.
+- **Alternatives considered**: Encerrar o piloto sem promover; validar branches locais sem vínculo;
+  fazer fetch no clone de produto; manter reasons em prosa livre; reduzir o limiar textual das
+  lessons; manter retrospectivas somente em `AGENTS.md`; criar outra skill de review.
+- **Scope**: Workflow e evidência local do workspace raiz. Não autoriza escrita em GitHub, Linear,
+  histories, Figma ou repos de produto; não persiste transcripts, credenciais, comentários, diffs,
+  código, dados de clientes nem outputs de produção. A materialização por URL continua sujeita à
+  aprovação de rede do engine.
+- **Date**: 2026-08-27
+- **Status**: active
+
 ## Handoff
-- **Feature**: routed-skill-context-preflight
-- **Phase / Task**: Completed and validated
-- **Completed**: Behavioral commit fec9f26 moves the context preflight into the five routed skills that lacked it, each planning its own route, and adds a manifest-derived detector; validation records 12 of 12 criteria, 4 of 4 edge cases and 7 of 7 killed mutants; aggregate gate passed at 29 suites
-- **In progress**: none
-- **Next durable step**: Re-run the sanitized session audit after a few cycles to measure whether the declared preflight actually raises invocation, and decide whether AD-048 should be revisited now that abort rates are comparable across engines
+- **Feature**: skill-behavior-retrospective-hardening
+- **Phase / Task**: Execute / T3 complete, T4 next
+- **Completed**: VI-001 b06bca3; VI-002 b70cfe4; T3 exact-head materializer passed 5 integration scenarios
+- **In progress**: VI-003 review evidence binding
+- **Next durable step**: Implement T4 schema-v2 review evidence and pilot promotion
 - **Blockers**: none
-- **Uncommitted files**: none
+- **Uncommitted files**: .agents/skills/review-pull-request/scripts/materialize-review-head.sh, .agents/skills/review-pull-request/scripts/test-materialize-review-head.sh, .specs/features/skill-behavior-retrospective-hardening/tasks.md
 - **Branch**: main
-- **Contract status**: PASS
-- **Operational status**: PASS
-- **Recorded at**: 2026-08-27T19:17:56Z
-- **Valid at SHA**: fec9f265e6fa6bb161094086b65de27598d39479
+- **Contract status**: UNPROVEN
+- **Operational status**: UNPROVEN
+- **Recorded at**: 2026-08-27T20:48:58Z
+- **Valid at SHA**: b70cfe42c96921f5ff8d1f62198da1fd5964e08b
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/routed-skill-context-preflight/spec.md, .specs/features/routed-skill-context-preflight/tasks.md, .specs/features/routed-skill-context-preflight/validation.md
+- **Evidence-only paths**: .specs/features/skill-behavior-retrospective-hardening/spec.md, .specs/features/skill-behavior-retrospective-hardening/tasks.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

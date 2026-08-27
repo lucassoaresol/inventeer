@@ -143,9 +143,9 @@ both engine surfaces.
 | SBRH-02 | Historical TLC compatibility | DECISION | Approved retrospective recommendation | Execute | Implementing |
 | SBRH-03 | Semantic lesson recurrence | DECISION | 31 candidates, one confirmed, all recurrence one | Execute | Implementing |
 | SBRH-04 | Lesson input safety and compatibility | SAFETY | Machine-owned store and existing schema | Execute | Implementing |
-| SBRH-05 | Exact-head review checkout | DECISION | 3/9 unbound local validations | Tasks | Pending |
-| SBRH-06 | Review ledger v2 and v1 compatibility | INHERITED | AD-038/AD-039 pilot evidence | Tasks | Pending |
-| SBRH-07 | Pilot promotion decision | DECISION | Nine reviewed PRs satisfy the pilot size | Tasks | Pending |
+| SBRH-05 | Exact-head review checkout | DECISION | 3/9 unbound local validations | Execute | Implementing |
+| SBRH-06 | Review ledger v2 and v1 compatibility | INHERITED | AD-038/AD-039 pilot evidence | Execute | Implementing |
+| SBRH-07 | Pilot promotion decision | DECISION | Nine reviewed PRs satisfy the pilot size | Execute | Implementing |
 | SBRH-08 | Structured Claude invocation metrics | DECISION | Claude `Skill` tool event is observable | Tasks | Pending |
 | SBRH-09 | Unsupported Codex invocation semantics | INHERITED | Audit contract v4 null semantics | Tasks | Pending |
 | SBRH-10 | Conservative load-proxy classification | SAFETY | Raw name/path searches overcount usage | Tasks | Pending |
@@ -156,7 +156,7 @@ both engine surfaces.
 
 | Dimension | Resolution |
 | --- | --- |
-| Input validation & bounds | Exact enum, SHA, pattern-key, reason-length, UTC-window, and path validation are required. |
+| Input validation & bounds | Exact enum, SHA, pattern-key, reason-state compatibility, UTC-window, and path validation are required. |
 | Compatibility & representation | Historical validation, schema-v1 review records, legacy lessons, and receipt null semantics remain readable. |
 | Failure / partial-failure states | Every helper fails closed before claiming evidence; incomplete evidence is explicit. |
 | Idempotency / retry / duplicate handling | Lesson recurrence uses distinct features; materialization rejects a populated destination; audit remains read-only. |

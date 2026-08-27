@@ -29,7 +29,8 @@ TOP_FIELDS = {
 }
 LINEAR_FIELDS = {"target_issue", "target_updated_at", "scope", "reads", "expansions"}
 EXPANSION_FIELDS = {"issue", "reason"}
-CHECK_FIELDS = {"remote", "local"}
+CHECK_FIELDS_V1 = {"remote", "local"}
+CHECK_FIELDS_V2 = {"remote", "local", "local_reason", "local_head_sha"}
 FINDING_FIELDS = {"id", "severity", "outcome"}
 POST_MERGE_FIELDS = {"status", "cutoff"}
 
@@ -38,7 +39,20 @@ GITHUB_REVIEW_EVIDENCE = {"threads", "approval-only", "none", "unavailable"}
 LINEAR_SCOPES = {"none", "target-only", "expanded", "reused", "unavailable"}
 EXPANSION_REASONS = {"inherited-dod", "dependency", "ids", "hierarchy", "ownership"}
 REMOTE_CHECKS = {"passed", "failed", "pending", "unavailable"}
-LOCAL_CHECKS = {"passed", "failed", "not-run", "unbound"}
+LOCAL_CHECKS_V1 = {"passed", "failed", "not-run", "unbound"}
+LOCAL_CHECKS = LOCAL_CHECKS_V1 | {"not-applicable"}
+LOCAL_REASONS = {
+    "exact-head-unavailable",
+    "validation-not-proportionate",
+    "validation-command-unavailable",
+    "resource-limit",
+    "review-stale",
+}
+LOCAL_REASONS_BY_STATE = {
+    "unbound": {"exact-head-unavailable"},
+    "not-run": {"validation-command-unavailable", "resource-limit", "review-stale"},
+    "not-applicable": {"validation-not-proportionate"},
+}
 SEVERITIES = {"P0", "P1", "P2", "P3"}
 OUTCOMES = {
     "accepted-fixed",
@@ -97,8 +111,9 @@ def _require_timestamp(value, label, nullable=False):
 def validate_record(record):
     """Return a validated record without adding or dropping fields."""
     _require_exact_fields(record, TOP_FIELDS, "record")
-    if record["schema_version"] != 1:
-        raise ValueError("schema_version must be 1")
+    schema_version = record["schema_version"]
+    if schema_version not in {1, 2}:
+        raise ValueError("schema_version must be 1 or 2")
     if not isinstance(record["repository"], str) or not REPOSITORY_RE.fullmatch(
         record["repository"]
     ):
@@ -145,9 +160,32 @@ def validate_record(record):
         raise ValueError("none or unavailable Linear scope requires zero reads")
 
     checks = record["checks"]
-    _require_exact_fields(checks, CHECK_FIELDS, "checks")
+    _require_exact_fields(
+        checks, CHECK_FIELDS_V1 if schema_version == 1 else CHECK_FIELDS_V2, "checks"
+    )
     _require_enum(checks["remote"], REMOTE_CHECKS, "checks.remote")
-    _require_enum(checks["local"], LOCAL_CHECKS, "checks.local")
+    _require_enum(
+        checks["local"], LOCAL_CHECKS_V1 if schema_version == 1 else LOCAL_CHECKS,
+        "checks.local",
+    )
+    if schema_version == 2:
+        local_state = checks["local"]
+        local_reason = checks["local_reason"]
+        local_head_sha = checks["local_head_sha"]
+        if local_state in {"passed", "failed"}:
+            if local_reason is not None:
+                raise ValueError("head-bound local validation requires null checks.local_reason")
+            if local_head_sha != record["final_head_sha"]:
+                raise ValueError("head-bound local validation must use the final head SHA")
+        else:
+            if local_head_sha is not None:
+                raise ValueError("non-head-bound local validation requires null checks.local_head_sha")
+            allowed_reasons = LOCAL_REASONS_BY_STATE[local_state]
+            if local_reason not in allowed_reasons:
+                raise ValueError(
+                    f"checks.local_reason for {local_state} must be one of: "
+                    + ", ".join(sorted(allowed_reasons))
+                )
 
     if not isinstance(record["findings"], list):
         raise ValueError("findings must be an array")
@@ -236,6 +274,11 @@ def summarize(records):
     review_evidence_counts = Counter(record["github_review_evidence"] for record in validated)
     remote_check_counts = Counter(record["checks"]["remote"] for record in validated)
     local_check_counts = Counter(record["checks"]["local"] for record in validated)
+    local_reason_counts = Counter(
+        record["checks"].get("local_reason")
+        for record in validated
+        if record["checks"].get("local_reason") is not None
+    )
     expansion_reason_counts = Counter(
         expansion["reason"]
         for record in validated
@@ -280,6 +323,9 @@ def summarize(records):
         },
         "remote_checks": {state: remote_check_counts[state] for state in sorted(REMOTE_CHECKS)},
         "local_validations": {state: local_check_counts[state] for state in sorted(LOCAL_CHECKS)},
+        "local_validation_reasons": {
+            reason: local_reason_counts[reason] for reason in sorted(LOCAL_REASONS)
+        },
         "head_bound_local_validations": sum(
             record["checks"]["local"] in {"passed", "failed"} for record in validated
         ),

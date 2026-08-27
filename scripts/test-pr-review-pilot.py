@@ -50,6 +50,18 @@ def valid_record(**overrides):
     return record
 
 
+def valid_v2_record(local="passed", reason=None, local_head_sha=HEAD_SHA, **overrides):
+    record = valid_record(schema_version=2)
+    record["checks"] = {
+        "remote": "passed",
+        "local": local,
+        "local_reason": reason,
+        "local_head_sha": local_head_sha,
+    }
+    record.update(overrides)
+    return record
+
+
 class PilotLedgerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -90,6 +102,56 @@ class PilotLedgerTests(unittest.TestCase):
             record[field] = "must not persist"
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, "unknown fields"):
                 self.module.validate_record(record)
+
+    def test_schema_v2_binds_passed_or_failed_validation_to_final_head(self):
+        for local in ("passed", "failed"):
+            with self.subTest(local=local):
+                record = valid_v2_record(local=local)
+                self.assertEqual(self.module.validate_record(record)["checks"]["local"], local)
+        for bad_sha in (None, "c" * 40):
+            with self.subTest(bad_sha=bad_sha), self.assertRaisesRegex(
+                ValueError, "final head SHA"
+            ):
+                self.module.validate_record(valid_v2_record(local_head_sha=bad_sha))
+        with self.assertRaisesRegex(ValueError, "null checks.local_reason"):
+            self.module.validate_record(valid_v2_record(reason="resource-limit"))
+
+    def test_schema_v2_requires_state_specific_sanitized_reasons(self):
+        cases = {
+            "unbound": "exact-head-unavailable",
+            "not-run": "validation-command-unavailable",
+            "not-applicable": "validation-not-proportionate",
+        }
+        for local, reason in cases.items():
+            with self.subTest(local=local):
+                record = valid_v2_record(local=local, reason=reason, local_head_sha=None)
+                self.assertEqual(self.module.validate_record(record)["checks"]["local_reason"], reason)
+                bad = valid_v2_record(local=local, reason="free form reason", local_head_sha=None)
+                with self.assertRaisesRegex(ValueError, "checks.local_reason"):
+                    self.module.validate_record(bad)
+                bound = valid_v2_record(local=local, reason=reason, local_head_sha=HEAD_SHA)
+                with self.assertRaisesRegex(ValueError, "null checks.local_head_sha"):
+                    self.module.validate_record(bound)
+
+    def test_schema_v1_remains_compatible_and_v2_summary_counts_reasons(self):
+        records = [
+            valid_record(),
+            valid_v2_record(
+                local="unbound", reason="exact-head-unavailable", local_head_sha=None, pr=281
+            ),
+            valid_v2_record(
+                local="not-applicable",
+                reason="validation-not-proportionate",
+                local_head_sha=None,
+                pr=282,
+            ),
+        ]
+        summary = self.module.summarize(records)
+        self.assertEqual(summary["reviewed_prs"], 3)
+        self.assertEqual(summary["local_validations"]["unbound"], 2)
+        self.assertEqual(summary["local_validations"]["not-applicable"], 1)
+        self.assertEqual(summary["local_validation_reasons"]["exact-head-unavailable"], 1)
+        self.assertEqual(summary["local_validation_reasons"]["validation-not-proportionate"], 1)
 
     def test_record_is_canonical_and_append_only(self):
         with tempfile.TemporaryDirectory() as temp_dir:

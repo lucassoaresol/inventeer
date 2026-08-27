@@ -88,8 +88,9 @@ measure or reject state, while skills retain contextual judgment.
 
 - **Purpose**: Distinguish a justified absence of local validation from unbound evidence.
 - **Location**: `scripts/pr-review-pilot.py` and tests.
-- **Model**: v2 adds `checks.local_reason` and `checks.local_head_sha`; reason is required for
-  `unbound`, `not-run`, and `not-applicable`; exact final head is required for `passed`/`failed`.
+- **Model**: v2 adds `checks.local_reason` and `checks.local_head_sha`; a state-compatible reason enum
+  is required for `unbound`, `not-run`, and `not-applicable`; exact final head is required for
+  `passed`/`failed`.
 - **Compatibility**: v1 records retain their prior summary semantics.
 
 ### Skill-Evidence Metrics

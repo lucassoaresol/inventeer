@@ -38,12 +38,21 @@ Read [references/review-contract.md](references/review-contract.md) completely b
 5. Locate the repository clone when available. Read its local instructions and inspect its worktree
    before running commands. Never modify product files, branches, worktrees, GitHub, or Linear as
    part of this skill. Prefer the GitHub diff for remote identity and local code for surrounding
-   context. If the exact head object is unavailable locally, declare the limitation instead of
-   reviewing a different checkout as if it were the PR head.
+   context. When local validation is decision-relevant but the clone is not at the exact review
+   identity, run `scripts/materialize-review-head.sh` from this skill with the authorized Git source,
+   full base/head SHAs, and a new explicit destination below a temporary directory. A URL source may
+   access the network and requires the engine approval applicable to that command. The helper clones
+   without local hardlinks, verifies both commits, and detaches at the requested head without
+   changing the source worktree. If exact objects remain unavailable, record
+   `exact-head-unavailable`; never test another checkout as if it were the PR head.
 6. Build a risk map from the requirements and diff. Prioritize behavior, data integrity, security,
    authorization, concurrency, compatibility, migrations, error handling, operations, and tests.
    Inspect unchanged callers and contracts when the changed code can affect them.
-7. Run proportionate local validation only when it can be bound to the reviewed head. Before a
+7. Run proportionate local validation only when it can be bound to the reviewed head. A `passed` or
+   `failed` local result records the exact final head SHA. Otherwise use the schema-v2 state and its
+   matching sanitized reason: `unbound/exact-head-unavailable`,
+   `not-run/validation-command-unavailable|resource-limit|review-stale`, or
+   `not-applicable/validation-not-proportionate`. Before a
    heavy suite, build, container, browser, or high-concurrency step, run the workspace resource
    preflight and adapt concurrency without reducing required coverage. Keep remote checks distinct
    from local validation.
@@ -54,8 +63,8 @@ Read [references/review-contract.md](references/review-contract.md) completely b
    with the reviewed identity. If either SHA changed, mark the review stale and inspect the changed
    surface before issuing a fresh verdict. Bind every PASS or approval recommendation to the final
    observed base and head SHAs.
-10. Return the review in chat by default. During the pilot, append only the sanitized metadata schema
-   from the contract below `session-context/review-pilot/` with
+10. Return the review in chat by default. Append only the adopted sanitized metadata schema from the
+   contract below `session-context/review-pilot/` with
    `python3 scripts/pr-review-pilot.py record --input <json-file>` and report when recording is
    unavailable. This local ledger is ignored, ephemeral, non-canonical, and contains no comments,
    diffs, finding prose, credentials, customer data, production output, or transcripts. Do not post
@@ -79,6 +88,8 @@ zero defects.
 
 - Keep this workflow read-only. A request to fix findings belongs to the applicable product context
   plus delivery executor, not to this skill.
+- An isolated clone below an explicit temporary root is allowed only to bind validation evidence;
+  it does not authorize changing the source clone, remote refs, or product worktree.
 - Do not use `create-review-bundle` unless the user asks for a portable ZIP or external review
   package. GitHub evidence is sufficient for ordinary PR review.
 - Do not use `advance-delivery-front` unless the question is what to work on while this PR waits.

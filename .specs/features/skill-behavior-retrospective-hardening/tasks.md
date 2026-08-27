@@ -131,17 +131,17 @@ T4 -> T5 -> T6 -> T7
 
 **Done when**:
 
-- [ ] Valid local fixtures materialize both commits and detached head.
-- [ ] Invalid source, destination, and SHA cases fail before success output.
-- [ ] Source worktree status and HEAD remain unchanged.
-- [ ] `bash .agents/skills/review-pull-request/scripts/test-materialize-review-head.sh` passes.
+- [x] Valid local fixtures materialize both commits and detached head.
+- [x] Invalid source, destination, and SHA cases fail before success output.
+- [x] Source worktree status and HEAD remain unchanged.
+- [x] `bash .agents/skills/review-pull-request/scripts/test-materialize-review-head.sh` passes.
 
 **Tests**: integration
 **Gate**: quick
 
 ### T4: Promote and version review evidence
 
-**What**: Add schema-v2 local-validation binding/reasons, preserve schema-v1 summaries, and update the review contract and pilot decision from the nine-record evidence.
+**What**: Add schema-v2 local-validation binding and state-compatible reason enums, preserve schema-v1 summaries, and update the review contract and pilot decision from the nine-record evidence.
 **Where**: `scripts/pr-review-pilot.py`
 **Depends on**: T3
 **Reuses**: Existing closed-schema validator, sanitized summary, skill contract, and AD-038/AD-039 evidence
@@ -155,11 +155,11 @@ T4 -> T5 -> T6 -> T7
 
 **Done when**:
 
-- [ ] Schema-v2 states enforce exact final-head binding or a bounded reason.
-- [ ] Existing schema-v1 ledger and summary remain valid.
-- [ ] Review instructions use the materializer only when local validation is decision-relevant.
-- [ ] The active decision records pilot promotion and the remaining limitation.
-- [ ] Both PR review Python suites pass.
+- [x] Schema-v2 states enforce exact final-head binding or a state-compatible sanitized reason.
+- [x] Existing schema-v1 ledger and summary remain valid.
+- [x] Review instructions use the materializer only when local validation is decision-relevant.
+- [x] The active decision records pilot promotion and the remaining limitation.
+- [x] Both PR review Python suites pass.
 
 **Tests**: unit/contract
 **Gate**: full
