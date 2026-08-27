@@ -18,7 +18,118 @@ UUID_RE = re.compile(
     r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b",
     re.IGNORECASE,
 )
-CONTRACT_VERSION = 3
+CONTRACT_VERSION = 4
+
+# One canonical key set for both engines. A cohort is only comparable if the blocks carry the same
+# fields; where an engine's transcript format cannot express a signal, the value is None and the
+# reason is stated in `unsupported_metrics`. A zero would assert the event did not happen, which is
+# a different claim from "this format cannot show it".
+METRIC_KEYS = (
+    "files",
+    "session_instances",
+    "continuations",
+    "sidechains",
+    "subagents",
+    "copies",
+    "logical_work_streams",
+    "compactions",
+    "aborted_turns",
+    "sessions_with_aborts",
+    "sessions_with_compactions",
+    "max_aborts_per_session",
+    "max_compactions_per_session",
+    "sessions_with_aborts_percent",
+    "sessions_with_compactions_percent",
+    "apex_tool_success_sessions",
+    "apex_tool_attempt_sessions",
+    "apex_tool_successes",
+    "apex_tool_failures",
+    "apex_tool_denials",
+    "apex_tool_unresolved",
+)
+
+TALLY_METRICS = frozenset(
+    {
+        "apex_tool_successes",
+        "apex_tool_failures",
+        "apex_tool_denials",
+        "apex_tool_unresolved",
+    }
+)
+RATIO_METRICS = frozenset(
+    {"sessions_with_aborts_percent", "sessions_with_compactions_percent"}
+)
+
+CODEX_UNSUPPORTED = {
+    "sidechains": (
+        "Codex writes a subagent to its own session file, so there is no inline sidechain to count"
+    ),
+}
+CLAUDE_UNSUPPORTED = {
+    "continuations": (
+        "a resumed Claude session appends to its original transcript, so no second instance exists"
+    ),
+    "compactions": "no compaction marker appears in this engine's transcript format",
+    "sessions_with_compactions": "derived from compactions, which this engine does not expose",
+    "max_compactions_per_session": "derived from compactions, which this engine does not expose",
+    "sessions_with_compactions_percent": (
+        "derived from compactions, which this engine does not expose"
+    ),
+}
+
+
+# Matched exactly, never as a substring: transcripts quote these strings when discussing an
+# interruption, and a substring test would count that quotation as a real abort.
+CLAUDE_ABORT_SENTINELS = frozenset(
+    {"[Request interrupted by user]", "[Request interrupted by user for tool use]"}
+)
+
+
+def claude_subagent_count(project: pathlib.Path, session_id: str) -> int:
+    """Subagents recorded beside a Claude transcript, as `<session>/subagents/*.meta.json`."""
+    directory = project / session_id / "subagents"
+    if not directory.is_dir():
+        return 0
+    return sum(1 for entry in directory.glob("*.meta.json") if entry.is_file())
+
+
+def default_metric(key: str) -> Any:
+    if key in TALLY_METRICS:
+        return {}
+    if key in RATIO_METRICS:
+        return 0.0
+    return 0
+
+
+def engine_block(
+    unsupported: dict[str, str],
+    *,
+    root_available: bool,
+    matching_history_found: bool,
+    **measured: Any,
+) -> dict[str, Any]:
+    """Assemble one engine block over the canonical key set.
+
+    Refuses to measure a key declared unsupported, and refuses to leave a key unaccounted for, so
+    the two blocks cannot drift apart as metrics are added.
+    """
+    overlap = sorted(set(unsupported) & set(measured))
+    if overlap:
+        raise ValueError(f"metrics declared unsupported but also measured: {overlap}")
+    unknown = sorted(set(measured) - set(METRIC_KEYS))
+    if unknown:
+        raise ValueError(f"measured metrics outside the canonical key set: {unknown}")
+    block: dict[str, Any] = {
+        "history_root_available": root_available,
+        "matching_history_found": matching_history_found,
+    }
+    for key in METRIC_KEYS:
+        if key in unsupported:
+            block[key] = None
+        else:
+            block[key] = measured.get(key, default_metric(key))
+    block["unsupported_metrics"] = dict(sorted(unsupported.items()))
+    return block
 RECEIPT_VERSION = 1
 WORKSPACE_ID_RE = re.compile(r"[a-z0-9][a-z0-9._-]{0,63}")
 
@@ -79,30 +190,9 @@ def codex_subagent(metadata: dict[str, Any]) -> bool:
 
 
 def empty_codex(*, root_available: bool = False) -> dict[str, Any]:
-    return {
-        "history_root_available": root_available,
-        "matching_history_found": False,
-        "files": 0,
-        "session_instances": 0,
-        "continuations": 0,
-        "subagents": 0,
-        "copies": 0,
-        "logical_work_streams": 0,
-        "compactions": 0,
-        "aborted_turns": 0,
-        "sessions_with_aborts": 0,
-        "sessions_with_compactions": 0,
-        "max_aborts_per_session": 0,
-        "max_compactions_per_session": 0,
-        "sessions_with_aborts_percent": 0.0,
-        "sessions_with_compactions_percent": 0.0,
-        "apex_tool_success_sessions": 0,
-        "apex_tool_attempt_sessions": 0,
-        "apex_tool_successes": {},
-        "apex_tool_failures": {},
-        "apex_tool_denials": {},
-        "apex_tool_unresolved": {},
-    }
+    return engine_block(
+        CODEX_UNSUPPORTED, root_available=root_available, matching_history_found=False
+    )
 
 
 def scan_codex(
@@ -219,57 +309,40 @@ def scan_codex(
         apex_totals.update(item["apex_successes"])
         apex_failures.update(item["apex_failures"])
 
-    return {
-        "history_root_available": True,
-        "matching_history_found": bool(accepted),
-        "files": len(accepted),
-        "session_instances": session_instances,
-        "continuations": continuations,
-        "subagents": sum(item["subagent"] for item in by_session.values()),
-        "copies": copies,
-        "logical_work_streams": session_instances - continuations,
-        "compactions": sum(item["compactions"] for item in by_session.values()),
-        "aborted_turns": sum(item["aborted_turns"] for item in by_session.values()),
-        "sessions_with_aborts": sessions_with_aborts,
-        "sessions_with_compactions": sessions_with_compactions,
-        "max_aborts_per_session": max(
-            (item["aborted_turns"] for item in primary), default=0
-        ),
-        "max_compactions_per_session": max(
-            (item["compactions"] for item in primary), default=0
-        ),
-        "sessions_with_aborts_percent": primary_percent(sessions_with_aborts),
-        "sessions_with_compactions_percent": primary_percent(sessions_with_compactions),
-        "apex_tool_success_sessions": sum(
+    return engine_block(
+        CODEX_UNSUPPORTED,
+        root_available=True,
+        matching_history_found=bool(accepted),
+        files=len(accepted),
+        session_instances=session_instances,
+        continuations=continuations,
+        subagents=sum(item["subagent"] for item in by_session.values()),
+        copies=copies,
+        logical_work_streams=session_instances - continuations,
+        compactions=sum(item["compactions"] for item in by_session.values()),
+        aborted_turns=sum(item["aborted_turns"] for item in by_session.values()),
+        sessions_with_aborts=sessions_with_aborts,
+        sessions_with_compactions=sessions_with_compactions,
+        max_aborts_per_session=max((item["aborted_turns"] for item in primary), default=0),
+        max_compactions_per_session=max((item["compactions"] for item in primary), default=0),
+        sessions_with_aborts_percent=primary_percent(sessions_with_aborts),
+        sessions_with_compactions_percent=primary_percent(sessions_with_compactions),
+        apex_tool_success_sessions=sum(
             bool(item["apex_successes"]) for item in by_session.values()
         ),
-        "apex_tool_attempt_sessions": sum(
+        apex_tool_attempt_sessions=sum(
             bool(item["apex_successes"] or item["apex_failures"])
             for item in by_session.values()
         ),
-        "apex_tool_successes": dict(sorted(apex_totals.items())),
-        "apex_tool_failures": dict(sorted(apex_failures.items())),
-        "apex_tool_denials": {},
-        "apex_tool_unresolved": {},
-    }, matched_exclusions
+        apex_tool_successes=dict(sorted(apex_totals.items())),
+        apex_tool_failures=dict(sorted(apex_failures.items())),
+    ), matched_exclusions
 
 
 def empty_claude(*, root_available: bool = False) -> dict[str, Any]:
-    return {
-        "history_root_available": root_available,
-        "matching_history_found": False,
-        "files": 0,
-        "session_instances": 0,
-        "sidechains": 0,
-        "copies": 0,
-        "logical_sessions": 0,
-        "apex_tool_success_sessions": 0,
-        "apex_tool_attempt_sessions": 0,
-        "apex_tool_successes": {},
-        "apex_tool_failures": {},
-        "apex_tool_denials": {},
-        "apex_tool_unresolved": {},
-    }
+    return engine_block(
+        CLAUDE_UNSUPPORTED, root_available=root_available, matching_history_found=False
+    )
 
 
 def scan_claude(
@@ -289,6 +362,7 @@ def scan_claude(
         session_origin_cwd = None
         timestamps = []
         is_sidechain = False
+        aborted_turns = 0
         apex_attempts: dict[str, str] = {}
         apex_outcomes: dict[str, str] = {}
         for record in json_lines(path):
@@ -308,6 +382,14 @@ def scan_claude(
                 continue
             for item in content:
                 if not isinstance(item, dict):
+                    continue
+                if (
+                    record.get("type") == "user"
+                    and item.get("type") == "text"
+                    and isinstance(item.get("text"), str)
+                    and item["text"].strip() in CLAUDE_ABORT_SENTINELS
+                ):
+                    aborted_turns += 1
                     continue
                 if record.get("type") == "assistant" and item.get("type") == "tool_use":
                     tool_id = item.get("id")
@@ -364,6 +446,8 @@ def scan_claude(
             {
                 "session_id": session_id,
                 "sidechain": is_sidechain,
+                "aborted_turns": aborted_turns,
+                "subagents": claude_subagent_count(project, session_id),
                 "successes": session_successes,
                 "failures": session_failures,
                 "denials": session_denials,
@@ -380,6 +464,8 @@ def scan_claude(
             continue
         by_session[session_id] = {
             "sidechain": item["sidechain"],
+            "aborted_turns": item["aborted_turns"],
+            "subagents": item["subagents"],
             "successes": item["successes"].copy(),
             "failures": item["failures"].copy(),
             "denials": item["denials"].copy(),
@@ -398,18 +484,33 @@ def scan_claude(
 
     sidechains = sum(item["sidechain"] for item in by_session.values())
     session_instances = len(by_session) - sidechains
-    return {
-        "history_root_available": True,
-        "matching_history_found": bool(accepted),
-        "files": len(accepted),
-        "session_instances": session_instances,
-        "sidechains": sidechains,
-        "copies": copies,
-        "logical_sessions": session_instances,
-        "apex_tool_success_sessions": sum(
+    # Derived over the same population as Codex: primary sessions, excluding sidechains.
+    primary = [item for item in by_session.values() if not item["sidechain"]]
+    sessions_with_aborts = sum(1 for item in primary if item["aborted_turns"])
+
+    def primary_percent(count: int) -> float:
+        if not primary:
+            return 0.0
+        return round(count / len(primary) * 100, 2)
+
+    return engine_block(
+        CLAUDE_UNSUPPORTED,
+        root_available=True,
+        matching_history_found=bool(accepted),
+        files=len(accepted),
+        session_instances=session_instances,
+        sidechains=sidechains,
+        subagents=sum(item["subagents"] for item in by_session.values()),
+        copies=copies,
+        logical_work_streams=session_instances,
+        aborted_turns=sum(item["aborted_turns"] for item in primary),
+        sessions_with_aborts=sessions_with_aborts,
+        max_aborts_per_session=max((item["aborted_turns"] for item in primary), default=0),
+        sessions_with_aborts_percent=primary_percent(sessions_with_aborts),
+        apex_tool_success_sessions=sum(
             bool(item["successes"]) for item in by_session.values()
         ),
-        "apex_tool_attempt_sessions": sum(
+        apex_tool_attempt_sessions=sum(
             bool(
                 item["successes"]
                 or item["failures"]
@@ -418,11 +519,37 @@ def scan_claude(
             )
             for item in by_session.values()
         ),
-        "apex_tool_successes": dict(sorted(apex_totals.items())),
-        "apex_tool_failures": dict(sorted(failure_totals.items())),
-        "apex_tool_denials": dict(sorted(denial_totals.items())),
-        "apex_tool_unresolved": dict(sorted(unresolved_totals.items())),
-    }, matched_exclusions
+        apex_tool_successes=dict(sorted(apex_totals.items())),
+        apex_tool_failures=dict(sorted(failure_totals.items())),
+        apex_tool_denials=dict(sorted(denial_totals.items())),
+        apex_tool_unresolved=dict(sorted(unresolved_totals.items())),
+    ), matched_exclusions
+
+
+def format_metric(value: Any) -> str:
+    """`n/a` for an unmeasurable metric, so a reader never mistakes it for a measured zero."""
+    return "n/a" if value is None else str(value)
+
+
+def render_engine(label: str, block: dict[str, Any]) -> list[str]:
+    lines = [label]
+    for key in ("history_root_available", "matching_history_found"):
+        lines.append(f"  {key}: {block[key]}")
+    for key in METRIC_KEYS:
+        if key in TALLY_METRICS:
+            continue
+        lines.append(f"  {key}: {format_metric(block[key])}")
+    for key in METRIC_KEYS:
+        if key not in TALLY_METRICS:
+            continue
+        lines.append(f"  {key}:")
+        lines.extend(f"    {tool}: {count}" for tool, count in (block[key] or {}).items())
+    if block["unsupported_metrics"]:
+        lines.append("  unsupported_metrics:")
+        lines.extend(
+            f"    {key}: {reason}" for key, reason in block["unsupported_metrics"].items()
+        )
+    return lines
 
 
 def render_text(report: dict[str, Any]) -> str:
@@ -435,59 +562,10 @@ def render_text(report: dict[str, Any]) -> str:
         f"Exclusions unmatched: {report['exclusions_unmatched']}",
         f"Exclusions matched by engine: codex={report['exclusions_by_engine']['codex']}, claude={report['exclusions_by_engine']['claude']}",
         "",
-        "Codex",
     ]
-    codex = report["codex"]
-    for key in (
-        "history_root_available",
-        "matching_history_found",
-        "files",
-        "session_instances",
-        "continuations",
-        "subagents",
-        "copies",
-        "logical_work_streams",
-        "compactions",
-        "aborted_turns",
-        "sessions_with_aborts",
-        "sessions_with_compactions",
-        "max_aborts_per_session",
-        "max_compactions_per_session",
-        "sessions_with_aborts_percent",
-        "sessions_with_compactions_percent",
-        "apex_tool_success_sessions",
-        "apex_tool_attempt_sessions",
-    ):
-        lines.append(f"  {key}: {codex[key]}")
-    lines.append("  apex_tool_successes:")
-    lines.extend(
-        f"    {tool}: {count}" for tool, count in codex["apex_tool_successes"].items()
-    )
-    for key in ("apex_tool_failures", "apex_tool_denials", "apex_tool_unresolved"):
-        lines.append(f"  {key}:")
-        lines.extend(f"    {tool}: {count}" for tool, count in codex[key].items())
-
-    lines.extend(("", "Claude"))
-    claude = report["claude"]
-    for key in (
-        "history_root_available",
-        "matching_history_found",
-        "files",
-        "session_instances",
-        "sidechains",
-        "copies",
-        "logical_sessions",
-        "apex_tool_success_sessions",
-        "apex_tool_attempt_sessions",
-    ):
-        lines.append(f"  {key}: {claude[key]}")
-    lines.append("  apex_tool_successes:")
-    lines.extend(
-        f"    {tool}: {count}" for tool, count in claude["apex_tool_successes"].items()
-    )
-    for key in ("apex_tool_failures", "apex_tool_denials", "apex_tool_unresolved"):
-        lines.append(f"  {key}:")
-        lines.extend(f"    {tool}: {count}" for tool, count in claude[key].items())
+    lines.extend(render_engine("Codex", report["codex"]))
+    lines.append("")
+    lines.extend(render_engine("Claude", report["claude"]))
     return "\n".join(lines) + "\n"
 
 

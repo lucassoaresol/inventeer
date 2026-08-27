@@ -2,6 +2,7 @@
 /repos/
 
 # Local environment and generated output.
+__pycache__/
 .env
 .env.*
 !.env.example

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import hashlib
 import pathlib
 import subprocess
+import sys
 import tempfile
 
 
@@ -113,6 +115,9 @@ def claude_session(
     final_cwd: str | None = None,
     timestamp: str = "2026-08-01T11:00:00Z",
     filename: str | None = None,
+    aborts: int = 0,
+    decoy_aborts: int = 0,
+    subagents: int = 0,
 ) -> None:
     content = [{"type": "text", "text": SECRET}]
     tool_id = f"tool-{session_id}"
@@ -177,6 +182,61 @@ def claude_session(
                 "isSidechain": sidechain,
             }
         )
+    for index in range(aborts):
+        records.append(
+            {
+                "type": "user",
+                "sessionId": session_id,
+                "cwd": initial_cwd,
+                "timestamp": timestamp,
+                "isSidechain": sidechain,
+                "message": {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                "[Request interrupted by user]"
+                                if index % 2 == 0
+                                else "[Request interrupted by user for tool use]"
+                            ),
+                        }
+                    ],
+                },
+            }
+        )
+    for _ in range(decoy_aborts):
+        # A transcript that merely quotes the sentinel, and a tool result that echoes it. Neither is
+        # an abort; substring matching would count both.
+        records.append(
+            {
+                "type": "user",
+                "sessionId": session_id,
+                "cwd": initial_cwd,
+                "timestamp": timestamp,
+                "isSidechain": sidechain,
+                "message": {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "the log shows [Request interrupted by user] in context",
+                        },
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": "decoy",
+                            "content": "[Request interrupted by user]",
+                        },
+                    ],
+                },
+            }
+        )
+    if subagents:
+        directory = root / session_id / "subagents"
+        directory.mkdir(parents=True, exist_ok=True)
+        for index in range(subagents):
+            (directory / f"agent-{index}.meta.json").write_text("{}", encoding="utf-8")
+        (directory / "notes.txt").write_text("not a subagent record", encoding="utf-8")
     write_jsonl(root / (filename or f"{session_id}.jsonl"), records)
 
 
@@ -254,10 +314,22 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         user_text=f"{SECRET} malformed timestamp",
     )
 
-    claude_session(claude_root, "77777777-7777-4777-8777-777777777777", apex_tool="apex_fetch_task")
-    claude_session(claude_root, "88888888-8888-4888-8888-888888888888", sidechain=True)
+    claude_session(
+        claude_root,
+        "77777777-7777-4777-8777-777777777777",
+        apex_tool="apex_fetch_task",
+        aborts=3,
+        decoy_aborts=2,
+        subagents=4,
+    )
+    # A sidechain is excluded from the derived population, exactly as in the Codex block.
+    claude_session(
+        claude_root, "88888888-8888-4888-8888-888888888888", sidechain=True, aborts=5
+    )
     claude_session(claude_root, CLAUDE_DENIED, apex_tool="apex_framework_index", outcome="denial")
-    claude_session(claude_root, CLAUDE_FAILED, apex_tool="apex_run_tests", outcome="failure")
+    claude_session(
+        claude_root, CLAUDE_FAILED, apex_tool="apex_run_tests", outcome="failure", aborts=1
+    )
     claude_session(
         claude_root,
         CLAUDE_UNRESOLVED,
@@ -334,7 +406,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "since",
         "until",
     }
-    assert report["contract_version"] == 3
+    assert report["contract_version"] == 4
     assert report["since"] == "2026-07-29T00:00:00Z"
     assert report["until"] == UNTIL
     assert report["exclusions_requested"] == 3
@@ -347,6 +419,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "files": 6,
         "session_instances": 3,
         "continuations": 1,
+        "sidechains": None,
         "subagents": 2,
         "copies": 1,
         "logical_work_streams": 2,
@@ -364,33 +437,88 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "apex_tool_failures": {"apex_run_tests": 1},
         "apex_tool_denials": {},
         "apex_tool_unresolved": {},
+        "unsupported_metrics": {
+            "sidechains": (
+                "Codex writes a subagent to its own session file, so there is no inline sidechain"
+                " to count"
+            )
+        },
     }
     assert report["claude"] == {
         "history_root_available": True,
         "matching_history_found": True,
         "files": 9,
         "session_instances": 7,
+        "continuations": None,
         "sidechains": 1,
+        "subagents": 4,
         "copies": 1,
-        "logical_sessions": 7,
+        "logical_work_streams": 7,
+        "compactions": None,
+        "aborted_turns": 4,
+        "sessions_with_aborts": 2,
+        "sessions_with_compactions": None,
+        "max_aborts_per_session": 3,
+        "max_compactions_per_session": None,
+        "sessions_with_aborts_percent": 28.57,
+        "sessions_with_compactions_percent": None,
         "apex_tool_success_sessions": 3,
         "apex_tool_attempt_sessions": 6,
         "apex_tool_successes": {"apex_fetch_task": 2, "read_mcp_resource": 1},
         "apex_tool_failures": {"apex_run_tests": 1},
         "apex_tool_denials": {"apex_framework_index": 1},
         "apex_tool_unresolved": {"apex_list_workspace_repos": 1},
+        "unsupported_metrics": {
+            "compactions": "no compaction marker appears in this engine's transcript format",
+            "continuations": (
+                "a resumed Claude session appends to its original transcript, so no second"
+                " instance exists"
+            ),
+            "max_compactions_per_session": (
+                "derived from compactions, which this engine does not expose"
+            ),
+            "sessions_with_compactions": (
+                "derived from compactions, which this engine does not expose"
+            ),
+            "sessions_with_compactions_percent": (
+                "derived from compactions, which this engine does not expose"
+            ),
+        },
     }
+
+    # --- Contrato simétrico -------------------------------------------------
+    # A comparação entre engines só é válida se os dois blocos carregarem as mesmas chaves.
+    assert sorted(report["codex"]) == sorted(report["claude"])
+    for engine in ("codex", "claude"):
+        block = report[engine]
+        reasons = block["unsupported_metrics"]
+        for key, reason in reasons.items():
+            assert key in block, f"{engine}: {key} has a reason but is not a field"
+            assert block[key] is None, f"{engine}: {key} has a reason but reports {block[key]!r}"
+            assert reason.strip(), f"{engine}: {key} has an empty reason"
+        for key, value in block.items():
+            if value is None:
+                assert key in reasons, f"{engine}: {key} is null with no stated reason"
+    # A sidechain contributes 5 sentinel records that must not reach the derived population, and
+    # the decoy session quotes the sentinel twice without being interrupted.
+    assert report["claude"]["aborted_turns"] == 4
+    assert report["claude"]["subagents"] == 4
     assert "apex_sessions" not in report["codex"]
     assert "apex_calls" not in report["claude"]
 
     text_output = subprocess.run(command[:-1] + ["text"], check=True, capture_output=True, text=True)
     assert "logical_work_streams: 2" in text_output.stdout
-    assert "Contract version: 3" in text_output.stdout
+    assert "Contract version: 4" in text_output.stdout
     assert "Exclusions requested: 3" in text_output.stdout
     assert "Exclusions matched: 2" in text_output.stdout
     assert "Exclusions unmatched: 1" in text_output.stdout
     assert f"Until (exclusive, UTC): {UNTIL}" in text_output.stdout
     assert "sessions_with_aborts_percent: 66.67" in text_output.stdout
+    assert "compactions: n/a" in text_output.stdout
+    assert "continuations: n/a" in text_output.stdout
+    assert "unsupported_metrics:" in text_output.stdout
+    assert "no compaction marker appears" in text_output.stdout
+    assert "subagents: 4" in text_output.stdout
     assert "apex_framework_index: 1" in text_output.stdout
     assert "apex_tool_denials:" in text_output.stdout
     assert "apex_tool_unresolved:" in text_output.stdout
@@ -415,6 +543,48 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         text=True,
     )
     missing_report = json.loads(missing_output.stdout)
+    # --- Guardas do construtor de bloco -------------------------------------
+    # engine_block é o único ponto onde as duas engines podem divergir; suas guardas precisam de
+    # teste próprio, porque nenhum caminho de dados as exercita.
+    # Importing the auditor would drop a __pycache__ next to it; the staged-content guard rejects
+    # binaries, so the import must not leave one behind.
+    previous_bytecode_setting = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        spec_module = importlib.util.spec_from_file_location("audit_module", SUBJECT)
+        audit = importlib.util.module_from_spec(spec_module)
+        spec_module.loader.exec_module(audit)
+    finally:
+        sys.dont_write_bytecode = previous_bytecode_setting
+
+    try:
+        audit.engine_block(
+            {"compactions": "unsupported"},
+            root_available=True,
+            matching_history_found=True,
+            compactions=7,
+        )
+    except ValueError as error:
+        assert "unsupported but also measured" in str(error), error
+    else:
+        raise AssertionError("measuring an unsupported metric must fail closed")
+
+    try:
+        audit.engine_block(
+            {}, root_available=True, matching_history_found=True, invented_metric=1
+        )
+    except ValueError as error:
+        assert "outside the canonical key set" in str(error), error
+    else:
+        raise AssertionError("a metric outside the canonical key set must fail closed")
+
+    both = (
+        audit.engine_block(audit.CODEX_UNSUPPORTED, root_available=False, matching_history_found=False),
+        audit.engine_block(audit.CLAUDE_UNSUPPORTED, root_available=False, matching_history_found=False),
+    )
+    assert sorted(both[0]) == sorted(both[1])
+    print("ok - engine_block guards reject measured-but-unsupported and unknown metrics")
+
     zero_interruption_metrics = {
         "aborted_turns": 0,
         "compactions": 0,
@@ -432,6 +602,29 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
     } == zero_interruption_metrics
     assert missing_report["claude"]["history_root_available"] is False
     assert missing_report["claude"]["matching_history_found"] is False
+    # The schema must not depend on the data: an absent root still carries every key and reason.
+    assert sorted(missing_report["claude"]) == sorted(missing_report["codex"])
+    assert {
+        key: missing_report["claude"][key]
+        for key in ("aborted_turns", "subagents", "sessions_with_aborts", "max_aborts_per_session")
+    } == {
+        "aborted_turns": 0,
+        "subagents": 0,
+        "sessions_with_aborts": 0,
+        "max_aborts_per_session": 0,
+    }
+    assert missing_report["claude"]["sessions_with_aborts_percent"] == 0.0
+    for engine, unsupported in (("codex", {"sidechains"}), ("claude", {
+        "compactions",
+        "continuations",
+        "max_compactions_per_session",
+        "sessions_with_compactions",
+        "sessions_with_compactions_percent",
+    })):
+        block = missing_report[engine]
+        assert set(block["unsupported_metrics"]) == unsupported
+        for key in unsupported:
+            assert block[key] is None
 
     empty_codex = fixture / "empty-codex"
     empty_claude = fixture / "empty-claude"
