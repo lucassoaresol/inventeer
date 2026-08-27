@@ -864,18 +864,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Status**: active
 
 ## Handoff
-- **Feature**: dual-engine-skill-parity
+- **Feature**: symmetric-session-audit-contract
 - **Phase / Task**: Completed and validated
-- **Completed**: Behavioral commit c7d3547 adds scripts/test-skill-engine-parity.py to the aggregate gate, now 29 suites; the five previously unexercised skills were smoke-tested under Claude (context routes, referenced scripts, repos, github and Linear MCP reads, a real review bundle); parity sensor killed 8 of 8 mutants; pre-commit hook installed via core.hooksPath=.githooks
+- **Completed**: Behavioral commit 3d1305c raises the audit contract to v4: both engine blocks share one canonical key set, Claude gains measured aborted turns and subagents, and an inexpressible signal is null with a stated reason instead of zero; validation records 20 of 20 criteria and 10 of 10 killed mutants after two survivors were closed; aggregate gate passed at 29 suites
 - **In progress**: none
-- **Next durable step**: Decide whether the remaining retrospective findings - symmetric v4 audit contract for Claude sessions, context preflight moved inside the skills, and the AD-046 evidence allowlist - become AD entries
+- **Next durable step**: Decide whether the remaining retrospective finding - moving the context preflight inside the product skills - becomes an AD entry, and whether AD-048 should be revisited now that abort rates are comparable across engines
 - **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-27T18:06:28Z
-- **Valid at SHA**: c7d3547047aedd43168e99c655df85e53978f114
+- **Recorded at**: 2026-08-27T19:02:49Z
+- **Valid at SHA**: 3d1305cb02fe741881bb3daa64ff2b790ab3a9f3
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/symmetric-session-audit-contract/spec.md, .specs/features/symmetric-session-audit-contract/tasks.md, .specs/features/symmetric-session-audit-contract/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
