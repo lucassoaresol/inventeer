@@ -150,6 +150,7 @@ ok "bytes=0, frontmatter_ok=false e id malformado sao rejeitados"
 
 # --- Falhas ------------------------------------------------------------------
 
+# Sai 2 para qualquer uso inválido; usado pelas seções de órfãos e de falhas.
 assert_exit_2() {
   local label="$1"
   shift
@@ -179,6 +180,58 @@ assert_exit_2 "catalogo sem all-tools" --check --catalog "$fixture_dir/sem-all-t
   --skills-dir "$fixture_dir/sem-inspector"
 [[ ! -e "$fixture_dir/sem-inspector" ]] || fail "missing all-tools still created the skills dir"
 ok "ausencia de all-tools falha fechada"
+
+# --- Órfãos sem catálogo -----------------------------------------------------
+
+# O resíduo de uma consolidação anterior é um diretório apex-* sem SKILL.md. Ele não é descoberto
+# como skill, o Git não versiona diretório vazio e o validador estrutural do gate agregado só
+# percorre diretórios que já têm SKILL.md — então nenhuma superfície existente o alcança.
+
+orphans="$fixture_dir/orfaos"
+mkdir -p "$orphans/apex-vazio" "$orphans/apex-sem-manifesto" "$orphans/apex-valido" \
+  "$orphans/nao-apex" "$orphans/apex-com-subdir/nested"
+printf 'residuo\n' >"$orphans/apex-sem-manifesto/README.md"
+printf 'manter\n' >"$orphans/apex-valido/SKILL.md"
+printf 'manter\n' >"$orphans/nao-apex/SKILL.md"
+printf 'arquivo\n' >"$orphans/apex-arquivo-regular"
+
+if run --check --prune-orphans --skills-dir "$orphans"; then
+  fail "--check --prune-orphans should exit 1 while orphans exist"
+fi
+grep -q '\[ORFAO\] (3)' <<<"$output" || fail "expected 3 orphans listed, got: $output"
+for name in apex-vazio apex-sem-manifesto apex-com-subdir; do
+  grep -q "  $name" <<<"$output" || fail "orphan $name not listed: $output"
+  [[ -d "$orphans/$name" ]] || fail "--check removed $name; it must write nothing"
+done
+ok "--check --prune-orphans lista cada orfao, nao escreve e sai 1"
+
+run --apply --prune-orphans --skills-dir "$orphans" || fail "--apply --prune-orphans failed: $output"
+[[ ! -e "$orphans/apex-vazio" ]] || fail "empty orphan survived"
+[[ ! -e "$orphans/apex-sem-manifesto" ]] || fail "orphan holding files survived"
+[[ ! -e "$orphans/apex-com-subdir" ]] || fail "orphan holding a subdirectory survived"
+ok "--apply --prune-orphans remove diretorio vazio, com arquivos e com subdiretorio"
+
+[[ -f "$orphans/apex-valido/SKILL.md" ]] || fail "wrapper with SKILL.md was deleted"
+[[ -f "$orphans/nao-apex/SKILL.md" ]] || fail "non-apex directory was deleted"
+[[ -f "$orphans/apex-arquivo-regular" ]] || fail "regular file named apex-* was deleted"
+ok "wrapper com manifesto, diretorio sem prefixo e arquivo regular sobrevivem"
+
+run --check --prune-orphans --skills-dir "$orphans" \
+  || fail "--check --prune-orphans should exit 0 when clean: $output"
+grep -q 'Nenhum diretório órfão' <<<"$output" || fail "clean report wrong: $output"
+ok "arvore limpa reporta estado limpo e sai 0"
+
+# A poda nunca depende do catálogo: exigir um acoplaria a limpeza à disponibilidade do MCP, que é
+# exatamente a razão pela qual os órfãos sobreviveram.
+assert_exit_2 "--prune-orphans com --catalog" --check --prune-orphans \
+  --catalog "$fixture_dir/full.json" --skills-dir "$orphans"
+assert_exit_2 "--prune-orphans sem modo" --prune-orphans --skills-dir "$orphans"
+assert_exit_2 "--prune-orphans repetido" --check --prune-orphans --prune-orphans \
+  --skills-dir "$orphans"
+assert_exit_2 "--prune-orphans com diretorio inexistente" --check --prune-orphans \
+  --skills-dir "$orphans/nao-existe"
+[[ ! -e "$orphans/nao-existe" ]] || fail "missing skills dir was created"
+ok "prune-orphans rejeita catalogo, modo ausente, flag repetida e diretorio inexistente"
 
 # --- Contrato ----------------------------------------------------------------
 

@@ -24,6 +24,7 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | [value-oriented-tlc-increments](./value-oriented-tlc-increments/) | Active |
 | [versioned-cycle-task-clarifications](./versioned-cycle-task-clarifications/) | Validated |
 | [workspace-context-routing-review-bundles](./workspace-context-routing-review-bundles/) | Validated |
+| [workspace-learning-and-skill-hygiene](./workspace-learning-and-skill-hygiene/) | Active |
 | [workspace-mcp-resource-preflight](./workspace-mcp-resource-preflight/) | Validated |
 | [workspace-process-hardening](./workspace-process-hardening/) | Active |
 | [workspace-operational-surface-simplification](./workspace-operational-surface-simplification/) | Validated |

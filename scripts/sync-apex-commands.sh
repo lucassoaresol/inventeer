@@ -23,16 +23,21 @@ RESOURCE_BASE="apex://framework/workflows"
 
 MODE=""
 CATALOG=""
+PRUNE_ORPHANS=""
 
 usage() {
   cat >&2 <<'EOF'
 Uso: sync-apex-commands.sh --check  --catalog <arquivo.json> [--skills-dir <dir>]
      sync-apex-commands.sh --apply  --catalog <arquivo.json> [--skills-dir <dir>]
+     sync-apex-commands.sh --check|--apply --prune-orphans [--skills-dir <dir>]
      sync-apex-commands.sh --print-contract
 
-  --check        Relata criações, atualizações e remoções sem escrever. Sai 1 se houver divergência.
-  --apply        Reconcilia os wrappers no disco. Não cria commits.
-  --skills-dir   Diretório alvo dos wrappers. Padrão: .agents/skills. Use apenas em testes.
+  --check          Relata criações, atualizações e remoções sem escrever. Sai 1 se houver divergência.
+  --apply          Reconcilia os wrappers no disco. Não cria commits.
+  --prune-orphans  Remove apenas diretórios apex-* sem SKILL.md. Não aceita --catalog: nenhum
+                   catálogo válido produz um wrapper sem manifesto, então o órfão é indesejado
+                   independentemente do catálogo. Use quando o MCP não estiver disponível.
+  --skills-dir     Diretório alvo dos wrappers. Padrão: .agents/skills. Use apenas em testes.
 EOF
   exit 2
 }
@@ -95,6 +100,11 @@ while [[ $# -gt 0 ]]; do
       SKILLS_DIR="$2"
       shift 2
       ;;
+    --prune-orphans)
+      [[ -z "$PRUNE_ORPHANS" ]] || usage
+      PRUNE_ORPHANS=1
+      shift
+      ;;
     --print-contract)
       print_contract
       ;;
@@ -105,6 +115,52 @@ while [[ $# -gt 0 ]]; do
 done
 
 [[ -n "$MODE" ]] || usage
+
+# Reconciliação de órfãos: independente do catálogo, porque nenhum catálogo válido pode produzir um
+# diretório apex-* sem SKILL.md. Um wrapper sem manifesto não é descoberto como skill por nenhuma
+# engine, então só resta como resíduo de uma consolidação anterior.
+if [[ -n "$PRUNE_ORPHANS" ]]; then
+  [[ -z "$CATALOG" ]] || usage
+
+  [[ -d "$SKILLS_DIR" ]] || {
+    echo "Erro: diretório de skills não encontrado: $SKILLS_DIR" >&2
+    exit 2
+  }
+
+  declare -a orphans=()
+  for dir in "$SKILLS_DIR/$PREFIX"*/; do
+    [[ -d "$dir" ]] || continue
+    [[ -f "$dir/SKILL.md" ]] && continue
+    orphans+=("$(basename "$dir")")
+  done
+
+  echo "Diretório: $SKILLS_DIR"
+  echo "Modo:      prune-orphans"
+  echo
+
+  if ((${#orphans[@]} == 0)); then
+    echo "Nenhum diretório órfão; nada a fazer."
+    exit 0
+  fi
+
+  printf '[ORFAO] (%d):\n' "${#orphans[@]}"
+  printf '  %s\n' "${orphans[@]}"
+
+  if [[ "$MODE" == "check" ]]; then
+    echo
+    echo "Nenhum arquivo foi alterado. Execute --apply após revisar."
+    exit 1
+  fi
+
+  for name in "${orphans[@]}"; do
+    rm -rf "${SKILLS_DIR:?}/$name"
+  done
+
+  echo
+  echo "[REMOVIDO] ${#orphans[@]} diretório(s) órfão(s). O script não cria commits."
+  exit 0
+fi
+
 [[ -n "$CATALOG" ]] || usage
 
 command -v jq >/dev/null 2>&1 || {
