@@ -894,17 +894,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 - **Feature**: skill-behavior-retrospective-hardening
-- **Phase / Task**: Execute / T3 complete, T4 next
-- **Completed**: VI-001 b06bca3; VI-002 b70cfe4; T3 exact-head materializer passed 5 integration scenarios
-- **In progress**: VI-003 review evidence binding
-- **Next durable step**: Implement T4 schema-v2 review evidence and pilot promotion
+- **Phase / Task**: Validate / complete
+- **Completed**: VI-001 b06bca3; VI-002 b70cfe4; VI-003 3ec9d92; VI-004 30cc7fa; independent validation 5e5bf32
+- **In progress**: none
+- **Next durable step**: Feature complete; no required local work remains
 - **Blockers**: none
-- **Uncommitted files**: .agents/skills/review-pull-request/scripts/materialize-review-head.sh, .agents/skills/review-pull-request/scripts/test-materialize-review-head.sh, .specs/features/skill-behavior-retrospective-hardening/tasks.md
+- **Uncommitted files**: none
 - **Branch**: main
-- **Contract status**: UNPROVEN
-- **Operational status**: UNPROVEN
-- **Recorded at**: 2026-08-27T20:48:58Z
-- **Valid at SHA**: b70cfe42c96921f5ff8d1f62198da1fd5964e08b
+- **Contract status**: PASS
+- **Operational status**: PASS
+- **Recorded at**: 2026-08-27T21:14:57Z
+- **Valid at SHA**: 5e5bf32d5295c4aab50ad98cc56abf0dfb4d5f4e
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/features/skill-behavior-retrospective-hardening/spec.md, .specs/features/skill-behavior-retrospective-hardening/tasks.md
+- **Evidence-only paths**: .specs/features/skill-behavior-retrospective-hardening/spec.md, .specs/features/skill-behavior-retrospective-hardening/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
