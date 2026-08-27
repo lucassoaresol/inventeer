@@ -62,10 +62,13 @@ substituídas permanecem no histórico e apontam para sua sucessora.
 
 - As skills requeridas ficam em `.agents/skills/`; não presuma equivalentes globais.
 - Leia completamente o `SKILL.md` selecionado antes de agir.
-- Antes de carregar uma rota registrada, execute `python3 scripts/workspace-context.py check` e
-  `python3 scripts/workspace-context.py plan --route <rota>`. Use `measure --route <rota>` para
+- Cada skill com rota registrada declara o preflight de contexto como primeiro passo do próprio
+  `## Workflow`: `python3 scripts/workspace-context.py check` e
+  `python3 scripts/workspace-context.py plan --route <rota>`, com a rota daquela skill. Siga o passo
+  declarado; esta instrução é a política, não o gatilho. Use `measure --route <rota>` para
   diagnosticar contribuições por fonte. exit `1` indica orçamento excedido; exit `2` indica contrato
-  inválido. Os comandos emitem somente metadata e nunca substituem a leitura das fontes selecionadas.
+  inválido. Os comandos emitem somente metadata e nunca substituem a leitura das fontes
+  selecionadas. Uma skill sem rota registrada não executa preflight.
 - Para discovery sem issue, use a rota registrada `project-discovery`; inspeção de freshness é
   read-only, e fetch, pull ou sincronização de repositórios exigem autorização separada.
 - Use `assistants-task-context` para preparar uma issue do produto Assistants.

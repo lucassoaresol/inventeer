@@ -12,13 +12,16 @@ Read [references/review-contract.md](references/review-contract.md) completely b
 
 ## Workflow
 
-1. Resolve the GitHub owner, repository, and PR number. If no unique PR can be identified, stop and
+1. Run `python3 scripts/workspace-context.py check` and
+   `python3 scripts/workspace-context.py plan --route pr-review`. Stop on a non-zero result;
+   these commands emit metadata only and do not replace reading the selected sources.
+2. Resolve the GitHub owner, repository, and PR number. If no unique PR can be identified, stop and
    request the missing reference.
-2. Read the PR through the read-only GitHub MCP. Capture the observation time, state, author, base
+3. Read the PR through the read-only GitHub MCP. Capture the observation time, state, author, base
    ref/SHA, head ref/SHA, commits, changed files, existing reviews, review threads, comments, and
    check runs. Treat missing or unavailable evidence explicitly; do not silently replace it with an
    assumption.
-3. Extract any `INV-*` issue reference and load Linear context progressively:
+4. Extract any `INV-*` issue reference and load Linear context progressively:
    - read the target issue once and record its `updatedAt`, parent, relations, acceptance criteria,
      declared DoD coverage, and explicit dependencies;
    - use the PR linkback only to locate or cross-check the issue, never as a fresher replacement for
@@ -32,26 +35,26 @@ Read [references/review-contract.md](references/review-contract.md) completely b
    Keep Linear canonical for issue scope and GitHub canonical for the submitted review surface. Do
    not use Linear's PR mirror for diffs, commits, reviews, threads, or checks when GitHub is available.
    If no issue exists, use repository documentation and the PR contract; do not invent requirements.
-4. Locate the repository clone when available. Read its local instructions and inspect its worktree
+5. Locate the repository clone when available. Read its local instructions and inspect its worktree
    before running commands. Never modify product files, branches, worktrees, GitHub, or Linear as
    part of this skill. Prefer the GitHub diff for remote identity and local code for surrounding
    context. If the exact head object is unavailable locally, declare the limitation instead of
    reviewing a different checkout as if it were the PR head.
-5. Build a risk map from the requirements and diff. Prioritize behavior, data integrity, security,
+6. Build a risk map from the requirements and diff. Prioritize behavior, data integrity, security,
    authorization, concurrency, compatibility, migrations, error handling, operations, and tests.
    Inspect unchanged callers and contracts when the changed code can affect them.
-6. Run proportionate local validation only when it can be bound to the reviewed head. Before a
+7. Run proportionate local validation only when it can be bound to the reviewed head. Before a
    heavy suite, build, container, browser, or high-concurrency step, run the workspace resource
    preflight and adapt concurrency without reducing required coverage. Keep remote checks distinct
    from local validation.
-7. Record only actionable defects as findings. Put uncertain items under questions or limitations.
+8. Record only actionable defects as findings. Put uncertain items under questions or limitations.
    Do not promote taste, optional refactoring, or undocumented preference into a defect. Present
    findings first, ordered by severity, using the contract format.
-8. Immediately before the verdict, read the PR again and compare its current base SHA and head SHA
+9. Immediately before the verdict, read the PR again and compare its current base SHA and head SHA
    with the reviewed identity. If either SHA changed, mark the review stale and inspect the changed
    surface before issuing a fresh verdict. Bind every PASS or approval recommendation to the final
    observed base and head SHAs.
-9. Return the review in chat by default. During the pilot, append only the sanitized metadata schema
+10. Return the review in chat by default. During the pilot, append only the sanitized metadata schema
    from the contract below `session-context/review-pilot/` with
    `python3 scripts/pr-review-pilot.py record --input <json-file>` and report when recording is
    unavailable. This local ledger is ignored, ephemeral, non-canonical, and contains no comments,

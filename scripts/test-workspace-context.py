@@ -365,3 +365,93 @@ for command in (
 for outcome in ("exit `1`", "exit `2`", "metadata"):
     assert outcome in agents and outcome in readme
 print("ok 11 - operator contracts require bounded metadata-only planning with exact exit semantics")
+
+
+# --- Preflight declarado dentro de cada skill roteada ------------------------
+# A regra ambiental alcançava 2 de 27 sessões Claude: uma engine lê AGENTS.md uma vez por sessão,
+# mas lê o corpo da skill no momento em que o trabalho começa. O passo declarado é a unidade
+# aplicável; este bloco garante que ele exista, aponte para a própria rota e venha primeiro.
+
+VENDORED = set(json.loads((ROOT / ".agents/vendor.json").read_text(encoding="utf-8")))
+
+
+def first_workflow_step(body: str) -> str:
+    marker = "## Workflow\n"
+    if marker not in body:
+        return ""
+    rest = body.split(marker, 1)[1].lstrip("\n")
+    steps = rest.split("\n2. ", 1)
+    return steps[0]
+
+
+def preflight_violation(skill: str, route: str, body: str) -> str | None:
+    """Return why a routed skill fails the preflight contract, or None when it passes."""
+    step = first_workflow_step(body)
+    if not step:
+        return f"{skill} has no numbered workflow"
+    if not step.lstrip().startswith("1. "):
+        return f"{skill} does not open its workflow with step 1"
+    for command in ("workspace-context.py check", "workspace-context.py plan --route"):
+        if command not in step:
+            return f"{skill} omits `{command}` from its first workflow step"
+    if f"plan --route {route}" not in step:
+        return f"{skill} must plan route {route} in its first step"
+    return None
+
+
+routed_skills: dict[str, str] = {}
+for route in json.loads(MANIFEST.read_text(encoding="utf-8"))["routes"]:
+    for reference in route["references"]:
+        source = reference["source"]
+        if not source.startswith(".agents/skills/"):
+            continue
+        skill = pathlib.PurePosixPath(source).parts[2]
+        if skill in VENDORED:
+            # Vendored content is replaced wholesale on update; a local step would not survive.
+            continue
+        assert routed_skills.setdefault(skill, route["name"]) == route["name"], (
+            f"{skill} is referenced by more than one route"
+        )
+
+assert routed_skills, "no routed skills derived from the manifest"
+assert set(routed_skills) == {
+    "portal-task-context",
+    "assistants-task-context",
+    "review-pull-request",
+    "triage-project-cycle",
+    "advance-delivery-front",
+    "discover-project-context",
+}, sorted(routed_skills)
+
+for skill, route in sorted(routed_skills.items()):
+    body = (ROOT / ".agents/skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+    violation = preflight_violation(skill, route, body)
+    assert violation is None, violation
+    step = first_workflow_step(body)
+    assert "non-zero" in step, f"{skill} does not tell the reader to stop on a non-zero result"
+    assert "metadata only" in step, f"{skill} does not state the metadata-only bound"
+
+# Uma skill sem rota não ganha preflight: o passo mediria um orçamento que não existe.
+for unrouted in ("create-review-bundle",):
+    body = (ROOT / ".agents/skills" / unrouted / "SKILL.md").read_text(encoding="utf-8")
+    assert "workspace-context.py" not in body, f"{unrouted} has no route and must not preflight"
+
+# Casos de falha exercitados contra o detector, para que ele não passe por vacuidade.
+GOOD_STEP = (
+    "## Workflow\n\n1. Run `python3 scripts/workspace-context.py check` and\n"
+    "   `python3 scripts/workspace-context.py plan --route pr-review`. Stop on a non-zero result;\n"
+    "   these commands emit metadata only and do not replace reading the selected sources.\n"
+    "2. Do the work.\n"
+)
+assert preflight_violation("probe", "pr-review", GOOD_STEP) is None
+for label, mutated, expected in (
+    ("comando ausente", GOOD_STEP.replace("scripts/workspace-context.py check` and\n", "nothing` and\n"), "omits"),
+    ("rota trocada", GOOD_STEP.replace("--route pr-review", "--route cycle-triage"), "must plan route"),
+    ("passo demovido", GOOD_STEP.replace("\n\n1. Run", "\n\n1. Do something else.\n2. Run"), "omits"),
+    ("sem workflow", "## Other\n\n1. Run `python3 scripts/workspace-context.py check`\n", "no numbered workflow"),
+):
+    violation = preflight_violation("probe", "pr-review", mutated)
+    assert violation is not None, f"detector missed: {label}"
+    assert expected in violation, f"{label}: unexpected message {violation!r}"
+
+print(f"ok 12 - {len(routed_skills)} routed skills declare their own preflight as step 1")

@@ -20,32 +20,35 @@ If the selection spans products, split the report by product and flag cross-prod
 
 ## Workflow
 
-1. Read `projects/README.md` and the matching `projects/<project>.md` entry point. Treat the registry
+1. Run `python3 scripts/workspace-context.py check` and
+   `python3 scripts/workspace-context.py plan --route cycle-triage`. Stop on a non-zero result;
+   these commands emit metadata only and do not replace reading the selected sources.
+2. Read `projects/README.md` and the matching `projects/<project>.md` entry point. Treat the registry
    as routing metadata, not as a canonical product source.
-2. Run `./scripts/update-repos.sh`. Continue with an explicit freshness warning for required repos
+3. Run `./scripts/update-repos.sh`. Continue with an explicit freshness warning for required repos
    that were skipped; stop when a required repo fails to update. Ignore the expected
    `inventeer-hub` skip.
-3. Retrieve each selected issue once per timestamped snapshot, including `updatedAt` and relevant
+4. Retrieve each selected issue once per timestamped snapshot, including `updatedAt` and relevant
    relations, without mutating Linear. Confirm each issue belongs to the expected product root.
    Resolve only the ancestry needed to establish shared outcomes, inherited DoDs, or a governance
    boundary; record every expanded identifier and reason, and do not expand every issue into a full
    context package.
-4. Normalize the comparison set: identity, type, status, priority, estimate, owner, objective,
+5. Normalize the comparison set: identity, type, status, priority, estimate, owner, objective,
    parent outcome, formal blockers, blocked issues, and related issues.
-5. Read local instructions and check the worktree for each likely implementation repo. Inspect code,
+6. Read local instructions and check the worktree for each likely implementation repo. Inspect code,
    tests, ADRs, artifacts, and specs only deeply enough to validate dependencies, shared contracts,
    likely file ownership, and collision risks.
-6. Distinguish evidence explicitly:
+7. Distinguish evidence explicitly:
    - `FORMAL`: represented by Linear hierarchy or relations;
    - `INHERITED`: imposed by a parent outcome, DoD, canonical contract, or active decision;
    - `CODE`: supported by current implementation, tests, or shared files;
    - `INFERENCE`: a reasoned sequencing or collision hypothesis;
    - `QUESTION`: missing information that changes readiness or order.
-7. Evaluate every issue for objective clarity, acceptance criteria, dependency closure, testability,
+8. Evaluate every issue for objective clarity, acceptance criteria, dependency closure, testability,
    operational prerequisites, and ownership. Do not treat `Ready to Start` as proof of readiness.
-8. Build execution waves from formal blockers first, then code-level collision and integration risk.
+9. Build execution waves from formal blockers first, then code-level collision and integration risk.
    Keep independent work parallelizable and explain every inferred ordering constraint.
-9. Recommend the first issue or clarification action that maximizes safe downstream progress.
+10. Recommend the first issue or clarification action that maximizes safe downstream progress.
 
 ## Triage Package
 

@@ -18,28 +18,31 @@ requested without re-collecting GitHub diff, reviews, threads, commits, or check
 
 ## Workflow
 
-1. From the workspace root, run `./scripts/update-repos.sh` before retrieving context. Inspect its
+1. Run `python3 scripts/workspace-context.py check` and
+   `python3 scripts/workspace-context.py plan --route assistants-task`. Stop on a non-zero result;
+   these commands emit metadata only and do not replace reading the selected sources.
+2. From the workspace root, run `./scripts/update-repos.sh` before retrieving context. Inspect its
    output: stop and report when `assistants` or a required `inventeer-ops` repo fails to update;
    continue with an explicit freshness warning when a required repo is skipped. Ignore the expected
    `inventeer-hub` skip.
-2. Retrieve the issue from Linear without mutating it.
-3. Resolve its complete parent chain until reaching `INV-2228`.
-4. Read [linear-context.md](references/linear-context.md) and validate the hierarchy and inherited
+3. Retrieve the issue from Linear without mutating it.
+4. Resolve its complete parent chain until reaching `INV-2228`.
+5. Read [linear-context.md](references/linear-context.md) and validate the hierarchy and inherited
    DoD coverage.
-5. Resolve `repos/assistants` and, when required by the domain, `repos/inventeer-ops`. The canonical
+6. Resolve `repos/assistants` and, when required by the domain, `repos/inventeer-ops`. The canonical
    IDS root is `repos/inventeer-ops/artifacts/products/ids`. If a required repo is absent, report the
    missing clone and stop; never clone automatically.
-6. Read the target repository's local agent instructions and check its Git worktree before any
+7. Read the target repository's local agent instructions and check its Git worktree before any
    proposed mutation.
-7. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
+8. Read [ids-context.md](references/ids-context.md), classify whether the task has an IDS dimension,
    read `repos/inventeer-ops/CLAUDE.md`, and load only the relevant canonical contracts or standards
    from `repos/inventeer-ops/artifacts/products/ids` when it does.
-8. Follow the code-first verification chain:
+9. Follow the code-first verification chain:
    - existing implementation and neighboring patterns;
    - relevant tests;
    - project documentation, artifacts, ADRs, and existing specs;
    - Git history only when the current rationale remains unclear.
-9. Establish the review contract before creating artifacts or asking the user to decide gray areas:
+10. Establish the review contract before creating artifacts or asking the user to decide gray areas:
    - default the review language to Portuguese and the canonical artifact language to English;
    - honor an explicit user preference over those defaults;
    - infer the user's domain familiarity from the conversation and include a functional walkthrough
@@ -50,22 +53,22 @@ requested without re-collecting GitHub diff, reviews, threads, commits, or check
    requests one. After approval, hand the approved package to the downstream workflow to create or
    update canonical artifacts in the canonical language; do not require a second approval solely for
    translation unless meaning changes.
-10. Build the user's mental model before requesting decisions: explain the problem, current and
+11. Build the user's mental model before requesting decisions: explain the problem, current and
     expected behavior, end-to-end flow, components, dependencies, scope boundaries, and why each
     unresolved choice matters. Use the sequence: orient with evidence, present options and
     consequences, recommend, then ask for a decision. Keep this adaptive for simple tasks and
     experienced users.
-11. When the task involves an external tool, service, runtime, environment, credential, or network
+12. When the task involves an external tool, service, runtime, environment, credential, or network
     boundary, assess operational readiness: where it runs, required binary/configuration, identity
     and credentials, connectivity, local reproduction, staging validation, and dependencies on
     other teams. Separate code changes from provisioning or access work.
-12. Separate discovered facts, supported inferences, and unresolved questions. Classify each
+13. Separate discovered facts, supported inferences, and unresolved questions. Classify each
     requirement or constraint by provenance: `ISSUE`, `INHERITED`, `SAFETY`, `DECISION`,
     `DEPENDENCY`, or `RECOMMENDATION`. Do not silently promote a recommendation or dependency into
     issue scope.
-13. Read [specification-policy.md](references/specification-policy.md) and determine whether the
+14. Read [specification-policy.md](references/specification-policy.md) and determine whether the
     Linear issue is ready for the user's intended action.
-14. Return the context package below and recommend exactly one next action.
+15. Return the context package below and recommend exactly one next action.
 
 ## Provenance
 

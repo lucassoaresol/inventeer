@@ -20,12 +20,15 @@ entry point and repository-local instructions to establish inherited branch, mer
 
 ## Workflow
 
-1. **Resolve the request mode.** Treat the request as assessing the current front, selecting the next
+1. **Bound the context.** Run `python3 scripts/workspace-context.py check` and
+   `python3 scripts/workspace-context.py plan --route delivery-front`. Stop on a non-zero result;
+   these commands emit metadata only and do not replace reading the selected sources.
+2. **Resolve the request mode.** Treat the request as assessing the current front, selecting the next
    merge-safe issue, preparing a delivery contract, or reassessing after a PR event. Do not broaden
    a reassessment into full cycle triage unless the candidate set itself is unresolved.
-2. **Read the policy.** Read [continuity-policy.md](references/continuity-policy.md) completely before
+3. **Read the policy.** Read [continuity-policy.md](references/continuity-policy.md) completely before
    classifying candidates, creating a contract, evaluating a transition, or planning reconciliation.
-3. **Gather Linear evidence read-only.** Read each issue once per timestamped snapshot. Reuse a
+4. **Gather Linear evidence read-only.** Read each issue once per timestamped snapshot. Reuse a
    supplied triage result only when it records retrieval time and issue `updatedAt`, no later event
    or user request indicates that a bound input changed, and the current decision needs no newer
    state; otherwise refresh the target issue. Elapsed time alone never proves freshness. Record
@@ -33,9 +36,9 @@ entry point and repository-local instructions to establish inherited branch, mer
    needed for the shared outcome, and formal blockers/relations. Expand ancestry or relations only
    when they can change topology or classification; record every additional issue identifier and
    reason. If Linear is unavailable, mark the source missing instead of inferring its state.
-4. **Gather GitHub evidence read-only.** Record retrieval time, PR number, open/merged/closed state,
+5. **Gather GitHub evidence read-only.** Record retrieval time, PR number, open/merged/closed state,
    draft status, base, head branch and SHA, review state, and CI checks. Use only read operations.
-5. **Inspect each local repository.** Read its instructions and worktree status, then run the bundled
+6. **Inspect each local repository.** Read its instructions and worktree status, then run the bundled
    inspector with explicit refs:
 
    ```bash
@@ -48,24 +51,24 @@ entry point and repository-local instructions to establish inherited branch, mer
 
    Treat the output as local evidence, not proof that a remote-tracking ref is current. Preserve a
    dirty worktree and report its paths.
-6. **Normalize the snapshot.** Build one timestamped view of sources, repo SHAs/worktrees, PRs,
+7. **Normalize the snapshot.** Build one timestamped view of sources, repo SHAs/worktrees, PRs,
    issues, inherited rules, WIP, stack depth, implementation maturity, and validation maturity. Bind
    validation to its exact evidence SHA/range and treat review bundles only as historical `CODE`
    evidence. Keep each repository's branch, PR, gates, and merge order separate.
-7. **Apply classification precedence.** Follow the policy's `blocked → dependent → conflicting →
+8. **Apply classification precedence.** Follow the policy's `blocked → dependent → conflicting →
    independent` order. Cite evidence class, source, confidence, missing evidence, and rejected
    alternatives. Never turn code overlap into a formal dependency or missing evidence into
    independence.
-8. **Choose the safe continuation.** Prefer a cycle-compatible independent issue. Enforce one ready
+9. **Choose the safe continuation.** Prefer a cycle-compatible independent issue. Enforce one ready
    PR plus one active/draft task per repository and one dependency level. If no safe transition
    exists, recommend recovering the earliest missing evidence or completing the current front.
-9. **Produce a contract or reconciliation plan.** Include every policy field and keep conceptual Git
+10. **Produce a contract or reconciliation plan.** Include every policy field and keep conceptual Git
    operations explanatory only. For dependent work, require the exact upstream head as boundary;
    block squash-aware reconciliation when it is absent.
-10. **Recheck freshness.** Before recommending promotion or reconciliation, re-read the PR head,
+11. **Recheck freshness.** Before recommending promotion or reconciliation, re-read the PR head,
     base, and state and compare the current review surface, gates, and validation binding. Mark the
     plan and affected validation stale when any bound input differs from the snapshot.
-11. **Return one next action.** Do not offer several simultaneous actions or imply that any proposed
+12. **Return one next action.** Do not offer several simultaneous actions or imply that any proposed
     state change has already happened.
 
 ## Output
