@@ -8,6 +8,7 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | [bounded-workspace-context](./bounded-workspace-context/) | Validated |
 | [claude-runtime-state-audit](./claude-runtime-state-audit/) | Validated |
 | [consolidated-documentation-topology](./consolidated-documentation-topology/) | Validated |
+| [cycle-11-inv-3967-snapshot](./cycle-11-inv-3967-snapshot/) | Validated |
 | [cycle-11-inv-3970-follow-up](./cycle-11-inv-3970-follow-up/) | Validated |
 | [delivery-front-continuity](./delivery-front-continuity/) | Validated |
 | [dual-engine-workspace](./dual-engine-workspace/) | Validated |
