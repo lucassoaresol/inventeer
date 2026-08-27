@@ -40,6 +40,7 @@ run_suite "TLC validation guidance" python3 .agents/skills/tlc-spec-driven/scrip
 run_suite "TLC value increments" python3 scripts/test-tlc-value-increments.py
 run_suite "TLC deterministic gates" python3 scripts/test-tlc-deterministic-gates.py
 run_suite "workspace structure" python3 scripts/test-workspace-structure.py
+run_suite "skill engine parity" python3 scripts/test-skill-engine-parity.py
 
 codex_skill_root="${CODEX_HOME:-${HOME}/.codex}/skills"
 skill_validator="$codex_skill_root/.system/skill-creator/scripts/quick_validate.py"
