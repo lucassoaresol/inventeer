@@ -906,5 +906,5 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Recorded at**: 2026-08-27T21:14:57Z
 - **Valid at SHA**: 5e5bf32d5295c4aab50ad98cc56abf0dfb4d5f4e
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/features/skill-behavior-retrospective-hardening/spec.md, .specs/features/skill-behavior-retrospective-hardening/validation.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/skill-behavior-retrospective-hardening/spec.md, .specs/features/skill-behavior-retrospective-hardening/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
