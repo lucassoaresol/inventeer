@@ -15,6 +15,12 @@
    - Returns a compact verdict + ranked gap list to the orchestrator in chat
    - Gaps become **fix tasks** routed back to an implementer; re-verification follows with a maximum of **3 fix→re-verify iterations** before escalating to the user
 
+   The report records `Verifier mode: independent-agent` and a bounded `Verifier evidence`
+   description of the fresh agent result. Use `standalone-fallback` only when the harness actually
+   exposes no sub-agent capability; record both the fresh-eyes evidence and a concrete `Fallback
+   reason`. Unused capability is not a fallback. The completion gate rejects missing, placeholder,
+   or self-review provenance.
+
 3. **Interactive UAT (for user-facing features only):** The feature has complex user-facing behavior where human judgment matters (UI flows, interaction patterns, visual design). For backend-only or infrastructure work, automated checks are sufficient.
 
 **Trigger for explicit validation:** "Validate", "verify work", "UAT", "test with me", "walk me through it"
@@ -226,6 +232,9 @@ The Verifier returns this block to the orchestrator after completing all checks:
 **Spec**: `.specs/features/[feature]/spec.md`
 **Diff range**: [commit range or branch..HEAD]
 **Verifier**: independent sub-agent (author ≠ verifier)
+**Verifier mode**: independent-agent
+**Verifier evidence**: [bounded description of the fresh agent result returned to the orchestrator]
+**Fallback reason**: [omit for independent-agent; required capability limitation for standalone-fallback]
 
 ---
 

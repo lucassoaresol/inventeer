@@ -36,6 +36,8 @@ import sys
 
 # A file:line citation: a path with an extension, then :<line>. e.g. src/a.ts:42
 EVIDENCE_RE = re.compile(r"[\w./-]+\.[A-Za-z0-9]+:\d+")
+PROVENANCE_MODES = frozenset({"independent-agent", "standalone-fallback"})
+PLACEHOLDER_RE = re.compile(r"(?:^[-–—]?$|\b(?:todo|tbd|none|placeholder)\b|\[[^]]*\]|<[^>]*>)", re.IGNORECASE)
 
 
 def _feature_dirs(root):
@@ -117,7 +119,42 @@ def _appears_complete(fdir):
     return True
 
 
-def _check_feature(fdir, name):
+def _field(text, label):
+    """Return a Markdown metadata field with emphasis/backticks removed."""
+    for line in text.splitlines():
+        plain = re.sub(r"[*_`]", "", line.strip())
+        match = re.match(rf"^{re.escape(label)}\s*:\s*(.*)$", plain, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+    return None
+
+
+def _real_value(value):
+    return bool(value and len(value) >= 12 and not PLACEHOLDER_RE.search(value))
+
+
+def _provenance_errors(text, name):
+    errors = []
+    mode = _field(text, "Verifier mode")
+    evidence = _field(text, "Verifier evidence")
+    fallback_reason = _field(text, "Fallback reason")
+    if mode not in PROVENANCE_MODES:
+        errors.append(
+            f"{name}: Verifier mode must be one of {sorted(PROVENANCE_MODES)}, got {mode!r}"
+        )
+        return errors
+    if not _real_value(evidence):
+        errors.append(
+            f"{name}: Verifier evidence is missing or placeholder; record the independent execution evidence"
+        )
+    if mode == "standalone-fallback" and not _real_value(fallback_reason):
+        errors.append(
+            f"{name}: Fallback reason is required for standalone-fallback and must name the unavailable capability"
+        )
+    return errors
+
+
+def _check_feature(fdir, name, *, require_provenance=False):
     """Return list of error strings for one feature (empty = pass)."""
     errors = []
     vpath = os.path.join(fdir, "validation.md")
@@ -137,6 +174,8 @@ def _check_feature(fdir, name):
         errors.append(f"{name}: validation.md verdict is FAIL - route the ranked gaps to fix tasks, then re-verify (feature is not done)")
     if verdict == "pass" and not EVIDENCE_RE.search(text):
         errors.append(f"{name}: validation.md is PASS but cites no file:line evidence - evidence-or-zero not satisfied")
+    if verdict == "pass" and require_provenance:
+        errors.extend(_provenance_errors(text, name))
     return errors
 
 
@@ -173,7 +212,9 @@ def main(argv=None):
     targets = _resolve(root, args.feature)
     all_errors = []
     for fdir, name in targets:
-        all_errors += _check_feature(fdir, name)
+        all_errors += _check_feature(
+            fdir, name, require_provenance=args.feature is not None
+        )
 
     for e in all_errors:
         print(f"  ERROR {e}")

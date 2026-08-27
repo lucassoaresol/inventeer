@@ -161,6 +161,11 @@ class SpecGateTests(unittest.TestCase):
 
 
 class StateGateTests(unittest.TestCase):
+    INDEPENDENT = (
+        "**Verifier mode:** independent-agent\n"
+        "**Verifier evidence:** fresh sub-agent result returned to the orchestrator\n\n"
+    )
+
     def run_validation(self, report: str) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory(prefix="tlc-state-gate-") as directory:
             feature = Path(directory) / ".specs" / "features" / "gate"
@@ -169,7 +174,10 @@ class StateGateTests(unittest.TestCase):
             return run_tool("validate_state.py", "gate", "--root", directory)
 
     def test_overall_pass_outranks_subordinate_fail(self) -> None:
-        result = self.run_validation("## Validation: PASS\n\n**Sensor result:** FAIL\n\nEvidence: `src/gate.py:12`\n")
+        result = self.run_validation(
+            self.INDEPENDENT
+            + "## Validation: PASS\n\n**Sensor result:** FAIL\n\nEvidence: `src/gate.py:12`\n"
+        )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_overall_fail_outranks_subordinate_pass(self) -> None:
@@ -179,9 +187,61 @@ class StateGateTests(unittest.TestCase):
         self.assertNotIn("template placeholder", result.stdout)
 
     def test_pass_without_file_line_evidence_fails_closed(self) -> None:
-        result = self.run_validation("**Verdict:** PASS\n\nAll checks completed.\n")
+        result = self.run_validation(
+            self.INDEPENDENT + "**Verdict:** PASS\n\nAll checks completed.\n"
+        )
         self.assertEqual(1, result.returncode, result.stdout + result.stderr)
         self.assertIn("cites no file:line evidence", result.stdout)
+
+    def test_independent_agent_requires_real_evidence(self) -> None:
+        for evidence in ("", "TODO", "[agent result]", "none", "-"):
+            report = (
+                "**Verifier mode:** independent-agent\n"
+                f"**Verifier evidence:** {evidence}\n\n"
+                "**Overall:** PASS\n\nEvidence: `src/gate.py:12`\n"
+            )
+            with self.subTest(evidence=evidence):
+                result = self.run_validation(report)
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn("Verifier evidence", result.stdout)
+
+    def test_standalone_fallback_requires_capability_reason(self) -> None:
+        valid = (
+            "**Verifier mode:** standalone-fallback\n"
+            "**Verifier evidence:** fresh-eyes pass executed after clearing feature context\n"
+            "**Fallback reason:** this harness exposes no sub-agent capability\n\n"
+            "**Overall:** PASS\n\nEvidence: `src/gate.py:12`\n"
+        )
+        result = self.run_validation(valid)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+        result = self.run_validation(valid.replace(
+            "this harness exposes no sub-agent capability", ""
+        ))
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        self.assertIn("Fallback reason", result.stdout)
+
+    def test_missing_or_unknown_verifier_mode_fails(self) -> None:
+        for mode_line in ("", "**Verifier mode:** self-review\n"):
+            report = (
+                mode_line
+                + "**Verifier evidence:** detailed but unsupported evidence\n\n"
+                + "**Overall:** PASS\n\nEvidence: `src/gate.py:12`\n"
+            )
+            with self.subTest(mode_line=mode_line):
+                result = self.run_validation(report)
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn("Verifier mode", result.stdout)
+
+    def test_aggregate_cross_check_preserves_historical_reports(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="tlc-state-gate-") as directory:
+            feature = Path(directory) / ".specs" / "features" / "historical"
+            feature.mkdir(parents=True)
+            (feature / "validation.md").write_text(
+                "**Overall:** PASS\n\nEvidence: `src/legacy.py:4`\n", encoding="utf-8"
+            )
+            result = run_tool("validate_state.py", "--root", directory)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
 
 class TaskGateTests(unittest.TestCase):

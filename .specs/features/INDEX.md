@@ -18,8 +18,9 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | [pr-review-pilot-hardening](./pr-review-pilot-hardening/) | Validated |
 | [resilient-tlc-checkpoints](./resilient-tlc-checkpoints/) | Validated |
 | [review-evidence-lifecycle](./review-evidence-lifecycle/) | Validated |
-| [routed-skill-context-preflight](./routed-skill-context-preflight/) | Validated |
 | [retrospective-evidence-freshness](./retrospective-evidence-freshness/) | Validated |
+| [routed-skill-context-preflight](./routed-skill-context-preflight/) | Validated |
+| [skill-behavior-retrospective-hardening](./skill-behavior-retrospective-hardening/) | Active |
 | [symmetric-session-audit-contract](./symmetric-session-audit-contract/) | Validated |
 | [tlc-spec-driven-3-3-upgrade](./tlc-spec-driven-3-3-upgrade/) | Validated |
 | [unified-dual-engine-delivery](./unified-dual-engine-delivery/) | Validated |
