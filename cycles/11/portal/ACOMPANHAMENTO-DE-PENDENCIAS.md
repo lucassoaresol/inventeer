@@ -64,3 +64,49 @@ deve permanecer separado da mudança funcional em qualquer caso.
 Nenhum código, teste, artifact de produto, issue Linear ou repo sob `repos/` foi alterado. Os dois
 resultados focais foram produzidos pela revisão independente e não foram reexecutados durante esta
 atualização documental.
+
+## Revalidação após a entrega da INV-3970
+
+O Linear e o GitHub foram revalidados em 2026-08-26 depois da entrega da INV-3970 e da triagem dos
+achados do seu QA. A INV-3970 está `Done`, e a PR
+[portal-web#239](https://github.com/Inventeer/portal-web/pull/239) foi incorporada a `develop`. A
+entrega fixou quatro páginas de Metrics: Activity, Delivery Flow, Quality e Velocity. A INV-3967 é
+a única task restante da MILE INV-3963 e preserva o escopo residual de posicionamento dos cards e
+regressão visual e comportamental.
+
+O recorte atual atribuído a Lucas Oliveira passou a onze tasks e continua somando 20 pontos. A
+mudança combina o esforço final de um ponto registrado na INV-3970 com a entrada da INV-4041, também
+de um ponto. O snapshot de entrada acima permanece inalterado porque registra a composição e as
+estimativas observadas na abertura do ciclo.
+
+### Disposição dos achados do QA
+
+| Pendência ou achado | Disposição canônica em 2026-08-26 | Relação com o Ciclo 11 |
+| --- | --- | --- |
+| `FU-03` — `portal-web/CLAUDE.md` obsoleto | `INV-4041`, task própria de enablement sob o catch-all INV-629 | `Prioritized` no Ciclo 11; não pertence ao roadmap do Portal |
+| `FU-02` — catálogo Web divergente do contrato de permissões | `INV-4036`, sob a frente de fechamento das divergências do QA | Backlog, fora do ciclo; não será absorvida silenciosamente pela INV-3915 |
+| `FU-04` — locale incompleto na paginação | `INV-4037`, junto da divergência de locale do Audit Log | Backlog, fora do ciclo |
+| `C11-03` — ERD divergente do schema vivo | `INV-4039`, com decisão entre atualização e reclassificação do artifact | Backlog, fora do ciclo |
+| Caminho E2E descrito pelo ADR-015 | `INV-4040`, com decisão explícita sobre restaurar ou abandonar o caminho | Backlog, fora do ciclo |
+| Reidratação da navegação permissionada | `INV-4035`, separada da entrega funcional que revelou a divergência | Backlog, fora do ciclo |
+| Negação integral de acesso a Metrics | `INV-4038`, distinta da negação regional do segundo tier tratada pela INV-3971 | Backlog, fora do ciclo |
+
+A estrutura INV-4031–INV-4040 permanece fora do Ciclo 11. A documentação correspondente está na PR
+[inventeer-ops#262](https://github.com/Inventeer/inventeer-ops/pull/262), ainda não incorporada a
+`main` neste snapshot. Linear continua canônico para a hierarquia e o estado dessas issues.
+
+### Itens deliberadamente sem task
+
+- A promoção operacional de Metrics v1 continua sem issue até existir owner, ambiente e smoke
+  autorizados.
+- Os grants reais de Ticket continuam sem issue até existirem owner, organizações, atores e ambiente
+  explícitos.
+- `reportAllChanges` lendo `startTime` indefinido e os históricos de flake de
+  `organization-home.test.tsx` e `ai-engine-keepalive.spec.ts` continuam sem task. Os dois testes não
+  reproduziram a falha na última passada focal, e um caso isolado sem reprodução não cria backlog.
+
+## Limite da revalidação pós-INV-3970
+
+Esta seção registra a disposição durável dos achados. Ela não altera ciclo, estado, prioridade,
+owner ou relações no Linear; não promove os artifacts da PR #262 antes do merge; e não transforma
+observações sem reprodução ou owner em backlog implícito.
