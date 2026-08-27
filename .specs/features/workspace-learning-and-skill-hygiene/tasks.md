@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: none - no architectural decision; both changes extend an existing script contract.
-**Status**: Draft
+**Status**: Done
 
 ---
 

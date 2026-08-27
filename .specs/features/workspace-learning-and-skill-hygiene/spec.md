@@ -1,6 +1,6 @@
 # Workspace Learning and Skill Hygiene Specification
 
-**Status:** Draft
+**Status:** Validated
 **Review language:** Portuguese
 **Canonical language:** English
 
@@ -16,11 +16,11 @@ and the layer behaves as a write-only log instead of a memory.
 
 ## Goals
 
-- [ ] Let `sync-apex-commands.sh` reconcile orphaned `apex-*` directories without requiring an MCP
+- [x] Let `sync-apex-commands.sh` reconcile orphaned `apex-*` directories without requiring an MCP
       catalog, and remove the 27 that exist today.
-- [ ] Give `lessons.py` a second merge axis so reformulations of the same lesson recur and promote,
+- [x] Give `lessons.py` a second merge axis so reformulations of the same lesson recur and promote,
       without merging genuinely distinct lessons.
-- [ ] Commit the 22 accumulated lessons (L-009..L-030) and close the Handoff at the current SHA.
+- [x] Commit the 22 accumulated lessons (L-009..L-030) and close the Handoff at the current SHA.
 
 ## Out of Scope
 

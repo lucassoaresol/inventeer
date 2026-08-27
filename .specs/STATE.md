@@ -864,18 +864,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Status**: active
 
 ## Handoff
-- **Feature**: official-figma-only
+- **Feature**: workspace-learning-and-skill-hygiene
 - **Phase / Task**: Completed and validated
-- **Completed**: Behavioral commit 5435bb9 keeps only the official Figma MCP; validation closure afc2a5b records 4 of 4 criteria and 3 of 3 killed mutants; aggregate gate passed
+- **Completed**: Behavioral commits 5c88372 (orphan pruning) and 2254304 (lesson similarity merge); 27 orphan apex-* directories removed; lessons L-009..L-030 recorded in 632a492 and L-031..L-032 distilled in dfcc4ae; validation records 20 of 20 criteria and 8 of 8 killed mutants; aggregate gate passed
 - **In progress**: none
-- **Next durable step**: Restart the engines and continue through the official Figma OAuth MCP
+- **Next durable step**: Decide whether the retrospective findings still open - dual-engine skill parity, symmetric v4 audit contract, context preflight inside the skills, and the AD-046 evidence allowlist named in validation Findings 3 - become AD entries
 - **Blockers**: none
-- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
+- **Uncommitted files**: none
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-27T15:49:59Z
-- **Valid at SHA**: 5435bb9951b038df28eb8d9b646a883b9ef4ee70
+- **Recorded at**: 2026-08-27T17:55:14Z
+- **Valid at SHA**: dfcc4ae7e21de53c186f317d812687141e5668bc
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/official-figma-only/spec.md, .specs/features/official-figma-only/validation.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/workspace-learning-and-skill-hygiene/spec.md, .specs/features/workspace-learning-and-skill-hygiene/tasks.md, .specs/features/workspace-learning-and-skill-hygiene/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
