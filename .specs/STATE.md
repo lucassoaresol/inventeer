@@ -847,18 +847,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Status**: active
 
 ## Handoff
-- **Feature**: cycle-10-closeout-and-cycle-11-pending-followup
+- **Feature**: workspace-operational-surface-simplification
 - **Phase / Task**: Completed and validated
-- **Completed**: Commit 0e77586 records the Cycle 11 accompaniment, AD-050 lifecycle, and synchronized Cycle 10 contract test; focal contract passed; aggregate workspace gate passed; Portuguese handoff-state mutant killed
+- **Completed**: Behavioral commit f9a7a65 implements bounded discovery, one APEX inspector, read-only hygiene, and the disabled local Figma pilot; focal and aggregate gates passed; standalone Verifier killed 3 of 3 mutants
 - **In progress**: none
-- **Next durable step**: Use the Cycle 11 accompaniment for material revalidations and distill its final dispositions when the cycle closes
-- **Blockers**: none
+- **Next durable step**: Install and connect the Desktop plugin manually in a disposable Figma file before any live figma-local validation
+- **Blockers**: Live figma-local validation depends on the external Desktop plugin and was not performed
 - **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-26T11:08:00Z
-- **Valid at SHA**: 0e77586e7bfce16424245c514586262dca365c44
+- **Recorded at**: 2026-08-27T15:22:28Z
+- **Valid at SHA**: f9a7a65a9aabb9c9d36b1b665b14d841e5adce0c
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/workspace-operational-surface-simplification/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
