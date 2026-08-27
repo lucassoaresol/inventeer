@@ -866,7 +866,7 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 ## Handoff
 - **Feature**: official-figma-only
 - **Phase / Task**: Completed and validated
-- **Completed**: Behavioral commit 5435bb9 keeps only the official Figma MCP; focal and aggregate gates passed; standalone Verifier killed 3 of 3 mutants after one corrected assertion
+- **Completed**: Behavioral commit 5435bb9 keeps only the official Figma MCP; validation closure afc2a5b records 4 of 4 criteria and 3 of 3 killed mutants; aggregate gate passed
 - **In progress**: none
 - **Next durable step**: Restart the engines and continue through the official Figma OAuth MCP
 - **Blockers**: none
@@ -877,5 +877,5 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Recorded at**: 2026-08-27T15:49:59Z
 - **Valid at SHA**: 5435bb9951b038df28eb8d9b646a883b9ef4ee70
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/official-figma-only/validation.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/official-figma-only/spec.md, .specs/features/official-figma-only/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
