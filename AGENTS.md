@@ -136,17 +136,20 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   e crie outro no novo ciclo; Linear continua canônico para o ciclo e estado atuais.
 - Não duplique o workflow da TLC em skills específicas de projeto.
 - Trate `tlc-spec-driven` como conteúdo vendorizado e atualize-a em commit isolado.
-- Em retrospectivas de skills e fluxo, consulte os históricos locais das duas engines associados a
+- Em retrospectivas de skills e fluxo, use `retrospect-skill-usage` e consulte os históricos locais
+  das duas engines associados a
   esta raiz: `~/.codex/sessions/` e o projeto correspondente em `~/.claude/projects/`. Diferencie
   sessões principais, continuations e cópias; não conte a própria retrospectiva como evidência.
   Use `scripts/audit-session-history.py` como inventário inicial sanitizado, com `cwd` exato,
   recorte temporal fechado com `--since` e `--until` e o ID da sessão corrente em
-  `--exclude-session`; no contrato v4, registre `contract_version`, limites,
+  `--exclude-session`; no contrato v5, registre `contract_version`, limites,
   `session_instances`, continuations ou sidechains, fluxos lógicos e exclusões solicitadas,
   encontradas e não encontradas antes de interpretar resultados. As duas engines emitem o mesmo
   conjunto de chaves: uma métrica que o formato daquela engine não expressa vem como `null` e sua
   razão fica em `unsupported_metrics`. Trate `null` como não medido, nunca como zero, e não compare
   uma métrica entre engines quando ela estiver listada como não suportada em qualquer um dos lados.
+  Diferencie invocação estruturada, proxy de leitura de `SKILL.md` e mera menção; antes de tratar
+  uso zero como finding, demonstre uma oportunidade real de aplicação da skill.
   Para comparação cross-machine,
   use `--workspace-id inventeer-personal-engineering --format receipt-json` e preserve somente o
   envelope sanitizado; ele usa `<workspace-root>` e não persiste IDs ou paths físicos.

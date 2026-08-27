@@ -43,7 +43,7 @@ trade-offs, and supersession history remain there. Decision drafts that have not
 | [AD-035](STATE.md#ad-035) | active |
 | [AD-036](STATE.md#ad-036) | superseded by AD-045 |
 | [AD-037](STATE.md#ad-037) | active |
-| [AD-038](STATE.md#ad-038) | active |
+| [AD-038](STATE.md#ad-038) | superseded by AD-053 |
 | [AD-039](STATE.md#ad-039) | active |
 | [AD-040](STATE.md#ad-040) | active |
 | [AD-041](STATE.md#ad-041) | active |
@@ -58,3 +58,4 @@ trade-offs, and supersession history remain there. Decision drafts that have not
 | [AD-050](STATE.md#ad-050) | active |
 | [AD-051](STATE.md#ad-051) | active |
 | [AD-052](STATE.md#ad-052) | active |
+| [AD-053](STATE.md#ad-053) | active |

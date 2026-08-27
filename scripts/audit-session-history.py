@@ -18,7 +18,12 @@ UUID_RE = re.compile(
     r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b",
     re.IGNORECASE,
 )
-CONTRACT_VERSION = 4
+CONTRACT_VERSION = 5
+SKILL_NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+SKILL_PATH_RE = re.compile(
+    r"(?<![A-Za-z0-9._-])\.agents/skills/([a-z0-9]+(?:-[a-z0-9]+)*)/SKILL\.md"
+    r"(?![A-Za-z0-9._-])"
+)
 
 # One canonical key set for both engines. A cohort is only comparable if the blocks carry the same
 # fields; where an engine's transcript format cannot express a signal, the value is None and the
@@ -46,6 +51,10 @@ METRIC_KEYS = (
     "apex_tool_failures",
     "apex_tool_denials",
     "apex_tool_unresolved",
+    "skill_invocations",
+    "skill_invocation_sessions",
+    "skill_load_proxies",
+    "skill_load_proxy_sessions",
 )
 
 TALLY_METRICS = frozenset(
@@ -54,6 +63,10 @@ TALLY_METRICS = frozenset(
         "apex_tool_failures",
         "apex_tool_denials",
         "apex_tool_unresolved",
+        "skill_invocations",
+        "skill_invocation_sessions",
+        "skill_load_proxies",
+        "skill_load_proxy_sessions",
     }
 )
 RATIO_METRICS = frozenset(
@@ -63,6 +76,12 @@ RATIO_METRICS = frozenset(
 CODEX_UNSUPPORTED = {
     "sidechains": (
         "Codex writes a subagent to its own session file, so there is no inline sidechain to count"
+    ),
+    "skill_invocations": (
+        "Codex session history does not expose a structured native skill invocation event"
+    ),
+    "skill_invocation_sessions": (
+        "derived from skill invocations, which Codex session history does not expose"
     ),
 }
 CLAUDE_UNSUPPORTED = {
@@ -174,6 +193,48 @@ def message_text(payload: dict[str, Any]) -> str:
     return " ".join(fragments)
 
 
+def nested_strings(value: Any) -> Iterable[str]:
+    """Yield strings from a tool's input only; callers must not pass prose or tool results."""
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for nested in value.values():
+            yield from nested_strings(nested)
+    elif isinstance(value, list):
+        for nested in value:
+            yield from nested_strings(nested)
+
+
+def skill_load_proxies(value: Any) -> collections.Counter[str]:
+    found: collections.Counter[str] = collections.Counter()
+    for text in nested_strings(value):
+        for match in SKILL_PATH_RE.finditer(text):
+            found[match.group(1)] += 1
+    return found
+
+
+def codex_tool_input(payload: dict[str, Any]) -> Any | None:
+    """Return only structured tool-call arguments from a Codex response item."""
+    if payload.get("type") not in {"function_call", "custom_tool_call"}:
+        return None
+    arguments = payload.get("arguments", payload.get("input"))
+    if isinstance(arguments, str):
+        try:
+            decoded = json.loads(arguments)
+        except json.JSONDecodeError:
+            return arguments
+        return decoded
+    if isinstance(arguments, (dict, list)):
+        return arguments
+    return None
+
+
+def validated_skill_name(value: Any) -> str | None:
+    if isinstance(value, str) and SKILL_NAME_RE.fullmatch(value):
+        return value
+    return None
+
+
 def continuation_parent(text: str) -> str | None:
     lowered = text.casefold()
     if "caiu" not in lowered or "continu" not in lowered:
@@ -215,6 +276,7 @@ def scan_codex(
         compacted_records = 0
         context_compactions = 0
         aborted_turns = 0
+        load_proxies: collections.Counter[str] = collections.Counter()
         for record in json_lines(path):
             payload = record.get("payload", {})
             if not isinstance(payload, dict):
@@ -231,6 +293,10 @@ def scan_codex(
                 continue
             if record.get("type") == "compacted":
                 compacted_records += 1
+            if record.get("type") == "response_item":
+                tool_input = codex_tool_input(payload)
+                if tool_input is not None:
+                    load_proxies.update(skill_load_proxies(tool_input))
             if record.get("type") == "event_msg":
                 event_type = payload.get("type")
                 if event_type == "context_compacted":
@@ -271,6 +337,7 @@ def scan_codex(
                 "aborted_turns": aborted_turns,
                 "apex_successes": apex_calls,
                 "apex_failures": failed_calls,
+                "load_proxies": load_proxies,
             }
         )
 
@@ -290,6 +357,7 @@ def scan_codex(
             "aborted_turns": item["aborted_turns"],
             "apex_successes": item["apex_successes"].copy(),
             "apex_failures": item["apex_failures"].copy(),
+            "load_proxies": item["load_proxies"].copy(),
         }
 
     primary = [item for item in by_session.values() if not item["subagent"]]
@@ -305,9 +373,13 @@ def scan_codex(
 
     apex_totals: collections.Counter[str] = collections.Counter()
     apex_failures: collections.Counter[str] = collections.Counter()
+    load_proxy_totals: collections.Counter[str] = collections.Counter()
+    load_proxy_sessions: collections.Counter[str] = collections.Counter()
     for item in by_session.values():
         apex_totals.update(item["apex_successes"])
         apex_failures.update(item["apex_failures"])
+        load_proxy_totals.update(item["load_proxies"])
+        load_proxy_sessions.update(item["load_proxies"].keys())
 
     return engine_block(
         CODEX_UNSUPPORTED,
@@ -336,6 +408,8 @@ def scan_codex(
         ),
         apex_tool_successes=dict(sorted(apex_totals.items())),
         apex_tool_failures=dict(sorted(apex_failures.items())),
+        skill_load_proxies=dict(sorted(load_proxy_totals.items())),
+        skill_load_proxy_sessions=dict(sorted(load_proxy_sessions.items())),
     ), matched_exclusions
 
 
@@ -365,6 +439,8 @@ def scan_claude(
         aborted_turns = 0
         apex_attempts: dict[str, str] = {}
         apex_outcomes: dict[str, str] = {}
+        invocations: collections.Counter[str] = collections.Counter()
+        load_proxies: collections.Counter[str] = collections.Counter()
         for record in json_lines(path):
             if session_id is None and isinstance(record.get("sessionId"), str):
                 session_id = record["sessionId"].lower()
@@ -394,6 +470,15 @@ def scan_claude(
                 if record.get("type") == "assistant" and item.get("type") == "tool_use":
                     tool_id = item.get("id")
                     name = item.get("name")
+                    tool_input = item.get("input")
+                    if isinstance(tool_input, (dict, list, str)):
+                        load_proxies.update(skill_load_proxies(tool_input))
+                    if name == "Skill" and isinstance(tool_input, dict):
+                        skill = validated_skill_name(
+                            tool_input.get("skill", tool_input.get("name"))
+                        )
+                        if skill:
+                            invocations[skill] += 1
                     tool = None
                     if (
                         isinstance(tool_id, str)
@@ -452,6 +537,8 @@ def scan_claude(
                 "failures": session_failures,
                 "denials": session_denials,
                 "unresolved": session_unresolved,
+                "invocations": invocations,
+                "load_proxies": load_proxies,
             }
         )
 
@@ -470,17 +557,27 @@ def scan_claude(
             "failures": item["failures"].copy(),
             "denials": item["denials"].copy(),
             "unresolved": item["unresolved"].copy(),
+            "invocations": item["invocations"].copy(),
+            "load_proxies": item["load_proxies"].copy(),
         }
 
     apex_totals: collections.Counter[str] = collections.Counter()
     failure_totals: collections.Counter[str] = collections.Counter()
     denial_totals: collections.Counter[str] = collections.Counter()
     unresolved_totals: collections.Counter[str] = collections.Counter()
+    invocation_totals: collections.Counter[str] = collections.Counter()
+    invocation_sessions: collections.Counter[str] = collections.Counter()
+    load_proxy_totals: collections.Counter[str] = collections.Counter()
+    load_proxy_sessions: collections.Counter[str] = collections.Counter()
     for item in by_session.values():
         apex_totals.update(item["successes"])
         failure_totals.update(item["failures"])
         denial_totals.update(item["denials"])
         unresolved_totals.update(item["unresolved"])
+        invocation_totals.update(item["invocations"])
+        invocation_sessions.update(item["invocations"].keys())
+        load_proxy_totals.update(item["load_proxies"])
+        load_proxy_sessions.update(item["load_proxies"].keys())
 
     sidechains = sum(item["sidechain"] for item in by_session.values())
     session_instances = len(by_session) - sidechains
@@ -523,6 +620,10 @@ def scan_claude(
         apex_tool_failures=dict(sorted(failure_totals.items())),
         apex_tool_denials=dict(sorted(denial_totals.items())),
         apex_tool_unresolved=dict(sorted(unresolved_totals.items())),
+        skill_invocations=dict(sorted(invocation_totals.items())),
+        skill_invocation_sessions=dict(sorted(invocation_sessions.items())),
+        skill_load_proxies=dict(sorted(load_proxy_totals.items())),
+        skill_load_proxy_sessions=dict(sorted(load_proxy_sessions.items())),
     ), matched_exclusions
 
 

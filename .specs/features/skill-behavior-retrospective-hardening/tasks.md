@@ -180,11 +180,11 @@ T4 -> T5 -> T6 -> T7
 
 **Done when**:
 
-- [ ] Claude `Skill` calls aggregate by validated name and distinct accepted session.
-- [ ] Codex invocation fields are null with a reason, never inferred zero.
-- [ ] Exact path proxies are separately named and decoy prose/output never counts.
-- [ ] Exclusions, empty roots, receipt privacy, and canonical engine keys remain tested.
-- [ ] `python3 scripts/test-session-history-audit.py` passes.
+- [x] Claude `Skill` calls aggregate by validated name and distinct accepted session.
+- [x] Codex invocation fields are null with a reason, never inferred zero.
+- [x] Exact path proxies are separately named and decoy prose/output never counts.
+- [x] Exclusions, empty roots, receipt privacy, and canonical engine keys remain tested.
+- [x] `python3 scripts/test-session-history-audit.py` passes.
 
 **Tests**: integration
 **Gate**: quick
@@ -205,10 +205,10 @@ T4 -> T5 -> T6 -> T7
 
 **Done when**:
 
-- [ ] Description routes retrospectives and excludes product discovery, PR review, and implementation.
-- [ ] Workflow requires closed bounds, current-session exclusion, limitations, opportunity checks, and chat-only output.
-- [ ] `agents/openai.yaml` names `$retrospect-skill-usage` and the Claude relative symlink resolves.
-- [ ] Quick validation and `python3 scripts/test-skill-engine-parity.py` pass.
+- [x] Description routes retrospectives and excludes product discovery, PR review, and implementation.
+- [x] Workflow requires closed bounds, current-session exclusion, limitations, opportunity checks, and chat-only output.
+- [x] `agents/openai.yaml` names `$retrospect-skill-usage` and the Claude relative symlink resolves.
+- [x] Quick validation and `python3 scripts/test-skill-engine-parity.py` pass.
 
 **Tests**: contract
 **Gate**: quick
@@ -229,10 +229,10 @@ T4 -> T5 -> T6 -> T7
 
 **Done when**:
 
-- [ ] AD-053 records Verifier, lesson, review-pilot, and retrospective boundaries without expanding product authority.
-- [ ] Workspace instructions route future skill/session retrospectives to the new skill.
-- [ ] Feature status and requirement traceability reflect implemented state before verification.
-- [ ] Aggregate runner includes the materializer test and all structural suites pass focally.
+- [x] AD-053 records Verifier, lesson, review-pilot, and retrospective boundaries without expanding product authority.
+- [x] Workspace instructions route future skill/session retrospectives to the new skill.
+- [x] Feature status and requirement traceability reflect implemented state before verification.
+- [x] Aggregate runner includes the materializer test and all structural suites pass focally.
 
 **Tests**: contract
 **Gate**: build

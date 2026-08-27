@@ -54,6 +54,7 @@ def codex_session(
     context_compactions: int = 0,
     thread_source: str | None = None,
     filename: str | None = None,
+    tool_inputs: list[object] | None = None,
 ) -> None:
     metadata = {
         "id": session_id,
@@ -88,6 +89,18 @@ def codex_session(
                 },
             }
         )
+    for index, tool_input in enumerate(tool_inputs or []):
+        records.append(
+            {
+                "type": "response_item",
+                "payload": {
+                    "type": "function_call",
+                    "name": "read_file",
+                    "call_id": f"call-{index}",
+                    "arguments": json.dumps(tool_input),
+                },
+            }
+        )
     records.extend(
         {"type": "event_msg", "payload": {"type": "turn_aborted"}}
         for _ in range(aborted_turns)
@@ -118,8 +131,15 @@ def claude_session(
     aborts: int = 0,
     decoy_aborts: int = 0,
     subagents: int = 0,
+    skill_calls: list[object] | None = None,
+    tool_inputs: list[object] | None = None,
 ) -> None:
-    content = [{"type": "text", "text": SECRET}]
+    content = [
+        {
+            "type": "text",
+            "text": f"{SECRET} assistant mention .agents/skills/assistant-decoy/SKILL.md",
+        }
+    ]
     tool_id = f"tool-{session_id}"
     assert not (apex_tool and resource_server)
     if apex_tool:
@@ -138,6 +158,24 @@ def claude_session(
                 "id": tool_id,
                 "name": "ReadMcpResourceTool",
                 "input": {"server": resource_server, "uri": "example://resource"},
+            }
+        )
+    for index, skill in enumerate(skill_calls or []):
+        content.append(
+            {
+                "type": "tool_use",
+                "id": f"skill-{index}-{session_id}",
+                "name": "Skill",
+                "input": {"skill": skill},
+            }
+        )
+    for index, tool_input in enumerate(tool_inputs or []):
+        content.append(
+            {
+                "type": "tool_use",
+                "id": f"read-{index}-{session_id}",
+                "name": "Read",
+                "input": tool_input,
             }
         )
     records = [
@@ -164,7 +202,10 @@ def claude_session(
                         "type": "tool_result",
                         "tool_use_id": tool_id,
                         "is_error": outcome != "success",
-                        "content": SECRET,
+                        "content": (
+                            f"{SECRET} tool output "
+                            ".agents/skills/output-decoy/SKILL.md"
+                        ),
                     }
                 ],
             },
@@ -248,10 +289,23 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
     codex_session(
         codex_root,
         PRIMARY,
-        user_text=f"{SECRET} injected name mcp__apex__apex_git_push",
+        user_text=(
+            f"{SECRET} injected name mcp__apex__apex_git_push and prose "
+            ".agents/skills/prose-decoy/SKILL.md"
+        ),
         apex_tool="apex_framework_index",
         aborted_turns=2,
         compactions=1,
+        tool_inputs=[
+            {
+                "paths": [
+                    ".agents/skills/review-pull-request/SKILL.md",
+                    "/workspace/inventeer/.agents/skills/review-pull-request/SKILL.md",
+                    ".agents/skills/retrospect-skill-usage/SKILL.md",
+                    ".agents/skills/Bad_Name/SKILL.md",
+                ]
+            }
+        ],
     )
     codex_session(
         codex_root,
@@ -268,6 +322,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         user_text=f"A sessão id {OLD_PARENT} caiu, continue aqui. {SECRET}",
         aborted_turns=1,
         context_compactions=2,
+        tool_inputs=[{"path": ".agents/skills/review-pull-request/SKILL.md"}],
     )
     codex_session(
         codex_root,
@@ -281,7 +336,12 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         THREAD_SOURCE_SUBAGENT,
         thread_source="subagent",
     )
-    codex_session(codex_root, EXCLUDED, apex_tool="apex_git_push")
+    codex_session(
+        codex_root,
+        EXCLUDED,
+        apex_tool="apex_git_push",
+        tool_inputs=[{"path": ".agents/skills/excluded-skill/SKILL.md"}],
+    )
     codex_session(codex_root, SHARED_EXCLUDED)
     codex_session(
         codex_root,
@@ -321,6 +381,13 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         aborts=3,
         decoy_aborts=2,
         subagents=4,
+        skill_calls=["review-pull-request", "review-pull-request", "Bad Skill"],
+        tool_inputs=[
+            {
+                "file_path": ".agents/skills/review-pull-request/SKILL.md",
+                "other": ".agents/skills/retrospect-skill-usage/SKILL.md",
+            }
+        ],
     )
     # A sidechain is excluded from the derived population, exactly as in the Codex block.
     claude_session(
@@ -341,6 +408,8 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         CLAUDE_DRIFT,
         apex_tool="apex_fetch_task",
         final_cwd=f"{CWD}/repos",
+        skill_calls=["retrospect-skill-usage"],
+        tool_inputs=[{"path": "/workspace/inventeer/.agents/skills/review-pull-request/SKILL.md"}],
     )
     claude_session(
         claude_root,
@@ -349,7 +418,12 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         final_cwd=CWD,
     )
     claude_session(claude_root, CLAUDE_APEX_RESOURCE, resource_server="apex")
-    claude_session(claude_root, SHARED_EXCLUDED)
+    claude_session(
+        claude_root,
+        SHARED_EXCLUDED,
+        skill_calls=["excluded-skill"],
+        tool_inputs=[{"path": ".agents/skills/excluded-skill/SKILL.md"}],
+    )
     claude_session(
         claude_root,
         CLAUDE_OTHER_RESOURCE,
@@ -390,7 +464,8 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "--format",
         "json",
     ]
-    completed = subprocess.run(command, check=True, capture_output=True, text=True)
+    completed = subprocess.run(command, capture_output=True, text=True)
+    assert completed.returncode == 0, completed.stderr
     for sensitive in (SECRET, CWD, PRIMARY, CONTINUATION, SUBAGENT, CLAUDE_DENIED):
         assert sensitive not in completed.stdout
     report = json.loads(completed.stdout)
@@ -406,7 +481,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "since",
         "until",
     }
-    assert report["contract_version"] == 4
+    assert report["contract_version"] == 5
     assert report["since"] == "2026-07-29T00:00:00Z"
     assert report["until"] == UNTIL
     assert report["exclusions_requested"] == 3
@@ -437,7 +512,23 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "apex_tool_failures": {"apex_run_tests": 1},
         "apex_tool_denials": {},
         "apex_tool_unresolved": {},
+        "skill_invocations": None,
+        "skill_invocation_sessions": None,
+        "skill_load_proxies": {
+            "retrospect-skill-usage": 1,
+            "review-pull-request": 3,
+        },
+        "skill_load_proxy_sessions": {
+            "retrospect-skill-usage": 1,
+            "review-pull-request": 2,
+        },
         "unsupported_metrics": {
+            "skill_invocation_sessions": (
+                "derived from skill invocations, which Codex session history does not expose"
+            ),
+            "skill_invocations": (
+                "Codex session history does not expose a structured native skill invocation event"
+            ),
             "sidechains": (
                 "Codex writes a subagent to its own session file, so there is no inline sidechain"
                 " to count"
@@ -468,6 +559,22 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "apex_tool_failures": {"apex_run_tests": 1},
         "apex_tool_denials": {"apex_framework_index": 1},
         "apex_tool_unresolved": {"apex_list_workspace_repos": 1},
+        "skill_invocations": {
+            "retrospect-skill-usage": 1,
+            "review-pull-request": 2,
+        },
+        "skill_invocation_sessions": {
+            "retrospect-skill-usage": 1,
+            "review-pull-request": 1,
+        },
+        "skill_load_proxies": {
+            "retrospect-skill-usage": 1,
+            "review-pull-request": 2,
+        },
+        "skill_load_proxy_sessions": {
+            "retrospect-skill-usage": 1,
+            "review-pull-request": 2,
+        },
         "unsupported_metrics": {
             "compactions": "no compaction marker appears in this engine's transcript format",
             "continuations": (
@@ -508,7 +615,7 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
 
     text_output = subprocess.run(command[:-1] + ["text"], check=True, capture_output=True, text=True)
     assert "logical_work_streams: 2" in text_output.stdout
-    assert "Contract version: 4" in text_output.stdout
+    assert "Contract version: 5" in text_output.stdout
     assert "Exclusions requested: 3" in text_output.stdout
     assert "Exclusions matched: 2" in text_output.stdout
     assert "Exclusions unmatched: 1" in text_output.stdout
@@ -614,7 +721,11 @@ with tempfile.TemporaryDirectory(prefix="session-history-audit-") as directory:
         "max_aborts_per_session": 0,
     }
     assert missing_report["claude"]["sessions_with_aborts_percent"] == 0.0
-    for engine, unsupported in (("codex", {"sidechains"}), ("claude", {
+    for engine, unsupported in (("codex", {
+        "sidechains",
+        "skill_invocations",
+        "skill_invocation_sessions",
+    }), ("claude", {
         "compactions",
         "continuations",
         "max_compactions_per_session",

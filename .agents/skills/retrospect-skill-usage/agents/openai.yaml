@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retrospect Skill Usage"
+  short_description: "Analyze skill usage across session histories"
+  default_prompt: "Use $retrospect-skill-usage to analyze skill usage and behavior across this workspace session history."
