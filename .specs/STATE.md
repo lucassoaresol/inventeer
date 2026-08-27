@@ -865,17 +865,17 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 
 ## Handoff
 - **Feature**: official-figma-only
-- **Phase / Task**: Execute / aggregate gate
-- **Completed**: Official-only MCP configuration, active guidance and AD-052; focal MCP suite passed 16 checks
-- **In progress**: aggregate workspace gate pending
-- **Next durable step**: Run the aggregate workspace gate, then commit the green value increment
+- **Phase / Task**: Completed and validated
+- **Completed**: Behavioral commit 5435bb9 keeps only the official Figma MCP; focal and aggregate gates passed; standalone Verifier killed 3 of 3 mutants after one corrected assertion
+- **In progress**: none
+- **Next durable step**: Restart the engines and continue through the official Figma OAuth MCP
 - **Blockers**: none
-- **Uncommitted files**: .codex/config.toml, .mcp.json, .specs/DECISIONS.md, .specs/LESSONS.md, .specs/STATE.md, .specs/features/INDEX.md, .specs/features/official-figma-only/spec.md, .specs/lessons.json, AGENTS.md, README.md, scripts/test-mcp-config.py
+- **Uncommitted files**: .specs/LESSONS.md, .specs/lessons.json
 - **Branch**: main
 - **Contract status**: PASS
-- **Operational status**: UNPROVEN
-- **Recorded at**: 2026-08-27T15:44:21Z
-- **Valid at SHA**: 66a83bf475334f125fa8b939aa8f7767d9bbf33f
+- **Operational status**: PASS
+- **Recorded at**: 2026-08-27T15:49:59Z
+- **Valid at SHA**: 5435bb9951b038df28eb8d9b646a883b9ef4ee70
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/official-figma-only/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change

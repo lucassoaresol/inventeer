@@ -1,6 +1,6 @@
 # Official Figma MCP Only Specification
 
-**Status:** Implemented
+**Status:** Validated
 **Review language:** Portuguese
 **Canonical language:** English
 

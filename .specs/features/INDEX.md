@@ -13,7 +13,7 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | [delivery-front-continuity](./delivery-front-continuity/) | Validated |
 | [dual-engine-workspace](./dual-engine-workspace/) | Validated |
 | [engine-aware-skill-learning](./engine-aware-skill-learning/) | Validated |
-| [official-figma-only](./official-figma-only/) | Active |
+| [official-figma-only](./official-figma-only/) | Validated |
 | [portal-tlc-session-artifacts](./portal-tlc-session-artifacts/) | Validated |
 | [pr-review-pilot-hardening](./pr-review-pilot-hardening/) | Validated |
 | [resilient-tlc-checkpoints](./resilient-tlc-checkpoints/) | Validated |
