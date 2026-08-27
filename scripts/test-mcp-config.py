@@ -17,17 +17,6 @@ EXPECTED_SHADCN = {
 EXPECTED_GITHUB_URL = "https://api.githubcopilot.com/mcp/"
 EXPECTED_GITHUB_TOOLSETS = "pull_requests,repos,actions,git"
 EXPECTED_FIGMA_URL = "https://mcp.figma.com/mcp"
-EXPECTED_FIGMA_LOCAL = {
-    "command": "npx",
-    "args": [
-        "-y",
-        "@alvinindra/figma-mcp-rust@0.2.0",
-        "--ip",
-        "127.0.0.1",
-        "--port",
-        "1994",
-    ],
-}
 FORBIDDEN_PROVIDER_SERVERS = {"cloudflare", "cloudflare-docs", "aws", "aws-docs"}
 
 
@@ -94,19 +83,14 @@ for label, servers in (("Claude", claude_servers), ("Codex", codex_servers)):
 ok(8, "Codex and Claude use the same credential-free Figma OAuth endpoint")
 
 assert codex_servers["figma"]["default_tools_approval_mode"] == "writes"
+assert codex_servers["figma"]["enabled"] is True
 ok(9, "Codex approval remains mandatory for Figma writes")
 
 for label, servers in (("Claude", claude_servers), ("Codex", codex_servers)):
-    figma_local = servers.get("figma-local")
-    assert figma_local is not None, f"{label} omits figma-local"
-    assert figma_local["command"] == EXPECTED_FIGMA_LOCAL["command"]
-    assert figma_local["args"] == EXPECTED_FIGMA_LOCAL["args"]
-    assert all("latest" not in argument for argument in figma_local["args"])
-assert codex_servers["figma-local"]["enabled"] is False
-assert codex_servers["figma-local"]["default_tools_approval_mode"] == "prompt"
+    assert "figma-local" not in servers, f"{label} still exposes figma-local"
 claude_settings = json.loads((ROOT / ".claude/settings.json").read_text(encoding="utf-8"))
 assert "figma-local" not in claude_settings.get("enabledMcpjsonServers", [])
-ok(10, "local Figma pilot is pinned, loopback-only, and not auto-enabled")
+ok(10, "both engines expose only the official Figma MCP")
 
 for label, servers in (("Claude", claude_servers), ("Codex", codex_servers)):
     forbidden = FORBIDDEN_PROVIDER_SERVERS.intersection(servers)
@@ -133,10 +117,7 @@ for phrase in (
     "OAuth em runtime, sem token versionado",
     "ferramentas de escrita do Figma exigem aprovação pelo modo `writes`",
     "`codex mcp login figma`",
-    "`figma-local` é um piloto manual e opt-in",
-    "arquivo Figma descartável",
-    "plugin Desktop estiver ausente ou desconectado",
-    "`127.0.0.1:1994`",
+    "Somente o MCP oficial `figma` permanece configurado",
     "Essas ferramentas exigem aprovação pelo modo `writes`",
     "migração do Portal para AWS",
 ):
@@ -148,9 +129,7 @@ for phrase in (
     "Use o MCP shadcn somente para trabalho em `repos/portal-web`",
     "Use o MCP Figma autenticado por OAuth",
     "Antes de qualquer ferramenta de escrita do Figma",
-    "O MCP `figma-local` é um piloto manual e opt-in",
-    "arquivo Figma descartável",
-    "plugin Desktop estiver ausente ou desconectado",
+    "Somente o MCP oficial `figma` permanece configurado",
     "Use o MCP GitHub read-only para evidência de PRs",
     "Mantenha o MCP GitHub restrito aos toolsets `pull_requests,repos,actions,git`",
     "Sua disponibilidade não autoriza comentários, approvals, merges",
@@ -160,10 +139,17 @@ for phrase in (
     "mantenha ferramentas de escrita do MCP `apex` sujeitas a aprovação",
 ):
     assert phrase in agents, f"AGENTS.md omits shadcn guardrail: {phrase}"
+active_figma_guidance = readme + agents
+for forbidden_guidance in (
+    "Import plugin from manifest",
+    "instale e execute manualmente o plugin Desktop",
+    "`figma-local` é um piloto",
+):
+    assert forbidden_guidance not in active_figma_guidance
 ok(14, "workspace instructions preserve MCP ownership and write approval")
 
 state = (ROOT / ".specs/STATE.md").read_text(encoding="utf-8")
-for decision in ("AD-028", "AD-030", "AD-032", "AD-037", "AD-043", "AD-051"):
+for decision in ("AD-028", "AD-030", "AD-032", "AD-037", "AD-043", "AD-051", "AD-052"):
     section = state.split(f"### {decision}", 1)[1].split("### ", 1)[0]
     assert "**Status**: active" in section, f"{decision} is not active"
 ad_029 = state.split("### AD-029", 1)[1].split("### ", 1)[0]
@@ -174,9 +160,12 @@ for phrase in ("GITHUB_PAT_TOKEN", "X-MCP-Readonly: true", "não altera GitHub")
 ad_043 = state.split("### AD-043", 1)[1].split("## Handoff", 1)[0]
 for phrase in ("OAuth em runtime", "ferramentas de escrita sujeitas à aprovação", "não autoriza mudanças"):
     assert phrase in ad_043, f"AD-043 omits Figma MCP boundary: {phrase}"
-ad_051 = state.split("### AD-051", 1)[1].split("## Handoff", 1)[0]
-for phrase in ("figma-local", "127.0.0.1:1994", "desabilitado por padrão", "inventeer-ops"):
-    assert phrase in ad_051, f"AD-051 omits pilot boundary: {phrase}"
+ad_051 = state.split("### AD-051", 1)[1].split("### AD-052", 1)[0]
+for phrase in ("figma-local", "127.0.0.1:1994", "inventeer-ops"):
+    assert phrase in ad_051, f"AD-051 history lost pilot boundary: {phrase}"
+ad_052 = state.split("### AD-052", 1)[1].split("## Handoff", 1)[0]
+for phrase in ("somente o MCP oficial", "parte do piloto local da AD-051", "conta Pro", "repos/"):
+    assert phrase in ad_052, f"AD-052 omits official-only boundary: {phrase}"
 ok(15, "workspace decisions record resource preflight and MCP boundaries")
 
 tlc = (ROOT / ".agents/skills/tlc-spec-driven/SKILL.md").read_text(encoding="utf-8")

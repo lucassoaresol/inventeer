@@ -175,11 +175,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   screenshots dos arquivos aos quais o usuário concedeu acesso; nunca persista tokens no workspace.
 - Antes de qualquer ferramenta de escrita do Figma, confirme o arquivo e o node alvo e obtenha a
   aprovação exigida pelo engine. Acesso ao design não autoriza mudanças em arquivos de produto.
-- O MCP `figma-local` é um piloto manual e opt-in, desabilitado por padrão e limitado a
-  `127.0.0.1:1994`; nunca use binding não-loopback. Mantenha o `figma` oficial como padrão.
-- Antes do piloto, instale e execute manualmente o plugin Desktop do projeto, use um arquivo Figma descartável,
-  confirme o arquivo e o node alvo e aprove cada ferramenta. Se o plugin Desktop estiver ausente ou desconectado,
-  reporte a dependência; não declare a integração validada.
+- Somente o MCP oficial `figma` permanece configurado. Não mantenha ou reintroduza bridges locais
+  baseados em plugin sem uma nova decisão transversal explícita.
 - A disponibilidade do MCP nesta raiz não transfere ownership nem autoriza mudanças de produto.
 - Cloudflare e AWS permanecem fora da configuração até uma nova decisão transversal explícita.
 

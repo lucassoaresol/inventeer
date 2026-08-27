@@ -261,7 +261,7 @@ engine enxergava metade do conjunto, e a diferença é coberta por arquivo:
 |---|---|---|
 | Instruções | `AGENTS.md` nativo | `CLAUDE.md`, que importa `AGENTS.md` |
 | Skills | `.agents/skills/` nativo | symlinks em `.claude/skills/` |
-| MCPs versionados | `apex`, `linear`, `github`, `context7`, `shadcn`, `figma`, `figma-local` em `.codex/config.toml` | `apex`, `github`, `context7`, `shadcn`, `figma`, `figma-local` em `.mcp.json` |
+| MCPs versionados | `apex`, `linear`, `github`, `context7`, `shadcn`, `figma` em `.codex/config.toml` | `apex`, `github`, `context7`, `shadcn`, `figma` em `.mcp.json` |
 | Workflows APEX | inspector experimental `apex-all-tools` | comandos nativos do MCP |
 
 Uma skill global de mesmo nome em `~/.claude/skills/` suprime a deste workspace sem aviso, e as
@@ -325,17 +325,10 @@ ferramentas de escrita do Figma exigem aprovação pelo modo `writes`; o arquivo
 ser confirmados antes de qualquer mutação. Conclua a autenticação local com
 `codex mcp login figma` e reinicie a sessão iniciada nesta raiz.
 
-`figma-local` é um piloto manual e opt-in para avaliar o bridge
-`@alvinindra/figma-mcp-rust@0.2.0` quando os limites do servidor oficial forem insuficientes. Ele
-coexiste com o `figma` oficial, que continua habilitado e padrão. O bridge fica desabilitado no
-Codex, não é auto-habilitado no Claude e só pode escutar em `127.0.0.1:1994`; nunca exponha essa
-porta em binding não-loopback, pois o bridge local não oferece autenticação.
-
-Antes de habilitá-lo em uma sessão controlada, instale e execute manualmente o plugin Desktop do
-projeto, comece com um arquivo Figma descartável, confirme o arquivo e o node alvo e aprove cada
-ferramenta do piloto. Se o plugin Desktop estiver ausente ou desconectado, registre essa dependência
-manual e não apresente a configuração como validação live bem-sucedida. O piloto não autoriza
-mudanças em arquivos Figma ou repositórios de produto.
+Somente o MCP oficial `figma` permanece configurado. O piloto local baseado em plugin foi retirado
+porque sua entrada de plugin não estava disponível no Figma Desktop usado pelo mantenedor. A conta
+Pro seguirá pelo endpoint OAuth gerenciado; qualquer bridge local futuro exige uma nova decisão
+transversal e não pode ser inferido desta configuração.
 
 Os candidatos de infraestrutura permanecem fora desta raiz por limites de necessidade e autoridade:
 
