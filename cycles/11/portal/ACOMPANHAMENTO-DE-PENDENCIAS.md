@@ -110,3 +110,40 @@ A estrutura INV-4031–INV-4040 permanece fora do Ciclo 11. A documentação cor
 Esta seção registra a disposição durável dos achados. Ela não altera ciclo, estado, prioridade,
 owner ou relações no Linear; não promove os artifacts da PR #262 antes do merge; e não transforma
 observações sem reprodução ou owner em backlog implícito.
+
+## Revalidação após a entrega da INV-3967 para QA
+
+O Linear, o GitHub e os clones locais foram revalidados em 2026-08-27 depois da entrega da
+INV-3967. A PR [portal-web#240](https://github.com/Inventeer/portal-web/pull/240) foi incorporada a
+`develop@01bb8d4755f5c579f03bde8cf0d200b1ea37a9a2`, e a superfície foi publicada em desenvolvimento
+para QA. A issue permanece `QA`, com Human Final Effort pendente. Merge e publicação em
+desenvolvimento não equivalem a `Done` nem fecham a MILE INV-3963.
+
+O [snapshot da INV-3967](./tasks/INV-3967.md) preserva a clarificação completa. A auditoria confirmou
+que os dez cards da v1 já estavam nas páginas corretas. A entrega prendeu esse mapeamento em
+regressão e acrescentou os filtros por grupo de Activity e Delivery Flow, sem alterar contratos da
+API, chaves do Collector ou definições de métricas.
+
+### Efeito sobre a frente de Metrics v2
+
+| Item | Situação em 2026-08-27 | Disposição |
+| --- | --- | --- |
+| INV-3967 | Entrega incorporada e em `QA` | Concluir QA e registrar Human Final Effort antes de `Done` |
+| INV-3963 | Continua `In Progress` | Fechar somente depois da conclusão canônica da INV-3967 |
+| INV-3964, INV-3965 e INV-3966 | Continuam carregando o blocker herdado da INV-3963 | Revalidar Linear após o fechamento da INV-3963 antes de iniciar as sucessoras |
+
+### Limites confirmados pela entrega
+
+- A barra ampla de filtros do frame continua sem issue canônica. O rascunho local não cria backlog
+  e não deve ser promovido antes das decisões de produto e contrato.
+- Seletores de segmentação permanecem na INV-3969; o segundo tier de permissão, na INV-3971.
+- A negação integral do grant geral e a reidratação da navegação permanecem, respectivamente, nas
+  INV-4038 e INV-4035.
+- Observações operacionais da sessão, estado TLC, instruções de branch, briefing de QA e identidade
+  do connector não fazem parte deste registro versionado.
+
+## Limite da revalidação pós-INV-3967
+
+Esta atualização preserva a entrega e seus limites sem alterar Linear, GitHub, código de produto ou
+artifacts canônicos. Ela não declara aprovação do QA, esforço final, fechamento da MILE, staging,
+rollout ou produção.
