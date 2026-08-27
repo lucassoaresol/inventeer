@@ -1,6 +1,6 @@
 # Skill Behavior Retrospective Hardening Specification
 
-**Status:** Implemented
+**Status:** Validated
 **Review language:** Portuguese
 **Canonical language:** English
 
@@ -139,18 +139,18 @@ both engine surfaces.
 
 | Requirement ID | Story | Provenance | Evidence | Phase | Status |
 | --- | --- | --- | --- | --- | --- |
-| SBRH-01 | Verifiable TLC independence | INHERITED | TLC `author != verifier` contract and session `6f9dd839…` | Execute | Implemented |
-| SBRH-02 | Historical TLC compatibility | DECISION | Approved retrospective recommendation | Execute | Implemented |
-| SBRH-03 | Semantic lesson recurrence | DECISION | 31 candidates, one confirmed, all recurrence one | Execute | Implemented |
-| SBRH-04 | Lesson input safety and compatibility | SAFETY | Machine-owned store and existing schema | Execute | Implemented |
-| SBRH-05 | Exact-head review checkout | DECISION | 3/9 unbound local validations | Execute | Implemented |
-| SBRH-06 | Review ledger v2 and v1 compatibility | INHERITED | AD-038/AD-039 pilot evidence | Execute | Implemented |
-| SBRH-07 | Pilot promotion decision | DECISION | Nine reviewed PRs satisfy the pilot size | Execute | Implemented |
-| SBRH-08 | Structured Claude invocation metrics | DECISION | Claude `Skill` tool event is observable | Execute | Implemented |
-| SBRH-09 | Unsupported Codex invocation semantics | INHERITED | Audit contract v5 null semantics | Execute | Implemented |
-| SBRH-10 | Conservative load-proxy classification | SAFETY | Raw name/path searches overcount usage | Execute | Implemented |
-| SBRH-11 | Retrospective skill and dual-engine surface | DECISION | Recurrent manual workflow and AD-024 | Execute | Implemented |
-| SBRH-12 | Privacy and read-only boundaries | INHERITED | AD-027, AD-046 and workspace security policy | Execute | Implemented |
+| SBRH-01 | Verifiable TLC independence | INHERITED | TLC `author != verifier` contract and session `6f9dd839…` | Execute | Verified |
+| SBRH-02 | Historical TLC compatibility | DECISION | Approved retrospective recommendation | Execute | Verified |
+| SBRH-03 | Semantic lesson recurrence | DECISION | 31 candidates, one confirmed, all recurrence one | Execute | Verified |
+| SBRH-04 | Lesson input safety and compatibility | SAFETY | Machine-owned store and existing schema | Execute | Verified |
+| SBRH-05 | Exact-head review checkout | DECISION | 3/9 unbound local validations | Execute | Verified |
+| SBRH-06 | Review ledger v2 and v1 compatibility | INHERITED | AD-038/AD-039 pilot evidence | Execute | Verified |
+| SBRH-07 | Pilot promotion decision | DECISION | Nine reviewed PRs satisfy the pilot size | Execute | Verified |
+| SBRH-08 | Structured Claude invocation metrics | DECISION | Claude `Skill` tool event is observable | Execute | Verified |
+| SBRH-09 | Unsupported Codex invocation semantics | INHERITED | Audit contract v5 null semantics | Execute | Verified |
+| SBRH-10 | Conservative load-proxy classification | SAFETY | Raw name/path searches overcount usage | Execute | Verified |
+| SBRH-11 | Retrospective skill and dual-engine surface | DECISION | Recurrent manual workflow and AD-024 | Execute | Verified |
+| SBRH-12 | Privacy and read-only boundaries | INHERITED | AD-027, AD-046 and workspace security policy | Execute | Verified |
 
 ## Implicit Requirement Dimensions
 
