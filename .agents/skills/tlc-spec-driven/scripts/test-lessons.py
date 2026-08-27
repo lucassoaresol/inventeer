@@ -28,6 +28,8 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     run("init")
     run(
         "add",
+        "--pattern-key",
+        "exact-head-validation-binding",
         "--feature",
         "review-lifecycle",
         "--signal",
@@ -44,12 +46,15 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     assert len(data["lessons"]) == 1
     lesson = data["lessons"][0]
     assert lesson["signal"] == "review_finding"
+    assert lesson["pattern_key"] == "exact-head-validation-binding"
     assert lesson["features"] == ["review-lifecycle"]
     assert lesson["evidence"] == ["validation.md:confirmed-review-R1 (delivery)"]
     print("ok 1 - records an independently confirmed external review finding")
 
     run(
         "add",
+        "--pattern-key",
+        "ungrounded-review-opinion",
         "--feature",
         "ungrounded-review",
         "--signal",
@@ -64,12 +69,38 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     assert len(unchanged["lessons"]) == 1
     print("ok 2 - rejects an ungrounded external review opinion")
 
+    store = ROOT / ".specs" / "lessons.json"
+    for bad_args in (
+        (),
+        ("--pattern-key", "Has Spaces"),
+        ("--pattern-key", "x"),
+        ("--pattern-key", "ghp-secret-looking-value"),
+    ):
+        before = store.read_bytes()
+        run(
+            "add",
+            *bad_args,
+            "--feature",
+            "invalid-pattern",
+            "--signal",
+            "gate_fail",
+            "--source",
+            "validation.md:G0",
+            "--text",
+            "Reject invalid semantic identities before touching the lesson store.",
+            expect=2,
+        )
+        assert store.read_bytes() == before
+    print("ok 3 - missing, malformed, short, and sensitive-looking pattern keys write nothing")
+
     # --- Segundo eixo de merge: similaridade de token-set --------------------
     # Exigir texto normalizado idêntico é o motivo de a recorrência quase nunca subir: a mesma
     # lição reescrita em outra feature entrava como uma lição nova.
 
     run(
         "add",
+        "--pattern-key",
+        "exact-head-validation-binding",
         "--feature",
         "reworded-feature",
         "--signal",
@@ -77,7 +108,7 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
         "--source",
         "validation.md:R7",
         "--text",
-        "Bind the validation evidence to the exact reviewed head commit before promotion.",
+        "Run local checks only on the commit identified by the review.",
     )
     data = json.loads((ROOT / ".specs" / "lessons.json").read_text(encoding="utf-8"))
     assert len(data["lessons"]) == 1, f"reworded lesson forked a new id: {data['lessons']}"
@@ -89,10 +120,12 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
         "the stored phrasing must stay authoritative"
     )
     assert "validation.md:R7" in merged["evidence"], merged["evidence"]
-    print("ok 3 - a reworded restatement merges, promotes, and keeps the stored text")
+    print("ok 4 - a semantic pattern merges different wording, promotes, and keeps stored text")
 
     run(
         "add",
+        "--pattern-key",
+        "accessible-wrapper-placement",
         "--feature",
         "unrelated-feature",
         "--signal",
@@ -104,12 +137,14 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     )
     data = json.loads((ROOT / ".specs" / "lessons.json").read_text(encoding="utf-8"))
     assert len(data["lessons"]) == 2, "an unrelated same-signal lesson must stay separate"
-    print("ok 4 - an unrelated lesson sharing the signal stays separate")
+    print("ok 5 - an unrelated lesson sharing the signal stays separate")
 
     # O sinal é o que ancora a lição numa falha de verificação; texto idêntico sob outro sinal
     # descreve outra falha.
     run(
         "add",
+        "--pattern-key",
+        "exact-head-validation-binding",
         "--feature",
         "other-signal",
         "--signal",
@@ -121,15 +156,16 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     )
     data = json.loads((ROOT / ".specs" / "lessons.json").read_text(encoding="utf-8"))
     assert len(data["lessons"]) == 3, "identical text under a different signal must not merge"
-    print("ok 5 - different signals never merge, even on identical text")
+    print("ok 6 - different signals never merge, even on identical pattern and text")
 
     # Limiar 1.0 reduz o comportamento ao merge exato anterior.
-    store = ROOT / ".specs" / "lessons.json"
     data = json.loads(store.read_text(encoding="utf-8"))
     data["merge_similarity"] = 1.0
     store.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     run(
         "add",
+        "--pattern-key",
+        "exact-head-validation-binding-now",
         "--feature",
         "exact-only-feature",
         "--signal",
@@ -141,7 +177,7 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     )
     data = json.loads(store.read_text(encoding="utf-8"))
     assert len(data["lessons"]) == 4, "threshold 1.0 must reduce to exact-match-only merging"
-    print("ok 6 - threshold 1.0 reduces to exact-match-only merging")
+    print("ok 7 - an explicit different pattern stays separate at threshold 1.0")
 
     # Contrato do limiar: falha fechada, sem escrever.
     for bad in (-0.1, 1.5, "0.6", True, None):
@@ -151,6 +187,8 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
         store.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
         run(
             "add",
+            "--pattern-key",
+            "guarded-threshold",
             "--feature",
             "guarded",
             "--signal",
@@ -164,7 +202,7 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
         after = json.loads(store.read_text(encoding="utf-8"))
         assert len(after["lessons"]) == 4, f"invalid threshold {bad!r} still wrote a lesson"
         store.write_text(before, encoding="utf-8")
-    print("ok 7 - an out-of-range or non-numeric threshold exits 2 and writes nothing")
+    print("ok 8 - an out-of-range or non-numeric threshold exits 2 and writes nothing")
 
     # Empate de similaridade resolve pelo menor id, independentemente da ordem no store.
     data = json.loads(store.read_text(encoding="utf-8"))
@@ -203,6 +241,8 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     store.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     run(
         "add",
+        "--pattern-key",
+        "legacy-similarity-tie",
         "--feature",
         "tie-breaker",
         "--signal",
@@ -217,7 +257,7 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     assert len(winner) == 1 and winner[0]["id"] == "L-800", (
         f"tie must break on lowest id, got {[l['id'] for l in winner]}"
     )
-    print("ok 8 - an equal-similarity tie breaks on the lowest lesson id")
+    print("ok 9 - an equal-similarity legacy tie breaks on the lowest lesson id")
 
     # Uma lição em quarentena absorve a recorrência sem ressuscitar.
     data = json.loads(store.read_text(encoding="utf-8"))
@@ -226,6 +266,8 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     store.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     run(
         "add",
+        "--pattern-key",
+        "legacy-quarantine-probe",
         "--feature",
         "quarantine-probe",
         "--signal",
@@ -239,11 +281,13 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     touched = [l for l in data["lessons"] if "quarantine-probe" in l["features"]]
     assert len(touched) == 1, touched
     assert touched[0]["status"] == "quarantined", "a quarantined lesson must not be resurrected"
-    print("ok 9 - merging into a quarantined lesson does not resurrect it")
+    print("ok 10 - merging into a legacy quarantined lesson does not resurrect it")
 
     # Texto só de stopwords não tem conteúdo comparável e não pode fundir por similaridade.
     run(
         "add",
+        "--pattern-key",
+        "stopwords-first",
         "--feature",
         "stopwords-only",
         "--signal",
@@ -255,6 +299,8 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     )
     run(
         "add",
+        "--pattern-key",
+        "stopwords-second",
         "--feature",
         "stopwords-again",
         "--signal",
@@ -267,4 +313,4 @@ with tempfile.TemporaryDirectory(prefix="test-tlc-lessons.") as temp_dir:
     data = json.loads(store.read_text(encoding="utf-8"))
     stop = [l for l in data["lessons"] if l["signal"] == "spec_deviation"]
     assert len(stop) == 2, f"empty content-token sets must not merge: {stop}"
-    print("ok 10 - lessons with no content tokens never merge by similarity")
+    print("ok 11 - different semantic patterns never merge through empty token sets")

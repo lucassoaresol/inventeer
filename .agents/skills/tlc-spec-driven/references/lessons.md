@@ -52,11 +52,19 @@ python3 <skill-dir>/scripts/lessons.py add \
   --feature "[feature folder name]" \
   --signal  "[signal value from table above]" \
   --source  "[file:line | AC id | mutant id | SPEC_DEVIATION ref from validation.md]" \
+  --pattern-key "[stable kebab-case behavior category]" \
   --text    "[the one-sentence lesson]" \
   --scope   "[optional: path/layer/tag, e.g. billing, routes, repo-layer]"
 ```
 
-**Phrasing rules** (they make recurrences actually merge - dedup is exact-after-normalization, not semantic):
+**Identity and phrasing rules:**
+
+- `--pattern-key` is the stable semantic identity of the failure pattern, not the incident, feature,
+  path, issue, credential, or free-form summary. Use 3..64 lowercase kebab-case characters, for
+  example `exact-head-validation-binding`. A later observation with the same signal and pattern key
+  merges even when its lesson sentence is worded differently. Different signals never merge.
+- Historical entries without a pattern key remain on the calibrated text-similarity compatibility
+  path; do not invent keys for them without a new grounded observation.
 
 - Write the general rule, not the incident. ✅ `"Assert the exact persisted status value, not just that a status field exists"` ❌ `"The subscription test on line 88 was too weak"`.
 - Be canonical and terse. Two lessons that mean the same thing must read the same way, or the script counts them as different and neither gets promoted.
@@ -116,4 +124,7 @@ This layer is additive and self-gating (no signal → no write). To turn it off 
 
 ## Known limitation
 
-Deduplication is exact-after-normalization (Unicode casefold, diacritic-stripped, punctuation-stripped, any-script alnum preserved) - there are no embeddings (stdlib-only, zero-dependency by design). Near-duplicate lessons phrased differently will not merge and will each sit as separate candidates that never promote. Mitigation: follow the phrasing rules above. A future version may add embedding-based dedup.
+The script cannot infer a semantic pattern key from prose. The Verifier supplies that bounded
+judgment; the script validates and applies it deterministically. Historical entries without keys use
+exact normalization and calibrated token similarity until a new grounded observation identifies the
+pattern.

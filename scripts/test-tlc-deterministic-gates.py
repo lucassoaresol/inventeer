@@ -282,6 +282,7 @@ class WorkspaceAdoptionTests(unittest.TestCase):
             "requirement provenance",
             "resource-aware execution preflight",
             "deterministic gate compatibility and prospective adoption",
+            "verifier provenance and semantic lesson identity",
             "value-oriented increments",
             "task-to-commit regression sensor",
         ]

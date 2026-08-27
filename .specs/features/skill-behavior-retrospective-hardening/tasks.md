@@ -107,10 +107,10 @@ T4 -> T5 -> T6 -> T7
 
 **Done when**:
 
-- [ ] New `add` calls require a safe kebab-case key and persist it.
-- [ ] Same signal/key across distinct features promotes independently of text.
-- [ ] Cross-signal, malformed, legacy, and error atomicity paths are tested.
-- [ ] `python3 .agents/skills/tlc-spec-driven/scripts/test-lessons.py` passes.
+- [x] New `add` calls require a safe kebab-case key and persist it.
+- [x] Same signal/key across distinct features promotes independently of text.
+- [x] Cross-signal, malformed, legacy, and error atomicity paths are tested.
+- [x] `python3 .agents/skills/tlc-spec-driven/scripts/test-lessons.py` passes.
 
 **Tests**: unit
 **Gate**: quick

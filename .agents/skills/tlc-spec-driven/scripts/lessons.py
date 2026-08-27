@@ -55,6 +55,9 @@ DEFAULTS = {
     "merge_similarity": 0.60,
 }
 
+PATTERN_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+SENSITIVE_PATTERN_PREFIXES = ("ghp-", "github-pat-", "sk-", "xoxb-", "xoxp-", "akia")
+
 # Function words carry no lesson content and inflate similarity between unrelated lessons, which
 # would eat the safety margin the threshold depends on.
 STOPWORDS = frozenset(
@@ -200,17 +203,21 @@ def _auto_prune(data):
     return dropped
 
 
-def _find(data, signal, text):
+def _find(data, signal, text, pattern_key):
     """Locate the lesson an incoming signal restates.
 
-    Exact normalized-key match first - it is the cheap, unambiguous case. Otherwise fall back to
-    token-set similarity within the same signal: a lesson reworded in a later feature is the same
-    lesson, and requiring identical text is why recurrence almost never rose. Signals never merge
-    across each other, because the signal is what grounds the lesson in a verification failure.
+    Stable signal + pattern_key is authoritative for new observations. Existing entries that
+    predate pattern keys remain eligible for exact and token-set matching, so adoption does not
+    rewrite or strand the historical store. Signals never merge across each other, because the
+    signal is what grounds the lesson in a verification failure.
     """
+    for l in data["lessons"]:
+        if l.get("signal") == signal and l.get("pattern_key") == pattern_key:
+            return l
+
     k = _key(signal, text)
     for l in data["lessons"]:
-        if l.get("key") == k:
+        if not l.get("pattern_key") and l.get("key") == k:
             return l
 
     threshold = data["merge_similarity"]
@@ -221,7 +228,7 @@ def _find(data, signal, text):
     best = None
     best_score = 0.0
     for l in data["lessons"]:
-        if l.get("signal") != signal:
+        if l.get("signal") != signal or l.get("pattern_key"):
             continue
         score = _similarity(incoming, _content_tokens(l.get("text", "")))
         if score < threshold:
@@ -258,9 +265,10 @@ def _render(root, data):
             return out
         for l in sorted(items, key=lambda x: x["id"]):
             scope = f" · scope: `{l['scope']}`" if l.get("scope") else ""
+            pattern = f" · pattern: `{l['pattern_key']}`" if l.get("pattern_key") else " · pattern: `legacy-text-match`"
             out.append(f"### {l['id']} - {l['text']}")
             out.append(
-                f"- signal: `{l['signal']}` · recurrence: {l['recurrence']} feature(s){scope} · harmful: {l.get('harmful', 0)}"
+                f"- signal: `{l['signal']}`{pattern} · recurrence: {l['recurrence']} feature(s){scope} · harmful: {l.get('harmful', 0)}"
             )
             feats = ", ".join(l.get("features", [])) or "-"
             out.append(f"- features: {feats}")
@@ -305,6 +313,7 @@ def cmd_add(root, args):
     source = (args.source or "").strip()
     text = (args.text or "").strip()
     feature = (args.feature or "").strip()
+    pattern_key = (args.pattern_key or "").strip()
 
     # Grounding is enforced here, deterministically - not left to the prompt.
     if signal not in SIGNALS:
@@ -312,6 +321,15 @@ def cmd_add(root, args):
         return 2
     if not feature:
         print("ERROR: --feature is required (the feature the signal came from).", file=sys.stderr)
+        return 2
+    if not 3 <= len(pattern_key) <= 64 or not PATTERN_KEY_RE.fullmatch(pattern_key):
+        print(
+            "ERROR: --pattern-key must be 3..64 lowercase kebab-case characters.",
+            file=sys.stderr,
+        )
+        return 2
+    if pattern_key.startswith(SENSITIVE_PATTERN_PREFIXES):
+        print("ERROR: --pattern-key resembles sensitive material; use a semantic category.", file=sys.stderr)
         return 2
     if not source:
         print("ERROR: --source is required (file:line / AC id / mutant id / SPEC_DEVIATION ref).", file=sys.stderr)
@@ -323,7 +341,7 @@ def cmd_add(root, args):
 
     data = _load(root)
     _auto_prune(data)
-    existing = _find(data, signal, text)
+    existing = _find(data, signal, text, pattern_key)
     now = _now()
 
     if existing:
@@ -352,6 +370,7 @@ def cmd_add(root, args):
                 "key": _key(signal, text),
                 "text": text,
                 "signal": signal,
+                "pattern_key": pattern_key,
                 "scope": (args.scope or "").strip(),
                 "status": "candidate",
                 "features": [feature],
@@ -441,6 +460,11 @@ def main(argv=None):
     sp.add_argument("--feature", required=True)
     sp.add_argument("--signal", required=True, choices=sorted(SIGNALS))
     sp.add_argument("--source", required=True, help="file:line / AC id / mutant id / SPEC_DEVIATION ref")
+    sp.add_argument(
+        "--pattern-key",
+        required=True,
+        help="Stable semantic identity in lowercase kebab-case (3..64 characters)",
+    )
     sp.add_argument("--text", required=True, help="One terse, actionable sentence")
     sp.add_argument("--scope", default="", help="Optional: path/layer/tag for retrieval filtering")
     sp.set_defaults(fn=cmd_add)

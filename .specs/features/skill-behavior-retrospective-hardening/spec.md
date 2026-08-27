@@ -141,8 +141,8 @@ both engine surfaces.
 | --- | --- | --- | --- | --- | --- |
 | SBRH-01 | Verifiable TLC independence | INHERITED | TLC `author != verifier` contract and session `6f9dd839…` | Execute | Implementing |
 | SBRH-02 | Historical TLC compatibility | DECISION | Approved retrospective recommendation | Execute | Implementing |
-| SBRH-03 | Semantic lesson recurrence | DECISION | 31 candidates, one confirmed, all recurrence one | Tasks | Pending |
-| SBRH-04 | Lesson input safety and compatibility | SAFETY | Machine-owned store and existing schema | Tasks | Pending |
+| SBRH-03 | Semantic lesson recurrence | DECISION | 31 candidates, one confirmed, all recurrence one | Execute | Implementing |
+| SBRH-04 | Lesson input safety and compatibility | SAFETY | Machine-owned store and existing schema | Execute | Implementing |
 | SBRH-05 | Exact-head review checkout | DECISION | 3/9 unbound local validations | Tasks | Pending |
 | SBRH-06 | Review ledger v2 and v1 compatibility | INHERITED | AD-038/AD-039 pilot evidence | Tasks | Pending |
 | SBRH-07 | Pilot promotion decision | DECISION | Nine reviewed PRs satisfy the pilot size | Tasks | Pending |
