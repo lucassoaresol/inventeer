@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 9,
+  "next_id": 31,
   "lessons": [
     {
       "id": "L-001",
@@ -150,6 +150,403 @@
       ],
       "created": "2026-07-31T06:11:36Z",
       "last_seen": "2026-08-02T11:28:52Z"
+    },
+    {
+      "id": "L-009",
+      "key": "spec_precision_gap::when an acceptance criterion depends on real browser behaviour focus on a rendered point responsive reflow declare it as manual uat in the spec instead of accepting a class or wiring assertion as coverage",
+      "text": "When an acceptance criterion depends on real browser behaviour (focus on a rendered point, responsive reflow), declare it as manual UAT in the spec instead of accepting a class or wiring assertion as coverage",
+      "signal": "spec_precision_gap",
+      "scope": "jsdom-component-tests",
+      "status": "candidate",
+      "features": [
+        "technical-dora-metrics-tab"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3833/tlc/validation.md#accessibility AC1/AC4 (jsdom-component-tests)"
+      ],
+      "created": "2026-08-18T01:53:08Z",
+      "last_seen": "2026-08-18T01:53:08Z"
+    },
+    {
+      "id": "L-010",
+      "key": "review_finding::a validation report must not claim full ac coverage while flagging any criterion as a gap mark those acs as not covered and keep the checkpoint state below passed until they are verified",
+      "text": "A validation report must not claim full AC coverage while flagging any criterion as a gap: mark those ACs as not covered and keep the checkpoint state below passed until they are verified",
+      "signal": "review_finding",
+      "scope": "validation-reports",
+      "status": "candidate",
+      "features": [
+        "technical-dora-metrics-tab"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "Codex review 01a01295-ae97-7cb2-a136-87dc4d74e3f1 finding 2 (validation-reports)"
+      ],
+      "created": "2026-08-18T03:08:29Z",
+      "last_seen": "2026-08-18T03:08:29Z"
+    },
+    {
+      "id": "L-011",
+      "key": "review_finding::apply a visually hidden utility to a wrapper div never to a table or other display table element which treats height as a minimum and keeps stretching the page s scroll area",
+      "text": "Apply a visually-hidden utility to a wrapper div, never to a table or other display:table element, which treats height as a minimum and keeps stretching the page's scroll area",
+      "signal": "review_finding",
+      "scope": "screen-reader-markup",
+      "status": "candidate",
+      "features": [
+        "technical-dora-metrics-tab"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "validation.md UAT finding 6 (screen-reader-markup)"
+      ],
+      "created": "2026-08-18T06:23:12Z",
+      "last_seen": "2026-08-18T06:23:12Z"
+    },
+    {
+      "id": "L-012",
+      "key": "spec_precision_gap::when an acceptance criterion uses a broad quantifier anywhere everywhere wherever presented enumerate the concrete surfaces it must reach or coverage becomes a judgement call at verification time",
+      "text": "When an acceptance criterion uses a broad quantifier (anywhere, everywhere, wherever presented), enumerate the concrete surfaces it must reach, or coverage becomes a judgement call at verification time",
+      "signal": "spec_precision_gap",
+      "scope": "acceptance-criteria",
+      "status": "candidate",
+      "features": [
+        "delivery-flow-metrics-tab"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3834/tlc/validation.md#AC2 (acceptance-criteria)"
+      ],
+      "created": "2026-08-19T10:32:49Z",
+      "last_seen": "2026-08-19T10:32:49Z"
+    },
+    {
+      "id": "L-013",
+      "key": "surviving_mutant::when a guard is added to one side of a mirrored pair of endpoints add the sibling s guard and both tests in the same increment the untested half survives mutation",
+      "text": "When a guard is added to one side of a mirrored pair of endpoints, add the sibling's guard and both tests in the same increment; the untested half survives mutation.",
+      "signal": "surviving_mutant",
+      "scope": "http-routes",
+      "status": "candidate",
+      "features": [
+        "ticket-foundation"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "MU-13 / tickets-attachment-routes.plugin.ts:95 (http-routes)"
+      ],
+      "created": "2026-08-21T10:24:27Z",
+      "last_seen": "2026-08-21T10:24:27Z"
+    },
+    {
+      "id": "L-014",
+      "key": "surviving_mutant::pin a permission guard with an actor holding only the required code and another holding only the sibling code an actor carrying every code cannot tell the two apart",
+      "text": "Pin a permission guard with an actor holding only the required code and another holding only the sibling code; an actor carrying every code cannot tell the two apart.",
+      "signal": "surviving_mutant",
+      "scope": "authorization-tests",
+      "status": "candidate",
+      "features": [
+        "ticket-foundation"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "M17 / tickets-attachment-routes.plugin.ts:150 (authorization-tests)"
+      ],
+      "created": "2026-08-21T10:24:28Z",
+      "last_seen": "2026-08-21T10:24:28Z"
+    },
+    {
+      "id": "L-015",
+      "key": "review_finding::when tenant scope is enforced in a service no route may read a body parse it or emit an audit event before that check runs assert the audit row count not only the response status",
+      "text": "When tenant scope is enforced in a service, no route may read a body, parse it or emit an audit event before that check runs; assert the audit row count, not only the response status.",
+      "signal": "review_finding",
+      "scope": "tenant-scope",
+      "status": "candidate",
+      "features": [
+        "ticket-foundation"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "TCK-02 / tickets-attachment-routes.plugin.ts:66 (tenant-scope)"
+      ],
+      "created": "2026-08-21T10:24:28Z",
+      "last_seen": "2026-08-21T10:24:28Z"
+    },
+    {
+      "id": "L-016",
+      "key": "review_finding::a route documented through openapiregistry registerpath receives no validator enforce in the plain handler every constraint the document publishes and test that constraint",
+      "text": "A route documented through openAPIRegistry.registerPath receives no validator; enforce in the plain handler every constraint the document publishes, and test that constraint.",
+      "signal": "review_finding",
+      "scope": "openapi-contract",
+      "status": "candidate",
+      "features": [
+        "ticket-foundation"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "Codex review / tickets.schema.ts:342 (openapi-contract)"
+      ],
+      "created": "2026-08-21T10:24:28Z",
+      "last_seen": "2026-08-21T10:24:28Z"
+    },
+    {
+      "id": "L-017",
+      "key": "review_finding::reconcile a coverage tally against its own per criterion table before publishing it counts that do not sum to the requirement total hide a miscounted criterion",
+      "text": "Reconcile a coverage tally against its own per-criterion table before publishing it; counts that do not sum to the requirement total hide a miscounted criterion.",
+      "signal": "review_finding",
+      "scope": "validation-report",
+      "status": "candidate",
+      "features": [
+        "ticket-foundation"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "validation.md coverage tally, first Verifier pass (validation-report)"
+      ],
+      "created": "2026-08-21T10:24:28Z",
+      "last_seen": "2026-08-21T10:24:28Z"
+    },
+    {
+      "id": "L-018",
+      "key": "gate_fail::derive the local gate list from every step the ci job runs not only its npm scripts a shell script invoked directly can be a distinct gate from the npm script that shares its name",
+      "text": "Derive the local gate list from every step the CI job runs, not only its npm scripts; a shell script invoked directly can be a distinct gate from the npm script that shares its name.",
+      "signal": "gate_fail",
+      "scope": "gate-inventory",
+      "status": "candidate",
+      "features": [
+        "ticket-foundation"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "CI anti-drift job / .github/workflows/ci.yml:95 (gate-inventory)"
+      ],
+      "created": "2026-08-21T11:06:36Z",
+      "last_seen": "2026-08-21T11:06:36Z"
+    },
+    {
+      "id": "L-019",
+      "key": "spec_deviation::when a published event carries its type and its payload as independent members switch on the payload s own discriminant so the compiler narrows it and derive the type from that same value instead of casting",
+      "text": "When a published event carries its type and its payload as independent members, switch on the payload's own discriminant so the compiler narrows it, and derive the type from that same value instead of casting",
+      "signal": "spec_deviation",
+      "scope": "adapters",
+      "status": "candidate",
+      "features": [
+        "ticket-lifecycle-notifications"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/modules/ticket-notifications/application/ticket-lifecycle-notifier.ts:96 (SPEC_DEVIATION marker, validation.md Code Quality) (adapters)"
+      ],
+      "created": "2026-08-25T09:09:16Z",
+      "last_seen": "2026-08-25T09:09:16Z"
+    },
+    {
+      "id": "L-020",
+      "key": "spec_deviation::to replace a cached list wholesale rather than merge into it give the cache key a generation segment instead of overwriting the key in place",
+      "text": "To replace a cached list wholesale rather than merge into it, give the cache key a generation segment instead of overwriting the key in place",
+      "signal": "spec_deviation",
+      "scope": "query-cache",
+      "status": "candidate",
+      "features": [
+        "ticket-detail-overlay"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/api/tickets/use-ticket-timeline.ts SPEC_DEVIATION; validation.md 'One SPEC_DEVIATION' (query-cache)"
+      ],
+      "created": "2026-08-25T10:20:43Z",
+      "last_seen": "2026-08-25T10:20:43Z"
+    },
+    {
+      "id": "L-021",
+      "key": "review_finding::in a suite whose setup already starts a global request mocking server register handlers on that server instead of creating a second one or every request is handled twice",
+      "text": "In a suite whose setup already starts a global request-mocking server, register handlers on that server instead of creating a second one, or every request is handled twice",
+      "signal": "review_finding",
+      "scope": "integration-tests",
+      "status": "candidate",
+      "features": [
+        "ticket-detail-overlay"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/pages/app/tickets/tickets-flow.integration.test.tsx:387; validation.md 'Issues found' (integration-tests)"
+      ],
+      "created": "2026-08-25T10:20:43Z",
+      "last_seen": "2026-08-25T10:20:43Z"
+    },
+    {
+      "id": "L-022",
+      "key": "gate_fail::before calling a concurrency test failure a host flake kill it with a deterministic mutant if removing the serialization primitive makes it fail every run it is a defect and a green ci is favorable scheduling rather than counter evidence",
+      "text": "Before calling a concurrency test failure a host flake, kill it with a deterministic mutant: if removing the serialization primitive makes it fail every run, it is a defect, and a green CI is favorable scheduling rather than counter-evidence",
+      "signal": "gate_fail",
+      "scope": "concurrency-tests",
+      "status": "candidate",
+      "features": [
+        "ticket-lifecycle-notifications"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "CI run 32852682651 job 97817095822; dod-dataset.integration.spec.ts:106 (concurrency-tests)"
+      ],
+      "created": "2026-08-25T14:29:19Z",
+      "last_seen": "2026-08-25T14:29:19Z"
+    },
+    {
+      "id": "L-023",
+      "key": "review_finding::when a surface has a published design read the design source for layout before implementing it acceptance criteria describe behaviour and never constrain appearance so a fully green suite says nothing about visual fidelity",
+      "text": "When a surface has a published design, read the design source for layout before implementing it: acceptance criteria describe behaviour and never constrain appearance, so a fully green suite says nothing about visual fidelity",
+      "signal": "review_finding",
+      "scope": "design-to-code",
+      "status": "candidate",
+      "features": [
+        "ticket-detail-overlay"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3831/tlc/validation.md 'What the UAT found that the tests did not' (design-to-code)"
+      ],
+      "created": "2026-08-25T18:19:31Z",
+      "last_seen": "2026-08-25T18:19:31Z"
+    },
+    {
+      "id": "L-024",
+      "key": "review_finding::after every exact text substitution in a source file read the region back and confirm the change landed a failed match reports success and the following gate passes on the unchanged code",
+      "text": "After every exact-text substitution in a source file, read the region back and confirm the change landed: a failed match reports success and the following gate passes on the unchanged code",
+      "signal": "review_finding",
+      "scope": "editing",
+      "status": "candidate",
+      "features": [
+        "ticket-detail-overlay"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3831/tlc/validation.md 'Process note — three patches lost silently' (editing)"
+      ],
+      "created": "2026-08-25T18:19:31Z",
+      "last_seen": "2026-08-25T18:19:31Z"
+    },
+    {
+      "id": "L-025",
+      "key": "review_finding::take a design s dimensions from the node metadata not from an exported image because the export includes shadows and other effects that fall outside the node s own box",
+      "text": "Take a design's dimensions from the node metadata, not from an exported image, because the export includes shadows and other effects that fall outside the node's own box",
+      "signal": "review_finding",
+      "scope": "design-to-code",
+      "status": "candidate",
+      "features": [
+        "ticket-detail-overlay"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3831/tlc/validation.md item 4; ticket-detail-overlay.tsx sheet width (design-to-code)"
+      ],
+      "created": "2026-08-25T18:19:31Z",
+      "last_seen": "2026-08-25T18:19:31Z"
+    },
+    {
+      "id": "L-026",
+      "key": "surviving_mutant::when state extensions are scoped by a cache generation extend the old generation switch generations and assert the default limit again so leaked state cannot survive mutation",
+      "text": "When state extensions are scoped by a cache generation, extend the old generation, switch generations, and assert the default limit again so leaked state cannot survive mutation.",
+      "signal": "surviving_mutant",
+      "scope": "query-cache-tests",
+      "status": "candidate",
+      "features": [
+        "ticket-detail-overlay"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3831/tlc/validation.md:393 (query-cache-tests)"
+      ],
+      "created": "2026-08-25T19:19:16Z",
+      "last_seen": "2026-08-25T19:19:16Z"
+    },
+    {
+      "id": "L-027",
+      "key": "review_finding::when replacing an approved cache seeding mechanism update its task contract and algorithm comments in the same increment so verification evaluates the mechanism actually shipped",
+      "text": "When replacing an approved cache-seeding mechanism, update its task contract and algorithm comments in the same increment so verification evaluates the mechanism actually shipped.",
+      "signal": "review_finding",
+      "scope": "query-cache",
+      "status": "candidate",
+      "features": [
+        "ticket-detail-overlay"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3831/tlc/validation.md:405 (query-cache)"
+      ],
+      "created": "2026-08-25T19:19:22Z",
+      "last_seen": "2026-08-25T19:19:22Z"
+    },
+    {
+      "id": "L-028",
+      "key": "spec_precision_gap::when a spec says a view reuses cache state whether a background revalidation request still fires with staletime 0 the cache is served and a request is issued",
+      "text": "When a spec says a view reuses cache, state whether a background revalidation request still fires; with staleTime 0 the cache is served AND a request is issued",
+      "signal": "spec_precision_gap",
+      "scope": "tanstack-query-ui",
+      "status": "candidate",
+      "features": [
+        "metrics-v2-shell"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3970/tlc/spec.md — edge case on returning to a page (tanstack-query-ui)"
+      ],
+      "created": "2026-08-26T18:03:43Z",
+      "last_seen": "2026-08-26T18:03:43Z"
+    },
+    {
+      "id": "L-029",
+      "key": "surviving_mutant::mutate the seam where a component composes its data hook not only isolated modules a suite that mocks the hook cannot detect a page that stopped fetching",
+      "text": "Mutate the seam where a component composes its data hook, not only isolated modules; a suite that mocks the hook cannot detect a page that stopped fetching",
+      "signal": "surviving_mutant",
+      "scope": "discrimination-sensor",
+      "status": "candidate",
+      "features": [
+        "metrics-v2-shell"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/pages/app/metrics/pages/pages.test.tsx:234 — enabled:false survived 53 tests (discrimination-sensor)"
+      ],
+      "created": "2026-08-26T18:03:43Z",
+      "last_seen": "2026-08-26T18:03:43Z"
+    },
+    {
+      "id": "L-030",
+      "key": "review_finding::when retiring a test split assertions that bundle two subjects one half can outlive the construct that died and its loss is a silent regression",
+      "text": "When retiring a test, split assertions that bundle two subjects; one half can outlive the construct that died and its loss is a silent regression",
+      "signal": "review_finding",
+      "scope": "test-migration",
+      "status": "candidate",
+      "features": [
+        "metrics-v2-shell"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "session-context/portal/INV-3970/tlc/evidence/t9-assertion-map.md:50 (test-migration)"
+      ],
+      "created": "2026-08-26T18:03:43Z",
+      "last_seen": "2026-08-26T18:03:43Z"
     }
-  ]
+  ],
+  "merge_similarity": 0.6
 }
