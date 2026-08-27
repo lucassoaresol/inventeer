@@ -864,18 +864,18 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Status**: active
 
 ## Handoff
-- **Feature**: symmetric-session-audit-contract
+- **Feature**: routed-skill-context-preflight
 - **Phase / Task**: Completed and validated
-- **Completed**: Behavioral commit 3d1305c raises the audit contract to v4: both engine blocks share one canonical key set, Claude gains measured aborted turns and subagents, and an inexpressible signal is null with a stated reason instead of zero; validation records 20 of 20 criteria and 10 of 10 killed mutants after two survivors were closed; aggregate gate passed at 29 suites
+- **Completed**: Behavioral commit fec9f26 moves the context preflight into the five routed skills that lacked it, each planning its own route, and adds a manifest-derived detector; validation records 12 of 12 criteria, 4 of 4 edge cases and 7 of 7 killed mutants; aggregate gate passed at 29 suites
 - **In progress**: none
-- **Next durable step**: Decide whether the remaining retrospective finding - moving the context preflight inside the product skills - becomes an AD entry, and whether AD-048 should be revisited now that abort rates are comparable across engines
+- **Next durable step**: Re-run the sanitized session audit after a few cycles to measure whether the declared preflight actually raises invocation, and decide whether AD-048 should be revisited now that abort rates are comparable across engines
 - **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: main
 - **Contract status**: PASS
 - **Operational status**: PASS
-- **Recorded at**: 2026-08-27T19:02:49Z
-- **Valid at SHA**: 3d1305cb02fe741881bb3daa64ff2b790ab3a9f3
+- **Recorded at**: 2026-08-27T19:17:56Z
+- **Valid at SHA**: fec9f265e6fa6bb161094086b65de27598d39479
 - **Publication state**: unpublished
-- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/symmetric-session-audit-contract/spec.md, .specs/features/symmetric-session-audit-contract/tasks.md, .specs/features/symmetric-session-audit-contract/validation.md
+- **Evidence-only paths**: .specs/STATE.md, .specs/features/INDEX.md, .specs/features/routed-skill-context-preflight/spec.md, .specs/features/routed-skill-context-preflight/tasks.md, .specs/features/routed-skill-context-preflight/validation.md
 - **Invalidated by**: behavioral SHA ancestry break; non-evidence descendant; publication state change
