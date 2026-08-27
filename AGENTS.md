@@ -66,6 +66,8 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   `python3 scripts/workspace-context.py plan --route <rota>`. Use `measure --route <rota>` para
   diagnosticar contribuições por fonte. exit `1` indica orçamento excedido; exit `2` indica contrato
   inválido. Os comandos emitem somente metadata e nunca substituem a leitura das fontes selecionadas.
+- Para discovery sem issue, use a rota registrada `project-discovery`; inspeção de freshness é
+  read-only, e fetch, pull ou sincronização de repositórios exigem autorização separada.
 - Use `assistants-task-context` para preparar uma issue do produto Assistants.
 - Use `portal-task-context` para preparar uma issue do Portal e determinar os repos em escopo.
 - Use `triage-project-cycle` para comparar várias issues, ciclos ou frentes antes de selecionar uma
@@ -87,11 +89,11 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   não use discovery para contornar uma issue existente.
 - Use `create-review-bundle` para empacotar evidências e diffs por arquivo sem modificar o repo
   revisado.
-- Trate as skills `apex-*` como wrappers experimentais de inspeção no Codex. Elas leem
-  `apex://framework/workflows/<id>`, mas não criam uma execução APEX suportada nem substituem
-  prompts nativos, contexto de sessão, artifacts ou gates ausentes. Não as use como executor de
-  entrega; não edite seu conteúdo gerado. No Claude Code, trate também os workflows nativos do MCP
-  `apex` como superfície experimental e diagnóstica, não como executor de entrega.
+- Trate `apex-all-tools` como o único inspector experimental do APEX no Codex. Ele lê o catálogo
+  agregado em `apex://framework/workflows/all-tools`; o inspector e seus recursos não criam uma execução APEX suportada.
+  Também não substituem prompts nativos, contexto de sessão, artifacts ou gates ausentes. Não o use
+  como executor de entrega nem edite seu conteúdo gerado. No Claude Code, trate também os workflows nativos do MCP `apex`
+  como superfície experimental e diagnóstica, não como executor de entrega.
 - No Codex, mantenha ferramentas de escrita do MCP `apex` sujeitas a aprovação. A exposição de
   operações Git, GitHub, Linear ou multi-repo não amplia ownership nem autoriza execução APEX.
 - Antes de declarar um workflow APEX executável, confirme que o servidor publica todas as tools que
@@ -173,6 +175,11 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   screenshots dos arquivos aos quais o usuário concedeu acesso; nunca persista tokens no workspace.
 - Antes de qualquer ferramenta de escrita do Figma, confirme o arquivo e o node alvo e obtenha a
   aprovação exigida pelo engine. Acesso ao design não autoriza mudanças em arquivos de produto.
+- O MCP `figma-local` é um piloto manual e opt-in, desabilitado por padrão e limitado a
+  `127.0.0.1:1994`; nunca use binding não-loopback. Mantenha o `figma` oficial como padrão.
+- Antes do piloto, instale e execute manualmente o plugin Desktop do projeto, use um arquivo Figma descartável,
+  confirme o arquivo e o node alvo e aprove cada ferramenta. Se o plugin Desktop estiver ausente ou desconectado,
+  reporte a dependência; não declare a integração validada.
 - A disponibilidade do MCP nesta raiz não transfere ownership nem autoriza mudanças de produto.
 - Cloudflare e AWS permanecem fora da configuração até uma nova decisão transversal explícita.
 
@@ -192,6 +199,9 @@ substituídas permanecem no histórico e apontam para sua sucessora.
   mesmo estado e contrato evita repetição acidental, e não substitui validação terminal fresca.
   Testes focais continuam válidos durante implementação, mas não substituem o gate completo no
   fechamento. O receipt é ignorado, efêmero e restrito ao workspace raiz; não o aplique a `repos/`.
+- Use `python3 scripts/workspace-hygiene.py` somente para inventário sanitizado e read-only de
+  lessons e `session-context/`. Elegibilidade não autoriza remoção: Portal exige evidência explícita
+  de merge e issue encerrada; runtime OMC exige evidência explícita de sessão finalizada.
 
 ## Segurança
 

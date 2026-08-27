@@ -81,7 +81,7 @@ O primeiro conjunto está em [`cycles/10/portal/tasks/`](cycles/10/portal/tasks/
 
 ### Contexto delimitado por rota
 
-As cinco rotas operacionais do workspace declaram fontes, headings e orçamento em
+As seis rotas operacionais do workspace declaram fontes, headings e orçamento em
 `.specs/context/routes.json`. Antes de carregar uma rota, valide todos os contratos e consulte seu
 plano metadata-only:
 
@@ -95,6 +95,10 @@ Para investigar tamanho sem emitir o conteúdo selecionado:
 ```bash
 python3 scripts/workspace-context.py measure --route portal-task
 ```
+
+Discovery sem issue usa `--route project-discovery`. A rota delimita as fontes e permite verificar
+branch, SHA, último commit e estado do worktree sem atualizar repositórios; fetch, pull ou sync
+exigem autorização separada.
 
 O estimador conta code points Unicode e arredonda um token estimado para cada quatro pontos. `check`
 retorna exit `1` quando qualquer rota excede seu orçamento; contrato, path ou heading inválido retorna
@@ -148,7 +152,7 @@ limpeza somente após merge e issue encerrada.
 | `review-pull-request` | Local | — | Revisar PRs existentes com findings e evidência ligados ao head exato |
 | `discover-project-context` | Local | — | Descobrir projetos e fluxos sem exigir uma issue Linear |
 | `create-review-bundle` | Local | — | Gerar ZIP de review com proveniência, diffs e lineage opcional |
-| `apex-*` (28) | Gerado | — | Inspecionar workflows APEX no Codex; superfície experimental, não executor |
+| `apex-all-tools` | Gerado | — | Inspecionar o catálogo APEX no Codex; superfície experimental, não executor |
 
 As skills necessárias estão versionadas em `.agents/skills/`; não dependem de uma instalação
 global. A `tlc-spec-driven` é um fork local vendorizado e deve ser atualizada separadamente das
@@ -257,8 +261,8 @@ engine enxergava metade do conjunto, e a diferença é coberta por arquivo:
 |---|---|---|
 | Instruções | `AGENTS.md` nativo | `CLAUDE.md`, que importa `AGENTS.md` |
 | Skills | `.agents/skills/` nativo | symlinks em `.claude/skills/` |
-| MCPs versionados | `apex`, `linear`, `github`, `context7`, `shadcn`, `figma` em `.codex/config.toml` | `apex`, `github`, `context7`, `shadcn`, `figma` em `.mcp.json` |
-| Workflows APEX | wrappers experimentais `apex-*` | comandos nativos do MCP |
+| MCPs versionados | `apex`, `linear`, `github`, `context7`, `shadcn`, `figma`, `figma-local` em `.codex/config.toml` | `apex`, `github`, `context7`, `shadcn`, `figma`, `figma-local` em `.mcp.json` |
+| Workflows APEX | inspector experimental `apex-all-tools` | comandos nativos do MCP |
 
 Uma skill global de mesmo nome em `~/.claude/skills/` suprime a deste workspace sem aviso, e as
 `description` podem ser idênticas. Se uma skill parecer desatualizada no Claude Code, verifique
@@ -321,6 +325,18 @@ ferramentas de escrita do Figma exigem aprovação pelo modo `writes`; o arquivo
 ser confirmados antes de qualquer mutação. Conclua a autenticação local com
 `codex mcp login figma` e reinicie a sessão iniciada nesta raiz.
 
+`figma-local` é um piloto manual e opt-in para avaliar o bridge
+`@alvinindra/figma-mcp-rust@0.2.0` quando os limites do servidor oficial forem insuficientes. Ele
+coexiste com o `figma` oficial, que continua habilitado e padrão. O bridge fica desabilitado no
+Codex, não é auto-habilitado no Claude e só pode escutar em `127.0.0.1:1994`; nunca exponha essa
+porta em binding não-loopback, pois o bridge local não oferece autenticação.
+
+Antes de habilitá-lo em uma sessão controlada, instale e execute manualmente o plugin Desktop do
+projeto, comece com um arquivo Figma descartável, confirme o arquivo e o node alvo e aprove cada
+ferramenta do piloto. Se o plugin Desktop estiver ausente ou desconectado, registre essa dependência
+manual e não apresente a configuração como validação live bem-sucedida. O piloto não autoriza
+mudanças em arquivos Figma ou repositórios de produto.
+
 Os candidatos de infraestrutura permanecem fora desta raiz por limites de necessidade e autoridade:
 
 - Cloudflare Docs não tem uso durável durante a migração do Portal para AWS.
@@ -358,13 +374,13 @@ A superfície Codex também expõe operações mutáveis de Git, GitHub, Linear 
 Essas ferramentas exigem aprovação pelo modo `writes`; leituras diagnósticas permanecem disponíveis,
 e a presença das operações não amplia ownership nem transforma o MCP em executor suportado.
 
-Os wrappers em `.agents/skills/apex-<id>/` preservam uma superfície experimental para inspeção e
-diagnóstico no Codex. Eles não são expostos ao Claude e não devem ser tratados como execução APEX
-suportada.
+O inspector `.agents/skills/apex-all-tools/` preserva uma única superfície experimental de
+inspeção e diagnóstico no Codex. Ele não é exposto ao Claude e não deve ser tratado como execução
+APEX suportada.
 
-Os wrappers não copiam o corpo dos workflows: cada um aponta para
-`apex://framework/workflows/<id>`, mantendo o APEX como fonte canônica. São conteúdo derivado — não
-edite.
+O inspector não copia o corpo dos workflows: aponta para
+`apex://framework/workflows/all-tools`, mantendo o APEX como fonte canônica. É conteúdo derivado —
+não edite.
 
 Para regenerar, o agente obtém o catálogo pela tool `apex_framework_index` e o entrega ao script:
 
@@ -375,12 +391,21 @@ Para regenerar, o agente obtém o catálogo pela tool `apex_framework_index` e o
 ```
 
 O `--check` relata criações, atualizações e remoções sem escrever, e sai 1 quando há divergência.
-São aceitos os workflows com `description` não vazia e não depreciados — hoje 28 dos 30, excluindo
-`README` e `warm-up` (ADR 0032). O contrato de aquisição proíbe ler `apex://framework/runtime`
-diretamente, arquivos de credencial do host ou o gateway por HTTP, porque nenhuma dessas rotas é
-reproduzível nos dois engines.
+Somente a entrada `all-tools`, com `description` não vazia e não depreciada, é materializada; as
+entradas por workflow são ignoradas e wrappers legados são removidos do target. A ausência de
+`all-tools` falha fechada. O contrato de aquisição proíbe ler `apex://framework/runtime` diretamente,
+arquivos de credencial do host ou o gateway por HTTP, porque nenhuma dessas rotas é reproduzível nos
+dois engines.
 
 Valide o script com `./scripts/test-sync-apex-commands.sh`.
+
+## Inventário de higiene
+
+Use `python3 scripts/workspace-hygiene.py` para listar somente contagens de status de lessons, IDs
+candidatos a expiração e classificações sanitizadas de `session-context/`. O comando é read-only e
+não emite prosa ou evidência das lessons. Diretórios Portal só ficam elegíveis com evidência
+explícita de PR merged e issue encerrada; runtimes OMC só ficam elegíveis com evidência explícita de
+sessão finalizada. Mesmo quando elegível, nenhuma remoção é autorizada ou executada pelo inventário.
 
 ## Aprendizados de sessão
 

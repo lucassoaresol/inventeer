@@ -824,6 +824,28 @@ de produtos devem permanecer nos respectivos repositórios sob `repos/`.
 - **Date**: 2026-08-26
 - **Status**: active
 
+### AD-051
+- **Decision**: Delimitar discovery pela rota `project-discovery`, reduzir a superfície de skills
+  APEX ao inspector diagnóstico `apex-all-tools`, disponibilizar um inventário sanitizado e
+  read-only de lessons e `session-context/`, e declarar `figma-local` como piloto manual paralelo ao
+  servidor oficial. O piloto usa `@alvinindra/figma-mcp-rust@0.2.0`, escuta somente em
+  `127.0.0.1:1994`, permanece desabilitado por padrão no Codex e não é auto-habilitado no Claude.
+- **Reason**: Discovery amplo, vinte e oito wrappers diagnósticos e ausência de um inventário único
+  aumentavam custo de contexto e reconstrução. Os limites baixos do MCP oficial do Figma justificam
+  avaliar um bridge local, mas sua dependência de plugin Desktop e ausência de autenticação exigem
+  uma fronteira opt-in sem substituir o fluxo OAuth gerenciado.
+- **Trade-off**: O catálogo APEX deixa de aparecer como uma skill por workflow, e o piloto local
+  exige instalação manual, arquivo descartável e aprovação por tool. Em troca, a superfície fica
+  menor, mensurável e falha fechada, enquanto o Figma oficial continua habilitado e padrão.
+- **Alternatives considered**: Manter as cinco rotas e os vinte e oito wrappers; remover todo acesso
+  diagnóstico ao APEX; substituir o MCP oficial do Figma; usar versão `latest`; expor o bridge fora
+  de loopback; automatizar limpeza com base em timestamps locais.
+- **Scope**: Workspace raiz, skills, scripts, configuração MCP e estado efêmero local. Não autoriza
+  deleção, instalação externa, mutação Figma, atualização de repositórios, alterações no
+  `inventeer-ops` ou em qualquer repo sob `repos/`, nem muda ownership ou fonte canônica.
+- **Date**: 2026-08-27
+- **Status**: active
+
 ## Handoff
 - **Feature**: cycle-10-closeout-and-cycle-11-pending-followup
 - **Phase / Task**: Completed and validated

@@ -19,6 +19,7 @@ ROUTES = (
     "pr-review",
     "cycle-triage",
     "delivery-front",
+    "project-discovery",
 )
 FORBIDDEN_CONTENT = "CONTENT_MUST_NOT_APPEAR"
 
@@ -81,8 +82,8 @@ print("ok 1 - canonical manifest declares the exact estimator, budgets, routes, 
 
 audit = run("audit")
 assert audit.returncode == 0, audit.stderr
-assert audit.stdout.startswith("ok - 5 routes, "), audit.stdout
-print("ok 2 - canonical manifest audits exactly five routes")
+assert audit.stdout.startswith("ok - 6 routes, "), audit.stdout
+print("ok 2 - canonical manifest audits exactly six routes")
 
 for route in ROUTES:
     first = run("plan", "--route", route)
@@ -107,7 +108,7 @@ assert [route["route"] for route in canonical_report["routes"]] == list(ROUTES)
 assert all(route["status"] == "pass" for route in canonical_report["routes"])
 assert FORBIDDEN_CONTENT not in canonical_check.stdout
 assert str(ROOT) not in canonical_check.stdout
-print("ok 4 - all five canonical routes measure within budget without disclosing content")
+print("ok 4 - all six canonical routes measure within budget without disclosing content")
 
 with tempfile.TemporaryDirectory() as temporary:
     fixture_root = pathlib.Path(temporary)

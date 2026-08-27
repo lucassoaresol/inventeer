@@ -25,4 +25,5 @@ This file is navigation only. Each linked directory remains canonical for its ow
 | [workspace-context-routing-review-bundles](./workspace-context-routing-review-bundles/) | Validated |
 | [workspace-mcp-resource-preflight](./workspace-mcp-resource-preflight/) | Validated |
 | [workspace-process-hardening](./workspace-process-hardening/) | Active |
+| [workspace-operational-surface-simplification](./workspace-operational-surface-simplification/) | Validated |
 | [workspace-session-resilience-v2](./workspace-session-resilience-v2/) | Validated |

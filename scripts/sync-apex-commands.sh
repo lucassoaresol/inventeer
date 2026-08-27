@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
-# Gera wrappers experimentais de inspeção APEX em .agents/skills/apex-<id>/ para o Codex.
+# Mantém um único inspector experimental APEX em .agents/skills/apex-all-tools/ para o Codex.
 #
 # O Claude Code recebe os mesmos workflows nativamente, como prompts MCP do servidor apex; o Codex
 # CLI consome apenas tools e resources, então os wrappers preservam descoberta e diagnóstico em
 # arquivo, mas não constituem execução suportada do workflow. Por isso eles não são expostos em
 # .claude/skills/: lá apenas duplicariam comandos nativos já existentes.
 #
-# Os wrappers não copiam o corpo dos workflows. Cada um aponta para apex://framework/workflows/<id>,
-# mantendo o APEX como fonte canônica e evitando drift.
+# O inspector não copia o corpo dos workflows. Ele aponta para
+# apex://framework/workflows/all-tools, mantendo o APEX como fonte canônica e evitando que um
+# wrapper por workflow domine a descoberta de skills.
 #
 # Este script não fala MCP. O catálogo é obtido pelo agente e entregue como JSON; ver
 # --print-contract para o contrato de aquisição.
@@ -71,7 +72,8 @@ Filtros aplicados pelo script:
 
   - id fora de ^[a-z0-9][a-z0-9-]*\$        -> rejeitado
   - description ausente ou vazia            -> rejeitado (remove sentinelas como README)
-  - description contendo DEPRECATED         -> rejeitado (remove warm-up, ADR 0032)
+  - id diferente de all-tools               -> ignorado; não gera skill
+  - description contendo DEPRECATED         -> rejeitado
 EOF
   exit 0
 }
@@ -131,12 +133,13 @@ selected="$(jq -r '
   | select((.description | ascii_upcase | contains("DEPRECATED")) | not)
   | select((has("bytes") | not) or (.bytes > 0))
   | select((has("frontmatter_ok") | not) or (.frontmatter_ok == true))
+  | select(.id == "all-tools")
   | [.id, .description]
   | @tsv
 ' "$CATALOG")"
 
 [[ -n "$selected" ]] || {
-  echo "Erro: nenhum workflow sobreviveu aos filtros do catálogo." >&2
+  echo "Erro: o catálogo não contém o workflow válido all-tools." >&2
   exit 2
 }
 
@@ -151,6 +154,18 @@ rejected="$(jq -r '
       or ((has("frontmatter_ok")) and (.frontmatter_ok == false))
     )
   | .id // "(sem id)"
+' "$CATALOG")"
+
+ignored="$(jq -r '
+  .workflows[]
+  | select(.id | type == "string")
+  | select(.id | test("^[a-z0-9][a-z0-9-]*$"))
+  | select((.description // "") | length > 0)
+  | select((.description | ascii_upcase | contains("DEPRECATED")) | not)
+  | select((has("bytes") | not) or (.bytes > 0))
+  | select((has("frontmatter_ok") | not) or (.frontmatter_ok == true))
+  | select(.id != "all-tools")
+  | .id
 ' "$CATALOG")"
 
 render_wrapper() {
@@ -217,6 +232,9 @@ echo "Catálogo:  $CATALOG"
 echo "Aceitos:   $(wc -l <<< "$selected") workflow(s)"
 if [[ -n "$rejected" ]]; then
   echo "Rejeitados: $(tr '\n' ' ' <<< "$rejected")"
+fi
+if [[ -n "$ignored" ]]; then
+  echo "Ignorados:  $(tr '\n' ' ' <<< "$ignored")"
 fi
 echo
 

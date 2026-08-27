@@ -17,6 +17,7 @@ ROUTE_NAMES = (
     "pr-review",
     "cycle-triage",
     "delivery-front",
+    "project-discovery",
 )
 ESTIMATOR = {
     "unit": "unicode-code-points",

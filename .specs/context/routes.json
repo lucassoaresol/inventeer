@@ -51,6 +51,15 @@
         {"source": ".agents/skills/advance-delivery-front/SKILL.md", "headings": [], "reason": "classify the next task against pending pull requests", "gate": "produce only evidence, contract, and next action"},
         {"source": ".specs/DECISIONS.md", "headings": [], "reason": "locate continuity and review boundaries", "gate": "open canonical decisions only when relevant"}
       ]
+    },
+    {
+      "name": "project-discovery",
+      "budget_estimated_tokens": 20000,
+      "references": [
+        {"source": "projects/README.md", "headings": ["## Roteamento de trabalho"], "reason": "locate registered project entry points without loading every project", "gate": "select one registered project before repository access"},
+        {"source": ".agents/skills/discover-project-context/SKILL.md", "headings": [], "reason": "apply the read-only discovery and authority-mapping workflow", "gate": "keep discovery separate from implementation and repository mutation"},
+        {"source": ".specs/DECISIONS.md", "headings": [], "reason": "locate active workspace constraints without loading decision bodies", "gate": "open canonical STATE entries only when they can change the discovery"}
+      ]
     }
   ]
 }

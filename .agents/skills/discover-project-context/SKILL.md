@@ -15,28 +15,32 @@ to understand. Capture the intended audience and output when stated.
 
 ## Workflow
 
-1. Read `projects/README.md` and the matching `projects/<project>.md` entry point. If no project is
+1. Run `python3 scripts/workspace-context.py check` and
+   `python3 scripts/workspace-context.py plan --route project-discovery`. Stop on a non-zero result;
+   these commands emit metadata only and do not replace reading the selected sources.
+2. Read `projects/README.md` and the matching `projects/<project>.md` entry point. If no project is
    registered, report the missing route instead of guessing repositories.
-2. Run `./scripts/update-repos.sh`. Continue with an explicit freshness warning for required repos
-   that were skipped; stop when a required repo fails to update. Ignore the expected
-   `inventeer-hub` skip.
-3. Resolve the product, implementation, foundation, and conditional dependency repos from the
+3. Inspect required repositories read-only: record the current branch, HEAD SHA, latest local
+   commit time, and worktree status. Do not run `update-repos.sh`, fetch, pull, or otherwise mutate
+   repositories during discovery unless the user separately authorizes synchronization. When no
+   remote comparison is available, report local freshness as a limitation instead of guessing.
+4. Resolve the product, implementation, foundation, and conditional dependency repos from the
    project entry point. Read local instructions and check each repo worktree before analysis.
-4. Establish authority before tracing behavior: identify which source owns product meaning, code,
+5. Establish authority before tracing behavior: identify which source owns product meaning, code,
    shared contracts, standards, tests, and operational state.
-5. Follow the current flow from its observable entry point through repository and service
+6. Follow the current flow from its observable entry point through repository and service
    boundaries. Prefer current code and tests, then active ADRs and artifacts, then Git history when
    the current rationale remains unclear.
-6. Load IDS or foundation context only when the discovered behavior crosses a governed boundary.
+7. Load IDS or foundation context only when the discovered behavior crosses a governed boundary.
    Reference canonical material without copying contract bodies.
-7. Separate:
+8. Separate:
    - observed current behavior and ownership;
    - supported inferences;
    - proposed future boundaries or hypotheses;
    - unresolved questions and missing external context.
-8. When an external system or absent repository is involved, describe only the observed interface
+9. When an external system or absent repository is involved, describe only the observed interface
    and explicitly label assumptions about its internals.
-9. Recommend where a durable output belongs: chat only, `session-context/`, a product discovery
+10. Recommend where a durable output belongs: chat only, `session-context/`, a product discovery
    workspace, a canonical artifact, or a new Linear issue. Do not create the output unless requested.
 
 ## Discovery Package

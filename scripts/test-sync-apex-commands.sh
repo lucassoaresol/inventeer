@@ -36,6 +36,7 @@ catalog full.json <<'EOF'
   "fetched_at": "2026-07-26",
   "workflows": [
     { "id": "README" },
+    { "id": "all-tools", "description": "Summary of all workflows and tools" },
     { "id": "eng-start", "description": "Initiates planning for a task" },
     { "id": "eng-work", "description": "Workflow for code implementation" },
     { "id": "init-apex", "description": "Initialize APEX in any repository" },
@@ -52,10 +53,11 @@ mkdir -p "$skills"
 if run --check --catalog "$fixture_dir/full.json" --skills-dir "$skills"; then
   fail "--check should exit 1 when wrappers are missing"
 fi
-grep -q 'Aceitos:   3 workflow' <<<"$output" || fail "expected 3 accepted, got: $output"
-ok "README sem description e warm-up depreciado sao rejeitados"
+grep -q 'Aceitos:   1 workflow' <<<"$output" || fail "expected 1 accepted, got: $output"
+ok "somente all-tools sobrevive como inspector agregado"
 
 grep -q 'Rejeitados: README warm-up' <<<"$output" || fail "rejected list wrong: $output"
+grep -q 'Ignorados:  eng-start eng-work init-apex' <<<"$output" || fail "ignored list wrong: $output"
 ok "entradas rejeitadas sao relatadas por id"
 
 [[ -z "$(ls -A "$skills")" ]] || fail "--check wrote to disk"
@@ -65,25 +67,26 @@ ok "--check nao escreve no disco"
 
 run --apply --catalog "$fixture_dir/full.json" --skills-dir "$skills" \
   || fail "--apply failed: $output"
+[[ -f "$skills/apex-all-tools/SKILL.md" ]] || fail "aggregate inspector not created"
 for id in eng-start eng-work init-apex; do
-  [[ -f "$skills/apex-$id/SKILL.md" ]] || fail "wrapper apex-$id not created"
+  [[ ! -e "$skills/apex-$id" ]] || fail "per-workflow wrapper apex-$id was created"
 done
 [[ ! -e "$skills/apex-README" ]] || fail "README wrapper was created"
 [[ ! -e "$skills/apex-warm-up" ]] || fail "deprecated wrapper was created"
-ok "--apply cria um wrapper por workflow aceito"
+ok "--apply cria somente o inspector agregado"
 
-grep -q 'apex://framework/workflows/eng-start' "$skills/apex-eng-start/SKILL.md" \
+grep -q 'apex://framework/workflows/all-tools' "$skills/apex-all-tools/SKILL.md" \
   || fail "wrapper does not reference its MCP resource"
 ok "wrapper aponta para o recurso MCP em vez de copiar o corpo"
 
-grep -q 'não use como executor de entrega' "$skills/apex-eng-start/SKILL.md" \
+grep -q 'não use como executor de entrega' "$skills/apex-all-tools/SKILL.md" \
   || fail "wrapper claims or implies supported APEX execution"
 # shellcheck disable=SC2016 # Backticks are literal Markdown in the generated wrapper.
-grep -Fq 'Use `tlc-spec-driven` como executor' "$skills/apex-eng-start/SKILL.md" \
+grep -Fq 'Use `tlc-spec-driven` como executor' "$skills/apex-all-tools/SKILL.md" \
   || fail "wrapper omits the Codex execution fallback"
 ok "wrapper declara o limite experimental e roteia entrega Codex para TLC"
 
-grep -qE '^name: apex-eng-start$' "$skills/apex-eng-start/SKILL.md" \
+grep -qE '^name: apex-all-tools$' "$skills/apex-all-tools/SKILL.md" \
   || fail "wrapper frontmatter name wrong"
 ok "frontmatter usa o nome prefixado"
 
@@ -96,14 +99,14 @@ ok "segunda execucao e no-op e sai 0"
 
 # --- Atualização -------------------------------------------------------------
 
-printf 'drift\n' >>"$skills/apex-eng-work/SKILL.md"
+printf 'drift\n' >>"$skills/apex-all-tools/SKILL.md"
 if run --check --catalog "$fixture_dir/full.json" --skills-dir "$skills"; then
   fail "--check should exit 1 after manual drift"
 fi
 grep -q '\[ATUALIZAR\] (1)' <<<"$output" || fail "drift not detected: $output"
 run --apply --catalog "$fixture_dir/full.json" --skills-dir "$skills" \
   || fail "--apply failed: $output"
-grep -q 'drift' "$skills/apex-eng-work/SKILL.md" && fail "manual drift survived --apply"
+grep -q 'drift' "$skills/apex-all-tools/SKILL.md" && fail "manual drift survived --apply"
 ok "edicao manual e sobrescrita pelo sync"
 
 # --- Remoção -----------------------------------------------------------------
@@ -127,7 +130,7 @@ ok "skills sem o prefixo apex- nao sao tocadas"
 catalog guarded.json <<'EOF'
 {
   "workflows": [
-    { "id": "eng-start", "description": "ok" },
+    { "id": "all-tools", "description": "ok" },
     { "id": "eng-vazio", "description": "recurso vazio", "bytes": 0 },
     { "id": "eng-quebrado", "description": "frontmatter ruim", "frontmatter_ok": false },
     { "id": "Eng_Invalido", "description": "id fora do padrao" }
@@ -139,7 +142,7 @@ guarded="$fixture_dir/guarded"
 mkdir -p "$guarded"
 run --apply --catalog "$fixture_dir/guarded.json" --skills-dir "$guarded" \
   || fail "--apply failed: $output"
-[[ -f "$guarded/apex-eng-start/SKILL.md" ]] || fail "valid entry rejected"
+[[ -f "$guarded/apex-all-tools/SKILL.md" ]] || fail "valid entry rejected"
 for id in eng-vazio eng-quebrado Eng_Invalido; do
   [[ ! -e "$guarded/apex-$id" ]] || fail "entry $id should have been rejected"
 done
@@ -169,6 +172,13 @@ assert_exit_2 "todas as entradas filtradas" --check --catalog "$fixture_dir/so-r
   --skills-dir "$fixture_dir/nunca"
 [[ ! -e "$fixture_dir/nunca" ]] || fail "rejected catalog still created the skills dir"
 ok "catalogo invalido ou totalmente filtrado sai 2 sem escrever"
+
+printf '{"workflows":[{"id":"eng-start","description":"valid but not aggregate"}]}' \
+  >"$fixture_dir/sem-all-tools.json"
+assert_exit_2 "catalogo sem all-tools" --check --catalog "$fixture_dir/sem-all-tools.json" \
+  --skills-dir "$fixture_dir/sem-inspector"
+[[ ! -e "$fixture_dir/sem-inspector" ]] || fail "missing all-tools still created the skills dir"
+ok "ausencia de all-tools falha fechada"
 
 # --- Contrato ----------------------------------------------------------------
 

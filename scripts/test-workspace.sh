@@ -29,6 +29,7 @@ run_suite "APEX command synchronization" bash scripts/test-sync-apex-commands.sh
 run_suite "TLC checkpoint contract" bash scripts/test-tlc-checkpoint-contract.sh
 run_suite "TLC checkpoint behavior" python3 scripts/test-tlc-checkpoint.py
 run_suite "workspace context routing" python3 scripts/test-workspace-context.py
+run_suite "workspace hygiene inventory" python3 scripts/test-workspace-hygiene.py
 run_suite "cycle task clarifications" python3 scripts/test-cycle-task-clarifications.py
 run_suite "staged content guard" python3 scripts/test-staged-content-guard.py
 run_suite "workspace gate evidence" python3 scripts/test-workspace-gate-evidence.py
@@ -48,7 +49,7 @@ if [[ ! -f "$skill_validator" ]]; then
 fi
 while IFS= read -r skill_dir; do
   python3 "$skill_validator" "$skill_dir" >/dev/null
-done < <(find .agents/skills -mindepth 1 -maxdepth 1 -type d | sort)
+done < <(find .agents/skills -mindepth 2 -maxdepth 2 -type f -name SKILL.md -printf '%h\n' | sort)
 suite_count=$((suite_count + 1))
 echo "[workspace] all skill folders are structurally valid"
 
