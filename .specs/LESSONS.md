@@ -192,6 +192,18 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: session-context/portal/INV-3970/tlc/evidence/t9-assertion-map.md:50 (test-migration)
 - last seen: 2026-08-26T18:03:43Z
 
+### L-031 - When a criterion constrains internal ordering that produces no observable difference, restate it as the outcome it protects; no black-box test can discriminate a sequence whose branches return the same value.
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `acceptance-criteria` · harmful: 0
+- features: workspace-learning-and-skill-hygiene
+- evidence: .specs/features/workspace-learning-and-skill-hygiene/validation.md Findings 1 (acceptance-criteria)
+- last seen: 2026-08-27T17:54:49Z
+
+### L-032 - When a freshness contract allowlists which paths count as closure evidence, commit every state file outside that allowlist before the anchor SHA, or a fresh handoff and a tracked store become mutually exclusive.
+- signal: `review_finding` · recurrence: 1 feature(s) · scope: `workspace-handoff` · harmful: 0
+- features: workspace-learning-and-skill-hygiene
+- evidence: .specs/features/workspace-learning-and-skill-hygiene/validation.md Findings 3 (workspace-handoff)
+- last seen: 2026-08-27T17:54:49Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

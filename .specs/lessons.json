@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 31,
+  "next_id": 33,
   "lessons": [
     {
       "id": "L-001",
@@ -546,6 +546,42 @@
       ],
       "created": "2026-08-26T18:03:43Z",
       "last_seen": "2026-08-26T18:03:43Z"
+    },
+    {
+      "id": "L-031",
+      "key": "spec_precision_gap::when a criterion constrains internal ordering that produces no observable difference restate it as the outcome it protects no black box test can discriminate a sequence whose branches return the same value",
+      "text": "When a criterion constrains internal ordering that produces no observable difference, restate it as the outcome it protects; no black-box test can discriminate a sequence whose branches return the same value.",
+      "signal": "spec_precision_gap",
+      "scope": "acceptance-criteria",
+      "status": "candidate",
+      "features": [
+        "workspace-learning-and-skill-hygiene"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".specs/features/workspace-learning-and-skill-hygiene/validation.md Findings 1 (acceptance-criteria)"
+      ],
+      "created": "2026-08-27T17:54:49Z",
+      "last_seen": "2026-08-27T17:54:49Z"
+    },
+    {
+      "id": "L-032",
+      "key": "review_finding::when a freshness contract allowlists which paths count as closure evidence commit every state file outside that allowlist before the anchor sha or a fresh handoff and a tracked store become mutually exclusive",
+      "text": "When a freshness contract allowlists which paths count as closure evidence, commit every state file outside that allowlist before the anchor SHA, or a fresh handoff and a tracked store become mutually exclusive.",
+      "signal": "review_finding",
+      "scope": "workspace-handoff",
+      "status": "candidate",
+      "features": [
+        "workspace-learning-and-skill-hygiene"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".specs/features/workspace-learning-and-skill-hygiene/validation.md Findings 3 (workspace-handoff)"
+      ],
+      "created": "2026-08-27T17:54:49Z",
+      "last_seen": "2026-08-27T17:54:49Z"
     }
   ],
   "merge_similarity": 0.6
