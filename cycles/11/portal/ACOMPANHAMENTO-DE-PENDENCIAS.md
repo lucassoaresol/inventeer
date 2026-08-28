@@ -147,3 +147,25 @@ API, chaves do Collector ou definições de métricas.
 Esta atualização preserva a entrega e seus limites sem alterar Linear, GitHub, código de produto ou
 artifacts canônicos. Ela não declara aprovação do QA, esforço final, fechamento da MILE, staging,
 rollout ou produção.
+
+## Revalidação após a conclusão da INV-3967
+
+O Linear e os clones locais foram revalidados em 2026-08-28. A INV-3967 está `Done`, com Human
+Final Effort de um ponto, e a MILE INV-3963 também está `Done`. Com a conclusão da MILE, foram
+satisfeitos os blockers formais das sucessoras INV-3964, INV-3965 e INV-3966. As relações históricas
+continuam visíveis no Linear, que deve ser revalidado antes do início de qualquer sucessora.
+
+O recorte atual do Ciclo 11 contém onze tasks e soma 19 pontos. Duas tasks, INV-3970 e INV-3967,
+estão concluídas e representam dois pontos; restam nove tasks e 17 pontos. A INV-4041 permanece
+`Prioritized`, mas foi reclassificada da referência catch-all observada anteriormente para o projeto
+Portal Engineering Operations, sob a MILE INV-4057.
+
+O [snapshot da INV-3967](./tasks/INV-3967.md) continua preservando a clarificação observada quando a
+task estava em QA e não é reescrito retroativamente. A conclusão canônica da issue e a incorporação
+da entrega não comprovam, por si sós, staging, rollout ou produção.
+
+## Limite da revalidação de 2026-08-28
+
+Esta seção registra apenas fatos duráveis revalidados. Ela não altera Linear, GitHub, código ou
+artifacts de produto e não promove estado TLC, logs, instruções de branch, briefing de QA,
+identidade do connector, rascunhos, credenciais, dados de clientes ou saídas de produção.
