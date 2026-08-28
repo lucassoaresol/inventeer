@@ -3,7 +3,7 @@
 - **Responsável pelo recorte:** Lucas Oliveira
 - **Ciclo:** 11
 - **Aberto em:** 2026-08-26
-- **Última revalidação:** 2026-08-26
+- **Última revalidação:** 2026-08-28
 - **Natureza:** acompanhamento histórico; não é backlog nem autorização de execução
 
 ## Relação com as outras etapas
@@ -169,3 +169,30 @@ da entrega não comprovam, por si sós, staging, rollout ou produção.
 Esta seção registra apenas fatos duráveis revalidados. Ela não altera Linear, GitHub, código ou
 artifacts de produto e não promove estado TLC, logs, instruções de branch, briefing de QA,
 identidade do connector, rascunhos, credenciais, dados de clientes ou saídas de produção.
+
+## Revalidação após a conclusão da INV-4041
+
+O Linear e o GitHub foram revalidados em 2026-08-28 depois da entrega da INV-4041. A task está
+`Done`, com Human Final Effort de um ponto, e sua MILE INV-4057 também está `Done`. As PRs
+[portal-web#243](https://github.com/Inventeer/portal-web/pull/243) e
+[portal-api#302](https://github.com/Inventeer/portal-api/pull/302) foram incorporadas a `develop`.
+Juntas, elas reconciliaram o contexto operacional diretamente consumido nos dois repositórios sem
+introduzir mudança de runtime, produto ou contrato.
+
+O [snapshot da INV-4041](./tasks/INV-4041.md) preserva a clarificação que consolidou a entrega em
+dois PRs independentes e suas exclusões. A correção de cobertura do Checkbox entregue na PR
+[portal-web#242](https://github.com/Inventeer/portal-web/pull/242) permaneceu separada e não integra o
+escopo nem o esforço da INV-4041.
+
+O recorte atual do Ciclo 11 contém onze tasks e soma 19 pontos. INV-3970, INV-3967 e INV-4041 estão
+concluídas e representam três pontos; restam oito tasks e 16 pontos. Entre as sucessoras, a INV-3973
+é a próxima candidata de execução: seu blocker formal INV-3970 está concluído, e sua entrega das três
+Gold keys desbloqueia a INV-3968. A recomendação exige nova preparação individual antes do início e
+não altera prioridade ou estado no Linear.
+
+## Limite da revalidação pós-INV-4041
+
+Esta atualização registra somente a disposição durável da entrega. Ela não altera Linear, GitHub,
+repositórios de produto ou artifacts canônicos; não promove logs, handoff, estado TLC, instruções de
+branch, credenciais, dados de clientes ou saídas de produção; e não cria snapshot da INV-3973 antes
+de sua preparação e eventual clarificação durável.
